@@ -1,0 +1,7345 @@
+
+
+[ 
+    {
+        "id": 0,
+        "Codigo": "",
+        "Ubigeo": "Elige distrito..."
+    },
+    {
+    "id": 1,
+    "Codigo": "010101",
+    "Ubigeo": "CHACHAPOYAS"
+}, {
+    "id": 2,
+    "Codigo": "010102",
+    "Ubigeo": "ASUNCION"
+}, {
+    "id": 3,
+    "Codigo": "010103",
+    "Ubigeo": "BALSAS"
+}, {
+    "id": 4,
+    "Codigo": "010104",
+    "Ubigeo": "CHETO"
+}, {
+    "id": 5,
+    "Codigo": "010105",
+    "Ubigeo": "CHILIQUIN"
+}, {
+    "id": 6,
+    "Codigo": "010106",
+    "Ubigeo": "CHUQUIBAMBA"
+}, {
+    "id": 7,
+    "Codigo": "010107",
+    "Ubigeo": "GRANADA"
+}, {
+    "id": 8,
+    "Codigo": "010108",
+    "Ubigeo": "HUANCAS"
+}, {
+    "id": 9,
+    "Codigo": "010109",
+    "Ubigeo": "LA JALCA"
+}, {
+    "id": 10,
+    "Codigo": "010110",
+    "Ubigeo": "LEIMEBAMBA"
+}, {
+    "id": 11,
+    "Codigo": "010111",
+    "Ubigeo": "LEVANTO"
+}, {
+    "id": 12,
+    "Codigo": "010112",
+    "Ubigeo": "MAGDALENA"
+}, {
+    "id": 13,
+    "Codigo": "010113",
+    "Ubigeo": "MARISCAL CASTILLA"
+}, {
+    "id": 14,
+    "Codigo": "010114",
+    "Ubigeo": "MOLINOPAMPA"
+}, {
+    "id": 15,
+    "Codigo": "010115",
+    "Ubigeo": "MONTEVIDEO"
+}, {
+    "id": 16,
+    "Codigo": "010116",
+    "Ubigeo": "OLLEROS"
+}, {
+    "id": 17,
+    "Codigo": "010117",
+    "Ubigeo": "QUINJALCA"
+}, {
+    "id": 18,
+    "Codigo": "010118",
+    "Ubigeo": "SAN FRANCISCO DE DAGUAS"
+}, {
+    "id": 19,
+    "Codigo": "010119",
+    "Ubigeo": "SAN ISIDRO DE MAINO"
+}, {
+    "id": 20,
+    "Codigo": "010120",
+    "Ubigeo": "SOLOCO"
+}, {
+    "id": 21,
+    "Codigo": "010121",
+    "Ubigeo": "SONCHE"
+}, {
+    "id": 22,
+    "Codigo": "010201",
+    "Ubigeo": "BAGUA"
+}, {
+    "id": 23,
+    "Codigo": "010202",
+    "Ubigeo": "ARAMANGO"
+}, {
+    "id": 24,
+    "Codigo": "010203",
+    "Ubigeo": "COPALLIN"
+}, {
+    "id": 25,
+    "Codigo": "010204",
+    "Ubigeo": "EL PARCO"
+}, {
+    "id": 26,
+    "Codigo": "010205",
+    "Ubigeo": "IMAZA"
+}, {
+    "id": 27,
+    "Codigo": "010206",
+    "Ubigeo": "LA PECA"
+}, {
+    "id": 28,
+    "Codigo": "010301",
+    "Ubigeo": "JUMBILLA"
+}, {
+    "id": 29,
+    "Codigo": "010302",
+    "Ubigeo": "CHISQUILLA"
+}, {
+    "id": 30,
+    "Codigo": "010303",
+    "Ubigeo": "CHURUJA"
+}, {
+    "id": 31,
+    "Codigo": "010304",
+    "Ubigeo": "COROSHA"
+}, {
+    "id": 32,
+    "Codigo": "010305",
+    "Ubigeo": "CUISPES"
+}, {
+    "id": 33,
+    "Codigo": "010306",
+    "Ubigeo": "FLORIDA"
+}, {
+    "id": 34,
+    "Codigo": "010307",
+    "Ubigeo": "JAZAN"
+}, {
+    "id": 35,
+    "Codigo": "010308",
+    "Ubigeo": "RECTA"
+}, {
+    "id": 36,
+    "Codigo": "010309",
+    "Ubigeo": "SAN CARLOS"
+}, {
+    "id": 37,
+    "Codigo": "010310",
+    "Ubigeo": "SHIPASBAMBA"
+}, {
+    "id": 38,
+    "Codigo": "010311",
+    "Ubigeo": "VALERA"
+}, {
+    "id": 39,
+    "Codigo": "010312",
+    "Ubigeo": "YAMBRASBAMBA"
+}, {
+    "id": 40,
+    "Codigo": "010401",
+    "Ubigeo": "NIEVA"
+}, {
+    "id": 41,
+    "Codigo": "010402",
+    "Ubigeo": "EL CENEPA"
+}, {
+    "id": 42,
+    "Codigo": "010403",
+    "Ubigeo": "RIO SANTIAGO"
+}, {
+    "id": 43,
+    "Codigo": "010501",
+    "Ubigeo": "LAMUD"
+}, {
+    "id": 44,
+    "Codigo": "010502",
+    "Ubigeo": "CAMPORREDONDO"
+}, {
+    "id": 45,
+    "Codigo": "010503",
+    "Ubigeo": "COCABAMBA"
+}, {
+    "id": 46,
+    "Codigo": "010504",
+    "Ubigeo": "COLCAMAR"
+}, {
+    "id": 47,
+    "Codigo": "010505",
+    "Ubigeo": "CONILA"
+}, {
+    "id": 48,
+    "Codigo": "010506",
+    "Ubigeo": "INGUILPATA"
+}, {
+    "id": 49,
+    "Codigo": "010507",
+    "Ubigeo": "LONGUITA"
+}, {
+    "id": 50,
+    "Codigo": "010508",
+    "Ubigeo": "LONYA CHICO"
+}, {
+    "id": 51,
+    "Codigo": "010509",
+    "Ubigeo": "LUYA"
+}, {
+    "id": 52,
+    "Codigo": "010510",
+    "Ubigeo": "LUYA VIEJO"
+}, {
+    "id": 53,
+    "Codigo": "010511",
+    "Ubigeo": "MARIA"
+}, {
+    "id": 54,
+    "Codigo": "010512",
+    "Ubigeo": "OCALLI"
+}, {
+    "id": 55,
+    "Codigo": "010513",
+    "Ubigeo": "OCUMAL"
+}, {
+    "id": 56,
+    "Codigo": "010514",
+    "Ubigeo": "PISUQUIA"
+}, {
+    "id": 57,
+    "Codigo": "010515",
+    "Ubigeo": "PROVIDENCIA"
+}, {
+    "id": 58,
+    "Codigo": "010516",
+    "Ubigeo": "SAN CRISTOBAL"
+}, {
+    "id": 59,
+    "Codigo": "010517",
+    "Ubigeo": "SAN FRANCISCO DEL YESO"
+}, {
+    "id": 60,
+    "Codigo": "010518",
+    "Ubigeo": "SAN JERONIMO"
+}, {
+    "id": 61,
+    "Codigo": "010519",
+    "Ubigeo": "SAN JUAN DE LOPECANCHA"
+}, {
+    "id": 62,
+    "Codigo": "010520",
+    "Ubigeo": "SANTA CATALINA"
+}, {
+    "id": 63,
+    "Codigo": "010521",
+    "Ubigeo": "SANTO TOMAS"
+}, {
+    "id": 64,
+    "Codigo": "010522",
+    "Ubigeo": "TINGO"
+}, {
+    "id": 65,
+    "Codigo": "010523",
+    "Ubigeo": "TRITA"
+}, {
+    "id": 66,
+    "Codigo": "010601",
+    "Ubigeo": "SAN NICOLAS"
+}, {
+    "id": 67,
+    "Codigo": "010602",
+    "Ubigeo": "CHIRIMOTO"
+}, {
+    "id": 68,
+    "Codigo": "010603",
+    "Ubigeo": "COCHAMAL"
+}, {
+    "id": 69,
+    "Codigo": "010604",
+    "Ubigeo": "HUAMBO"
+}, {
+    "id": 70,
+    "Codigo": "010605",
+    "Ubigeo": "LIMABAMBA"
+}, {
+    "id": 71,
+    "Codigo": "010606",
+    "Ubigeo": "LONGAR"
+}, {
+    "id": 72,
+    "Codigo": "010607",
+    "Ubigeo": "MARISCAL BENAVIDES"
+}, {
+    "id": 73,
+    "Codigo": "010608",
+    "Ubigeo": "MILPUC"
+}, {
+    "id": 74,
+    "Codigo": "010609",
+    "Ubigeo": "OMIA"
+}, {
+    "id": 75,
+    "Codigo": "010610",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 76,
+    "Codigo": "010611",
+    "Ubigeo": "TOTORA"
+}, {
+    "id": 77,
+    "Codigo": "010612",
+    "Ubigeo": "VISTA ALEGRE"
+}, {
+    "id": 78,
+    "Codigo": "010701",
+    "Ubigeo": "BAGUA GRANDE"
+}, {
+    "id": 79,
+    "Codigo": "010702",
+    "Ubigeo": "CAJARURO"
+}, {
+    "id": 80,
+    "Codigo": "010703",
+    "Ubigeo": "CUMBA"
+}, {
+    "id": 81,
+    "Codigo": "010704",
+    "Ubigeo": "EL MILAGRO"
+}, {
+    "id": 82,
+    "Codigo": "010705",
+    "Ubigeo": "JAMALCA"
+}, {
+    "id": 83,
+    "Codigo": "010706",
+    "Ubigeo": "LONYA GRANDE"
+}, {
+    "id": 84,
+    "Codigo": "010707",
+    "Ubigeo": "YAMON"
+}, {
+    "id": 85,
+    "Codigo": "020101",
+    "Ubigeo": "HUARAZ"
+}, {
+    "id": 86,
+    "Codigo": "020102",
+    "Ubigeo": "COCHABAMBA"
+}, {
+    "id": 87,
+    "Codigo": "020103",
+    "Ubigeo": "COLCABAMBA"
+}, {
+    "id": 88,
+    "Codigo": "020104",
+    "Ubigeo": "HUANCHAY"
+}, {
+    "id": 89,
+    "Codigo": "020105",
+    "Ubigeo": "INDEPENDENCIA"
+}, {
+    "id": 90,
+    "Codigo": "020106",
+    "Ubigeo": "JANGAS"
+}, {
+    "id": 91,
+    "Codigo": "020107",
+    "Ubigeo": "LA LIBERTAD"
+}, {
+    "id": 92,
+    "Codigo": "020108",
+    "Ubigeo": "OLLEROS"
+}, {
+    "id": 93,
+    "Codigo": "020109",
+    "Ubigeo": "PAMPAS"
+}, {
+    "id": 94,
+    "Codigo": "020110",
+    "Ubigeo": "PARIACOTO"
+}, {
+    "id": 95,
+    "Codigo": "020111",
+    "Ubigeo": "PIRA"
+}, {
+    "id": 96,
+    "Codigo": "020112",
+    "Ubigeo": "TARICA"
+}, {
+    "id": 97,
+    "Codigo": "020201",
+    "Ubigeo": "AIJA"
+}, {
+    "id": 98,
+    "Codigo": "020202",
+    "Ubigeo": "CORIS"
+}, {
+    "id": 99,
+    "Codigo": "020203",
+    "Ubigeo": "HUACLLAN"
+}, {
+    "id": 100,
+    "Codigo": "020204",
+    "Ubigeo": "LA MERCED"
+}, {
+    "id": 101,
+    "Codigo": "020205",
+    "Ubigeo": "SUCCHA"
+}, {
+    "id": 102,
+    "Codigo": "020301",
+    "Ubigeo": "LLAMELLIN"
+}, {
+    "id": 103,
+    "Codigo": "020302",
+    "Ubigeo": "ACZO"
+}, {
+    "id": 104,
+    "Codigo": "020303",
+    "Ubigeo": "CHACCHO"
+}, {
+    "id": 105,
+    "Codigo": "020304",
+    "Ubigeo": "CHINGAS"
+}, {
+    "id": 106,
+    "Codigo": "020305",
+    "Ubigeo": "MIRGAS"
+}, {
+    "id": 107,
+    "Codigo": "020306",
+    "Ubigeo": "SAN JUAN DE RONTOY"
+}, {
+    "id": 108,
+    "Codigo": "020401",
+    "Ubigeo": "CHACAS"
+}, {
+    "id": 109,
+    "Codigo": "020402",
+    "Ubigeo": "ACOCHACA"
+}, {
+    "id": 110,
+    "Codigo": "020501",
+    "Ubigeo": "CHIQUIAN"
+}, {
+    "id": 111,
+    "Codigo": "020502",
+    "Ubigeo": "ABELARDO PARDO LEZAMETA"
+}, {
+    "id": 112,
+    "Codigo": "020503",
+    "Ubigeo": "ANTONIO RAYMONDI"
+}, {
+    "id": 113,
+    "Codigo": "020504",
+    "Ubigeo": "AQUIA"
+}, {
+    "id": 114,
+    "Codigo": "020505",
+    "Ubigeo": "CAJACAY"
+}, {
+    "id": 115,
+    "Codigo": "020506",
+    "Ubigeo": "CANIS"
+}, {
+    "id": 116,
+    "Codigo": "020507",
+    "Ubigeo": "COLQUIOC"
+}, {
+    "id": 117,
+    "Codigo": "020508",
+    "Ubigeo": "HUALLANCA"
+}, {
+    "id": 118,
+    "Codigo": "020509",
+    "Ubigeo": "HUASTA"
+}, {
+    "id": 119,
+    "Codigo": "020510",
+    "Ubigeo": "HUAYLLACAYAN"
+}, {
+    "id": 120,
+    "Codigo": "020511",
+    "Ubigeo": "LA PRIMAVERA"
+}, {
+    "id": 121,
+    "Codigo": "020512",
+    "Ubigeo": "MANGAS"
+}, {
+    "id": 122,
+    "Codigo": "020513",
+    "Ubigeo": "PACLLON"
+}, {
+    "id": 123,
+    "Codigo": "020514",
+    "Ubigeo": "SAN MIGUEL DE CORPANQUI"
+}, {
+    "id": 124,
+    "Codigo": "020515",
+    "Ubigeo": "TICLLOS"
+}, {
+    "id": 125,
+    "Codigo": "020601",
+    "Ubigeo": "CARHUAZ"
+}, {
+    "id": 126,
+    "Codigo": "020602",
+    "Ubigeo": "ACOPAMPA"
+}, {
+    "id": 127,
+    "Codigo": "020603",
+    "Ubigeo": "AMASHCA"
+}, {
+    "id": 128,
+    "Codigo": "020604",
+    "Ubigeo": "ANTA"
+}, {
+    "id": 129,
+    "Codigo": "020605",
+    "Ubigeo": "ATAQUERO"
+}, {
+    "id": 130,
+    "Codigo": "020606",
+    "Ubigeo": "MARCARA"
+}, {
+    "id": 131,
+    "Codigo": "020607",
+    "Ubigeo": "PARIAHUANCA"
+}, {
+    "id": 132,
+    "Codigo": "020608",
+    "Ubigeo": "SAN MIGUEL DE ACO"
+}, {
+    "id": 133,
+    "Codigo": "020609",
+    "Ubigeo": "SHILLA"
+}, {
+    "id": 134,
+    "Codigo": "020610",
+    "Ubigeo": "TINCO"
+}, {
+    "id": 135,
+    "Codigo": "020611",
+    "Ubigeo": "YUNGAR"
+}, {
+    "id": 136,
+    "Codigo": "020701",
+    "Ubigeo": "SAN LUIS"
+}, {
+    "id": 137,
+    "Codigo": "020702",
+    "Ubigeo": "SAN NICOLAS"
+}, {
+    "id": 138,
+    "Codigo": "020703",
+    "Ubigeo": "YAUYA"
+}, {
+    "id": 139,
+    "Codigo": "020801",
+    "Ubigeo": "CASMA"
+}, {
+    "id": 140,
+    "Codigo": "020802",
+    "Ubigeo": "BUENA VISTA ALTA"
+}, {
+    "id": 141,
+    "Codigo": "020803",
+    "Ubigeo": "COMANDANTE NOEL"
+}, {
+    "id": 142,
+    "Codigo": "020804",
+    "Ubigeo": "YAUTAN"
+}, {
+    "id": 143,
+    "Codigo": "020901",
+    "Ubigeo": "CORONGO"
+}, {
+    "id": 144,
+    "Codigo": "020902",
+    "Ubigeo": "ACO"
+}, {
+    "id": 145,
+    "Codigo": "020903",
+    "Ubigeo": "BAMBAS"
+}, {
+    "id": 146,
+    "Codigo": "020904",
+    "Ubigeo": "CUSCA"
+}, {
+    "id": 147,
+    "Codigo": "020905",
+    "Ubigeo": "LA PAMPA"
+}, {
+    "id": 148,
+    "Codigo": "020906",
+    "Ubigeo": "YANAC"
+}, {
+    "id": 149,
+    "Codigo": "020907",
+    "Ubigeo": "YUPAN"
+}, {
+    "id": 150,
+    "Codigo": "021001",
+    "Ubigeo": "HUARI"
+}, {
+    "id": 151,
+    "Codigo": "021002",
+    "Ubigeo": "ANRA"
+}, {
+    "id": 152,
+    "Codigo": "021003",
+    "Ubigeo": "CAJAY"
+}, {
+    "id": 153,
+    "Codigo": "021004",
+    "Ubigeo": "CHAVIN DE HUANTAR"
+}, {
+    "id": 154,
+    "Codigo": "021005",
+    "Ubigeo": "HUACACHI"
+}, {
+    "id": 155,
+    "Codigo": "021006",
+    "Ubigeo": "HUACCHIS"
+}, {
+    "id": 156,
+    "Codigo": "021007",
+    "Ubigeo": "HUACHIS"
+}, {
+    "id": 157,
+    "Codigo": "021008",
+    "Ubigeo": "HUANTAR"
+}, {
+    "id": 158,
+    "Codigo": "021009",
+    "Ubigeo": "MASIN"
+}, {
+    "id": 159,
+    "Codigo": "021010",
+    "Ubigeo": "PAUCAS"
+}, {
+    "id": 160,
+    "Codigo": "021011",
+    "Ubigeo": "PONTO"
+}, {
+    "id": 161,
+    "Codigo": "021012",
+    "Ubigeo": "RAHUAPAMPA"
+}, {
+    "id": 162,
+    "Codigo": "021013",
+    "Ubigeo": "RAPAYAN"
+}, {
+    "id": 163,
+    "Codigo": "021014",
+    "Ubigeo": "SAN MARCOS"
+}, {
+    "id": 164,
+    "Codigo": "021015",
+    "Ubigeo": "SAN PEDRO DE CHANA"
+}, {
+    "id": 165,
+    "Codigo": "021016",
+    "Ubigeo": "UCO"
+}, {
+    "id": 166,
+    "Codigo": "021101",
+    "Ubigeo": "HUARMEY"
+}, {
+    "id": 167,
+    "Codigo": "021102",
+    "Ubigeo": "COCHAPETI"
+}, {
+    "id": 168,
+    "Codigo": "021103",
+    "Ubigeo": "CULEBRAS"
+}, {
+    "id": 169,
+    "Codigo": "021104",
+    "Ubigeo": "HUAYAN"
+}, {
+    "id": 170,
+    "Codigo": "021105",
+    "Ubigeo": "MALVAS"
+}, {
+    "id": 171,
+    "Codigo": "021201",
+    "Ubigeo": "CARAZ"
+}, {
+    "id": 172,
+    "Codigo": "021202",
+    "Ubigeo": "HUALLANCA"
+}, {
+    "id": 173,
+    "Codigo": "021203",
+    "Ubigeo": "HUATA"
+}, {
+    "id": 174,
+    "Codigo": "021204",
+    "Ubigeo": "HUAYLAS"
+}, {
+    "id": 175,
+    "Codigo": "021205",
+    "Ubigeo": "MATO"
+}, {
+    "id": 176,
+    "Codigo": "021206",
+    "Ubigeo": "PAMPAROMAS"
+}, {
+    "id": 177,
+    "Codigo": "021207",
+    "Ubigeo": "PUEBLO LIBRE"
+}, {
+    "id": 178,
+    "Codigo": "021208",
+    "Ubigeo": "SANTA CRUZ"
+}, {
+    "id": 179,
+    "Codigo": "021209",
+    "Ubigeo": "SANTO TORIBIO"
+}, {
+    "id": 180,
+    "Codigo": "021210",
+    "Ubigeo": "YURACMARCA"
+}, {
+    "id": 181,
+    "Codigo": "021301",
+    "Ubigeo": "PISCOBAMBA"
+}, {
+    "id": 182,
+    "Codigo": "021302",
+    "Ubigeo": "CASCA"
+}, {
+    "id": 183,
+    "Codigo": "021303",
+    "Ubigeo": "ELEAZAR GUZMAN BARRON"
+}, {
+    "id": 184,
+    "Codigo": "021304",
+    "Ubigeo": "FIDEL OLIVAS ESCUDERO"
+}, {
+    "id": 185,
+    "Codigo": "021305",
+    "Ubigeo": "LLAMA"
+}, {
+    "id": 186,
+    "Codigo": "021306",
+    "Ubigeo": "LLUMPA"
+}, {
+    "id": 187,
+    "Codigo": "021307",
+    "Ubigeo": "LUCMA"
+}, {
+    "id": 188,
+    "Codigo": "021308",
+    "Ubigeo": "MUSGA"
+}, {
+    "id": 189,
+    "Codigo": "021401",
+    "Ubigeo": "OCROS"
+}, {
+    "id": 190,
+    "Codigo": "021402",
+    "Ubigeo": "ACAS"
+}, {
+    "id": 191,
+    "Codigo": "021403",
+    "Ubigeo": "CAJAMARQUILLA"
+}, {
+    "id": 192,
+    "Codigo": "021404",
+    "Ubigeo": "CARHUAPAMPA"
+}, {
+    "id": 193,
+    "Codigo": "021405",
+    "Ubigeo": "COCHAS"
+}, {
+    "id": 194,
+    "Codigo": "021406",
+    "Ubigeo": "CONGAS"
+}, {
+    "id": 195,
+    "Codigo": "021407",
+    "Ubigeo": "LLIPA"
+}, {
+    "id": 196,
+    "Codigo": "021408",
+    "Ubigeo": "SAN CRISTOBAL DE RAJAN"
+}, {
+    "id": 197,
+    "Codigo": "021409",
+    "Ubigeo": "SAN PEDRO"
+}, {
+    "id": 198,
+    "Codigo": "021410",
+    "Ubigeo": "SANTIAGO DE CHILCAS"
+}, {
+    "id": 199,
+    "Codigo": "021501",
+    "Ubigeo": "CABANA"
+}, {
+    "id": 200,
+    "Codigo": "021502",
+    "Ubigeo": "BOLOGNESI"
+}, {
+    "id": 201,
+    "Codigo": "021503",
+    "Ubigeo": "CONCHUCOS"
+}, {
+    "id": 202,
+    "Codigo": "021504",
+    "Ubigeo": "HUACASCHUQUE"
+}, {
+    "id": 203,
+    "Codigo": "021505",
+    "Ubigeo": "HUANDOVAL"
+}, {
+    "id": 204,
+    "Codigo": "021506",
+    "Ubigeo": "LACABAMBA"
+}, {
+    "id": 205,
+    "Codigo": "021507",
+    "Ubigeo": "LLAPO"
+}, {
+    "id": 206,
+    "Codigo": "021508",
+    "Ubigeo": "PALLASCA"
+}, {
+    "id": 207,
+    "Codigo": "021509",
+    "Ubigeo": "PAMPAS"
+}, {
+    "id": 208,
+    "Codigo": "021510",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 209,
+    "Codigo": "021511",
+    "Ubigeo": "TAUCA"
+}, {
+    "id": 210,
+    "Codigo": "021601",
+    "Ubigeo": "POMABAMBA"
+}, {
+    "id": 211,
+    "Codigo": "021602",
+    "Ubigeo": "HUAYLLAN"
+}, {
+    "id": 212,
+    "Codigo": "021603",
+    "Ubigeo": "PAROBAMBA"
+}, {
+    "id": 213,
+    "Codigo": "021604",
+    "Ubigeo": "QUINUABAMBA"
+}, {
+    "id": 214,
+    "Codigo": "021701",
+    "Ubigeo": "RECUAY"
+}, {
+    "id": 215,
+    "Codigo": "021702",
+    "Ubigeo": "CATAC"
+}, {
+    "id": 216,
+    "Codigo": "021703",
+    "Ubigeo": "COTAPARACO"
+}, {
+    "id": 217,
+    "Codigo": "021704",
+    "Ubigeo": "HUAYLLAPAMPA"
+}, {
+    "id": 218,
+    "Codigo": "021705",
+    "Ubigeo": "LLACLLIN"
+}, {
+    "id": 219,
+    "Codigo": "021706",
+    "Ubigeo": "MARCA"
+}, {
+    "id": 220,
+    "Codigo": "021707",
+    "Ubigeo": "PAMPAS CHICO"
+}, {
+    "id": 221,
+    "Codigo": "021708",
+    "Ubigeo": "PARARIN"
+}, {
+    "id": 222,
+    "Codigo": "021709",
+    "Ubigeo": "TAPACOCHA"
+}, {
+    "id": 223,
+    "Codigo": "021710",
+    "Ubigeo": "TICAPAMPA"
+}, {
+    "id": 224,
+    "Codigo": "021801",
+    "Ubigeo": "CHIMBOTE"
+}, {
+    "id": 225,
+    "Codigo": "021802",
+    "Ubigeo": "CACERES DEL PERU"
+}, {
+    "id": 226,
+    "Codigo": "021803",
+    "Ubigeo": "COISHCO"
+}, {
+    "id": 227,
+    "Codigo": "021804",
+    "Ubigeo": "MACATE"
+}, {
+    "id": 228,
+    "Codigo": "021805",
+    "Ubigeo": "MORO"
+}, {
+    "id": 229,
+    "Codigo": "021806",
+    "Ubigeo": "NEPEÑA"
+}, {
+    "id": 230,
+    "Codigo": "021807",
+    "Ubigeo": "SAMANCO"
+}, {
+    "id": 231,
+    "Codigo": "021808",
+    "Ubigeo": "SANTA"
+}, {
+    "id": 232,
+    "Codigo": "021809",
+    "Ubigeo": "NUEVO CHIMBOTE"
+}, {
+    "id": 233,
+    "Codigo": "021901",
+    "Ubigeo": "SIHUAS"
+}, {
+    "id": 234,
+    "Codigo": "021902",
+    "Ubigeo": "ACOBAMBA"
+}, {
+    "id": 235,
+    "Codigo": "021903",
+    "Ubigeo": "ALFONSO UGARTE"
+}, {
+    "id": 236,
+    "Codigo": "021904",
+    "Ubigeo": "CASHAPAMPA"
+}, {
+    "id": 237,
+    "Codigo": "021905",
+    "Ubigeo": "CHINGALPO"
+}, {
+    "id": 238,
+    "Codigo": "021906",
+    "Ubigeo": "HUAYLLABAMBA"
+}, {
+    "id": 239,
+    "Codigo": "021907",
+    "Ubigeo": "QUICHES"
+}, {
+    "id": 240,
+    "Codigo": "021908",
+    "Ubigeo": "RAGASH"
+}, {
+    "id": 241,
+    "Codigo": "021909",
+    "Ubigeo": "SAN JUAN"
+}, {
+    "id": 242,
+    "Codigo": "021910",
+    "Ubigeo": "SICSIBAMBA"
+}, {
+    "id": 243,
+    "Codigo": "022001",
+    "Ubigeo": "YUNGAY"
+}, {
+    "id": 244,
+    "Codigo": "022002",
+    "Ubigeo": "CASCAPARA"
+}, {
+    "id": 245,
+    "Codigo": "022003",
+    "Ubigeo": "MANCOS"
+}, {
+    "id": 246,
+    "Codigo": "022004",
+    "Ubigeo": "MATACOTO"
+}, {
+    "id": 247,
+    "Codigo": "022005",
+    "Ubigeo": "QUILLO"
+}, {
+    "id": 248,
+    "Codigo": "022006",
+    "Ubigeo": "RANRAHIRCA"
+}, {
+    "id": 249,
+    "Codigo": "022007",
+    "Ubigeo": "SHUPLUY"
+}, {
+    "id": 250,
+    "Codigo": "022008",
+    "Ubigeo": "YANAMA"
+}, {
+    "id": 251,
+    "Codigo": "030101",
+    "Ubigeo": "ABANCAY"
+}, {
+    "id": 252,
+    "Codigo": "030102",
+    "Ubigeo": "CHACOCHE"
+}, {
+    "id": 253,
+    "Codigo": "030103",
+    "Ubigeo": "CIRCA"
+}, {
+    "id": 254,
+    "Codigo": "030104",
+    "Ubigeo": "CURAHUASI"
+}, {
+    "id": 255,
+    "Codigo": "030105",
+    "Ubigeo": "HUANIPACA"
+}, {
+    "id": 256,
+    "Codigo": "030106",
+    "Ubigeo": "LAMBRAMA"
+}, {
+    "id": 257,
+    "Codigo": "030107",
+    "Ubigeo": "PICHIRHUA"
+}, {
+    "id": 258,
+    "Codigo": "030108",
+    "Ubigeo": "SAN PEDRO DE CACHORA"
+}, {
+    "id": 259,
+    "Codigo": "030109",
+    "Ubigeo": "TAMBURCO"
+}, {
+    "id": 260,
+    "Codigo": "030201",
+    "Ubigeo": "ANDAHUAYLAS"
+}, {
+    "id": 261,
+    "Codigo": "030202",
+    "Ubigeo": "ANDARAPA"
+}, {
+    "id": 262,
+    "Codigo": "030203",
+    "Ubigeo": "CHIARA"
+}, {
+    "id": 263,
+    "Codigo": "030204",
+    "Ubigeo": "HUANCARAMA"
+}, {
+    "id": 264,
+    "Codigo": "030205",
+    "Ubigeo": "HUANCARAY"
+}, {
+    "id": 265,
+    "Codigo": "030206",
+    "Ubigeo": "HUAYANA"
+}, {
+    "id": 266,
+    "Codigo": "030207",
+    "Ubigeo": "KISHUARA"
+}, {
+    "id": 267,
+    "Codigo": "030208",
+    "Ubigeo": "PACOBAMBA"
+}, {
+    "id": 268,
+    "Codigo": "030209",
+    "Ubigeo": "PACUCHA"
+}, {
+    "id": 269,
+    "Codigo": "030210",
+    "Ubigeo": "PAMPACHIRI"
+}, {
+    "id": 270,
+    "Codigo": "030211",
+    "Ubigeo": "POMACOCHA"
+}, {
+    "id": 271,
+    "Codigo": "030212",
+    "Ubigeo": "SAN ANTONIO DE CACHI"
+}, {
+    "id": 272,
+    "Codigo": "030213",
+    "Ubigeo": "SAN JERONIMO"
+}, {
+    "id": 273,
+    "Codigo": "030214",
+    "Ubigeo": "SAN MIGUEL DE CHACCRAMPA"
+}, {
+    "id": 274,
+    "Codigo": "030215",
+    "Ubigeo": "SANTA MARIA DE CHICMO"
+}, {
+    "id": 275,
+    "Codigo": "030216",
+    "Ubigeo": "TALAVERA"
+}, {
+    "id": 276,
+    "Codigo": "030217",
+    "Ubigeo": "TUMAY HUARACA"
+}, {
+    "id": 277,
+    "Codigo": "030218",
+    "Ubigeo": "TURPO"
+}, {
+    "id": 278,
+    "Codigo": "030219",
+    "Ubigeo": "KAQUIABAMBA"
+}, {
+    "id": 279,
+    "Codigo": "030301",
+    "Ubigeo": "ANTABAMBA"
+}, {
+    "id": 280,
+    "Codigo": "030302",
+    "Ubigeo": "EL ORO"
+}, {
+    "id": 281,
+    "Codigo": "030303",
+    "Ubigeo": "HUAQUIRCA"
+}, {
+    "id": 282,
+    "Codigo": "030304",
+    "Ubigeo": "JUAN ESPINOZA MEDRANO"
+}, {
+    "id": 283,
+    "Codigo": "030305",
+    "Ubigeo": "OROPESA"
+}, {
+    "id": 284,
+    "Codigo": "030306",
+    "Ubigeo": "PACHACONAS"
+}, {
+    "id": 285,
+    "Codigo": "030307",
+    "Ubigeo": "SABAINO"
+}, {
+    "id": 286,
+    "Codigo": "030401",
+    "Ubigeo": "CHALHUANCA"
+}, {
+    "id": 287,
+    "Codigo": "030402",
+    "Ubigeo": "CAPAYA"
+}, {
+    "id": 288,
+    "Codigo": "030403",
+    "Ubigeo": "CARAYBAMBA"
+}, {
+    "id": 289,
+    "Codigo": "030404",
+    "Ubigeo": "CHAPIMARCA"
+}, {
+    "id": 290,
+    "Codigo": "030405",
+    "Ubigeo": "COLCABAMBA"
+}, {
+    "id": 291,
+    "Codigo": "030406",
+    "Ubigeo": "COTARUSE"
+}, {
+    "id": 292,
+    "Codigo": "030407",
+    "Ubigeo": "HUAYLLO"
+}, {
+    "id": 293,
+    "Codigo": "030408",
+    "Ubigeo": "JUSTO APU SAHUARAURA"
+}, {
+    "id": 294,
+    "Codigo": "030409",
+    "Ubigeo": "LUCRE"
+}, {
+    "id": 295,
+    "Codigo": "030410",
+    "Ubigeo": "POCOHUANCA"
+}, {
+    "id": 296,
+    "Codigo": "030411",
+    "Ubigeo": "SAN JUAN DE CHACÑA"
+}, {
+    "id": 297,
+    "Codigo": "030412",
+    "Ubigeo": "SAÑAYCA"
+}, {
+    "id": 298,
+    "Codigo": "030413",
+    "Ubigeo": "SORAYA"
+}, {
+    "id": 299,
+    "Codigo": "030414",
+    "Ubigeo": "TAPAIRIHUA"
+}, {
+    "id": 300,
+    "Codigo": "030415",
+    "Ubigeo": "TINTAY"
+}, {
+    "id": 301,
+    "Codigo": "030416",
+    "Ubigeo": "TORAYA"
+}, {
+    "id": 302,
+    "Codigo": "030417",
+    "Ubigeo": "YANACA"
+}, {
+    "id": 303,
+    "Codigo": "030501",
+    "Ubigeo": "TAMBOBAMBA"
+}, {
+    "id": 304,
+    "Codigo": "030502",
+    "Ubigeo": "COTABAMBAS"
+}, {
+    "id": 305,
+    "Codigo": "030503",
+    "Ubigeo": "COYLLURQUI"
+}, {
+    "id": 306,
+    "Codigo": "030504",
+    "Ubigeo": "HAQUIRA"
+}, {
+    "id": 307,
+    "Codigo": "030505",
+    "Ubigeo": "MARA"
+}, {
+    "id": 308,
+    "Codigo": "030506",
+    "Ubigeo": "CHALLHUAHUACHO"
+}, {
+    "id": 309,
+    "Codigo": "030601",
+    "Ubigeo": "CHINCHEROS"
+}, {
+    "id": 310,
+    "Codigo": "030602",
+    "Ubigeo": "ANCO-HUALLO"
+}, {
+    "id": 311,
+    "Codigo": "030603",
+    "Ubigeo": "COCHARCAS"
+}, {
+    "id": 312,
+    "Codigo": "030604",
+    "Ubigeo": "HUACCANA"
+}, {
+    "id": 313,
+    "Codigo": "030605",
+    "Ubigeo": "OCOBAMBA"
+}, {
+    "id": 314,
+    "Codigo": "030606",
+    "Ubigeo": "ONGOY"
+}, {
+    "id": 315,
+    "Codigo": "030607",
+    "Ubigeo": "URANMARCA"
+}, {
+    "id": 316,
+    "Codigo": "030608",
+    "Ubigeo": "RANRACANCHA"
+}, {
+    "id": 317,
+    "Codigo": "030701",
+    "Ubigeo": "CHUQUIBAMBILLA"
+}, {
+    "id": 318,
+    "Codigo": "030702",
+    "Ubigeo": "CURPAHUASI"
+}, {
+    "id": 319,
+    "Codigo": "030703",
+    "Ubigeo": "GAMARRA"
+}, {
+    "id": 320,
+    "Codigo": "030704",
+    "Ubigeo": "HUAYLLATI"
+}, {
+    "id": 321,
+    "Codigo": "030705",
+    "Ubigeo": "MAMARA"
+}, {
+    "id": 322,
+    "Codigo": "030706",
+    "Ubigeo": "MICAELA BASTIDAS"
+}, {
+    "id": 323,
+    "Codigo": "030707",
+    "Ubigeo": "PATAYPAMPA"
+}, {
+    "id": 324,
+    "Codigo": "030708",
+    "Ubigeo": "PROGRESO"
+}, {
+    "id": 325,
+    "Codigo": "030709",
+    "Ubigeo": "SAN ANTONIO"
+}, {
+    "id": 326,
+    "Codigo": "030710",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 327,
+    "Codigo": "030711",
+    "Ubigeo": "TURPAY"
+}, {
+    "id": 328,
+    "Codigo": "030712",
+    "Ubigeo": "VILCABAMBA"
+}, {
+    "id": 329,
+    "Codigo": "030713",
+    "Ubigeo": "VIRUNDO"
+}, {
+    "id": 330,
+    "Codigo": "030714",
+    "Ubigeo": "CURASCO"
+}, {
+    "id": 331,
+    "Codigo": "040101",
+    "Ubigeo": "AREQUIPA"
+}, {
+    "id": 332,
+    "Codigo": "040102",
+    "Ubigeo": "ALTO SELVA ALEGRE"
+}, {
+    "id": 333,
+    "Codigo": "040103",
+    "Ubigeo": "CAYMA"
+}, {
+    "id": 334,
+    "Codigo": "040104",
+    "Ubigeo": "CERRO COLORADO"
+}, {
+    "id": 335,
+    "Codigo": "040105",
+    "Ubigeo": "CHARACATO"
+}, {
+    "id": 336,
+    "Codigo": "040106",
+    "Ubigeo": "CHIGUATA"
+}, {
+    "id": 337,
+    "Codigo": "040107",
+    "Ubigeo": "JACOBO HUNTER"
+}, {
+    "id": 338,
+    "Codigo": "040108",
+    "Ubigeo": "LA JOYA"
+}, {
+    "id": 339,
+    "Codigo": "040109",
+    "Ubigeo": "MARIANO MELGAR"
+}, {
+    "id": 340,
+    "Codigo": "040110",
+    "Ubigeo": "MIRAFLORES"
+}, {
+    "id": 341,
+    "Codigo": "040111",
+    "Ubigeo": "MOLLEBAYA"
+}, {
+    "id": 342,
+    "Codigo": "040112",
+    "Ubigeo": "PAUCARPATA"
+}, {
+    "id": 343,
+    "Codigo": "040113",
+    "Ubigeo": "POCSI"
+}, {
+    "id": 344,
+    "Codigo": "040114",
+    "Ubigeo": "POLOBAYA"
+}, {
+    "id": 345,
+    "Codigo": "040115",
+    "Ubigeo": "QUEQUEÑA"
+}, {
+    "id": 346,
+    "Codigo": "040116",
+    "Ubigeo": "SABANDIA"
+}, {
+    "id": 347,
+    "Codigo": "040117",
+    "Ubigeo": "SACHACA"
+}, {
+    "id": 348,
+    "Codigo": "040118",
+    "Ubigeo": "SAN JUAN DE SIGUAS"
+}, {
+    "id": 349,
+    "Codigo": "040119",
+    "Ubigeo": "SAN JUAN DE TARUCANI"
+}, {
+    "id": 350,
+    "Codigo": "040120",
+    "Ubigeo": "SANTA ISABEL DE SIGUAS"
+}, {
+    "id": 351,
+    "Codigo": "040121",
+    "Ubigeo": "SANTA RITA DE SIGUAS"
+}, {
+    "id": 352,
+    "Codigo": "040122",
+    "Ubigeo": "SOCABAYA"
+}, {
+    "id": 353,
+    "Codigo": "040123",
+    "Ubigeo": "TIABAYA"
+}, {
+    "id": 354,
+    "Codigo": "040124",
+    "Ubigeo": "UCHUMAYO"
+}, {
+    "id": 355,
+    "Codigo": "040125",
+    "Ubigeo": "VITOR"
+}, {
+    "id": 356,
+    "Codigo": "040126",
+    "Ubigeo": "YANAHUARA"
+}, {
+    "id": 357,
+    "Codigo": "040127",
+    "Ubigeo": "YARABAMBA"
+}, {
+    "id": 358,
+    "Codigo": "040128",
+    "Ubigeo": "YURA"
+}, {
+    "id": 359,
+    "Codigo": "040129",
+    "Ubigeo": "JOSE LUIS BUSTAMANTE Y RIVERO"
+}, {
+    "id": 360,
+    "Codigo": "040201",
+    "Ubigeo": "CAMANA"
+}, {
+    "id": 361,
+    "Codigo": "040202",
+    "Ubigeo": "JOSE MARIA QUIMPER"
+}, {
+    "id": 362,
+    "Codigo": "040203",
+    "Ubigeo": "MARIANO NICOLAS VALCARCEL"
+}, {
+    "id": 363,
+    "Codigo": "040204",
+    "Ubigeo": "MARISCAL CACERES"
+}, {
+    "id": 364,
+    "Codigo": "040205",
+    "Ubigeo": "NICOLAS DE PIEROLA"
+}, {
+    "id": 365,
+    "Codigo": "040206",
+    "Ubigeo": "OCOÑA"
+}, {
+    "id": 366,
+    "Codigo": "040207",
+    "Ubigeo": "QUILCA"
+}, {
+    "id": 367,
+    "Codigo": "040208",
+    "Ubigeo": "SAMUEL PASTOR"
+}, {
+    "id": 368,
+    "Codigo": "040301",
+    "Ubigeo": "CARAVELI"
+}, {
+    "id": 369,
+    "Codigo": "040302",
+    "Ubigeo": "ACARI"
+}, {
+    "id": 370,
+    "Codigo": "040303",
+    "Ubigeo": "ATICO"
+}, {
+    "id": 371,
+    "Codigo": "040304",
+    "Ubigeo": "ATIQUIPA"
+}, {
+    "id": 372,
+    "Codigo": "040305",
+    "Ubigeo": "BELLA UNION"
+}, {
+    "id": 373,
+    "Codigo": "040306",
+    "Ubigeo": "CAHUACHO"
+}, {
+    "id": 374,
+    "Codigo": "040307",
+    "Ubigeo": "CHALA"
+}, {
+    "id": 375,
+    "Codigo": "040308",
+    "Ubigeo": "CHAPARRA"
+}, {
+    "id": 376,
+    "Codigo": "040309",
+    "Ubigeo": "HUANUHUANU"
+}, {
+    "id": 377,
+    "Codigo": "040310",
+    "Ubigeo": "JAQUI"
+}, {
+    "id": 378,
+    "Codigo": "040311",
+    "Ubigeo": "LOMAS"
+}, {
+    "id": 379,
+    "Codigo": "040312",
+    "Ubigeo": "QUICACHA"
+}, {
+    "id": 380,
+    "Codigo": "040313",
+    "Ubigeo": "YAUCA"
+}, {
+    "id": 381,
+    "Codigo": "040401",
+    "Ubigeo": "APLAO"
+}, {
+    "id": 382,
+    "Codigo": "040402",
+    "Ubigeo": "ANDAGUA"
+}, {
+    "id": 383,
+    "Codigo": "040403",
+    "Ubigeo": "AYO"
+}, {
+    "id": 384,
+    "Codigo": "040404",
+    "Ubigeo": "CHACHAS"
+}, {
+    "id": 385,
+    "Codigo": "040405",
+    "Ubigeo": "CHILCAYMARCA"
+}, {
+    "id": 386,
+    "Codigo": "040406",
+    "Ubigeo": "CHOCO"
+}, {
+    "id": 387,
+    "Codigo": "040407",
+    "Ubigeo": "HUANCARQUI"
+}, {
+    "id": 388,
+    "Codigo": "040408",
+    "Ubigeo": "MACHAGUAY"
+}, {
+    "id": 389,
+    "Codigo": "040409",
+    "Ubigeo": "ORCOPAMPA"
+}, {
+    "id": 390,
+    "Codigo": "040410",
+    "Ubigeo": "PAMPACOLCA"
+}, {
+    "id": 391,
+    "Codigo": "040411",
+    "Ubigeo": "TIPAN"
+}, {
+    "id": 392,
+    "Codigo": "040412",
+    "Ubigeo": "UÑON"
+}, {
+    "id": 393,
+    "Codigo": "040413",
+    "Ubigeo": "URACA"
+}, {
+    "id": 394,
+    "Codigo": "040414",
+    "Ubigeo": "VIRACO"
+}, {
+    "id": 395,
+    "Codigo": "040501",
+    "Ubigeo": "CHIVAY"
+}, {
+    "id": 396,
+    "Codigo": "040502",
+    "Ubigeo": "ACHOMA"
+}, {
+    "id": 397,
+    "Codigo": "040503",
+    "Ubigeo": "CABANACONDE"
+}, {
+    "id": 398,
+    "Codigo": "040504",
+    "Ubigeo": "CALLALLI"
+}, {
+    "id": 399,
+    "Codigo": "040505",
+    "Ubigeo": "CAYLLOMA"
+}, {
+    "id": 400,
+    "Codigo": "040506",
+    "Ubigeo": "COPORAQUE"
+}, {
+    "id": 401,
+    "Codigo": "040507",
+    "Ubigeo": "HUAMBO"
+}, {
+    "id": 402,
+    "Codigo": "040508",
+    "Ubigeo": "HUANCA"
+}, {
+    "id": 403,
+    "Codigo": "040509",
+    "Ubigeo": "ICHUPAMPA"
+}, {
+    "id": 404,
+    "Codigo": "040510",
+    "Ubigeo": "LARI"
+}, {
+    "id": 405,
+    "Codigo": "040511",
+    "Ubigeo": "LLUTA"
+}, {
+    "id": 406,
+    "Codigo": "040512",
+    "Ubigeo": "MACA"
+}, {
+    "id": 407,
+    "Codigo": "040513",
+    "Ubigeo": "MADRIGAL"
+}, {
+    "id": 408,
+    "Codigo": "040514",
+    "Ubigeo": "SAN ANTONIO DE CHUCA"
+}, {
+    "id": 409,
+    "Codigo": "040515",
+    "Ubigeo": "SIBAYO"
+}, {
+    "id": 410,
+    "Codigo": "040516",
+    "Ubigeo": "TAPAY"
+}, {
+    "id": 411,
+    "Codigo": "040517",
+    "Ubigeo": "TISCO"
+}, {
+    "id": 412,
+    "Codigo": "040518",
+    "Ubigeo": "TUTI"
+}, {
+    "id": 413,
+    "Codigo": "040519",
+    "Ubigeo": "YANQUE"
+}, {
+    "id": 414,
+    "Codigo": "040520",
+    "Ubigeo": "MAJES"
+}, {
+    "id": 415,
+    "Codigo": "040601",
+    "Ubigeo": "CHUQUIBAMBA"
+}, {
+    "id": 416,
+    "Codigo": "040602",
+    "Ubigeo": "ANDARAY"
+}, {
+    "id": 417,
+    "Codigo": "040603",
+    "Ubigeo": "CAYARANI"
+}, {
+    "id": 418,
+    "Codigo": "040604",
+    "Ubigeo": "CHICHAS"
+}, {
+    "id": 419,
+    "Codigo": "040605",
+    "Ubigeo": "IRAY"
+}, {
+    "id": 420,
+    "Codigo": "040606",
+    "Ubigeo": "RIO GRANDE"
+}, {
+    "id": 421,
+    "Codigo": "040607",
+    "Ubigeo": "SALAMANCA"
+}, {
+    "id": 422,
+    "Codigo": "040608",
+    "Ubigeo": "YANAQUIHUA"
+}, {
+    "id": 423,
+    "Codigo": "040701",
+    "Ubigeo": "MOLLENDO"
+}, {
+    "id": 424,
+    "Codigo": "040702",
+    "Ubigeo": "COCACHACRA"
+}, {
+    "id": 425,
+    "Codigo": "040703",
+    "Ubigeo": "DEAN VALDIVIA"
+}, {
+    "id": 426,
+    "Codigo": "040704",
+    "Ubigeo": "ISLAY"
+}, {
+    "id": 427,
+    "Codigo": "040705",
+    "Ubigeo": "MEJIA"
+}, {
+    "id": 428,
+    "Codigo": "040706",
+    "Ubigeo": "PUNTA DE BOMBON"
+}, {
+    "id": 429,
+    "Codigo": "040801",
+    "Ubigeo": "COTAHUASI"
+}, {
+    "id": 430,
+    "Codigo": "040802",
+    "Ubigeo": "ALCA"
+}, {
+    "id": 431,
+    "Codigo": "040803",
+    "Ubigeo": "CHARCANA"
+}, {
+    "id": 432,
+    "Codigo": "040804",
+    "Ubigeo": "HUAYNACOTAS"
+}, {
+    "id": 433,
+    "Codigo": "040805",
+    "Ubigeo": "PAMPAMARCA"
+}, {
+    "id": 434,
+    "Codigo": "040806",
+    "Ubigeo": "PUYCA"
+}, {
+    "id": 435,
+    "Codigo": "040807",
+    "Ubigeo": "QUECHUALLA"
+}, {
+    "id": 436,
+    "Codigo": "040808",
+    "Ubigeo": "SAYLA"
+}, {
+    "id": 437,
+    "Codigo": "040809",
+    "Ubigeo": "TAURIA"
+}, {
+    "id": 438,
+    "Codigo": "040810",
+    "Ubigeo": "TOMEPAMPA"
+}, {
+    "id": 439,
+    "Codigo": "040811",
+    "Ubigeo": "TORO"
+}, {
+    "id": 440,
+    "Codigo": "050101",
+    "Ubigeo": "AYACUCHO"
+}, {
+    "id": 441,
+    "Codigo": "050102",
+    "Ubigeo": "ACOCRO"
+}, {
+    "id": 442,
+    "Codigo": "050103",
+    "Ubigeo": "ACOS VINCHOS"
+}, {
+    "id": 443,
+    "Codigo": "050104",
+    "Ubigeo": "CARMEN ALTO"
+}, {
+    "id": 444,
+    "Codigo": "050105",
+    "Ubigeo": "CHIARA"
+}, {
+    "id": 445,
+    "Codigo": "050106",
+    "Ubigeo": "OCROS"
+}, {
+    "id": 446,
+    "Codigo": "050107",
+    "Ubigeo": "PACAYCASA"
+}, {
+    "id": 447,
+    "Codigo": "050108",
+    "Ubigeo": "QUINUA"
+}, {
+    "id": 448,
+    "Codigo": "050109",
+    "Ubigeo": "SAN JOSE DE TICLLAS"
+}, {
+    "id": 449,
+    "Codigo": "050110",
+    "Ubigeo": "SAN JUAN BAUTISTA"
+}, {
+    "id": 450,
+    "Codigo": "050111",
+    "Ubigeo": "SANTIAGO DE PISCHA"
+}, {
+    "id": 451,
+    "Codigo": "050112",
+    "Ubigeo": "SOCOS"
+}, {
+    "id": 452,
+    "Codigo": "050113",
+    "Ubigeo": "TAMBILLO"
+}, {
+    "id": 453,
+    "Codigo": "050114",
+    "Ubigeo": "VINCHOS"
+}, {
+    "id": 454,
+    "Codigo": "050115",
+    "Ubigeo": "JESUS NAZARENO"
+}, {
+    "id": 455,
+    "Codigo": "050201",
+    "Ubigeo": "CANGALLO"
+}, {
+    "id": 456,
+    "Codigo": "050202",
+    "Ubigeo": "CHUSCHI"
+}, {
+    "id": 457,
+    "Codigo": "050203",
+    "Ubigeo": "LOS MOROCHUCOS"
+}, {
+    "id": 458,
+    "Codigo": "050204",
+    "Ubigeo": "MARIA PARADO DE BELLIDO"
+}, {
+    "id": 459,
+    "Codigo": "050205",
+    "Ubigeo": "PARAS"
+}, {
+    "id": 460,
+    "Codigo": "050206",
+    "Ubigeo": "TOTOS"
+}, {
+    "id": 461,
+    "Codigo": "050301",
+    "Ubigeo": "SANCOS"
+}, {
+    "id": 462,
+    "Codigo": "050302",
+    "Ubigeo": "CARAPO"
+}, {
+    "id": 463,
+    "Codigo": "050303",
+    "Ubigeo": "SACSAMARCA"
+}, {
+    "id": 464,
+    "Codigo": "050304",
+    "Ubigeo": "SANTIAGO DE LUCANAMARCA"
+}, {
+    "id": 465,
+    "Codigo": "050401",
+    "Ubigeo": "HUANTA"
+}, {
+    "id": 466,
+    "Codigo": "050402",
+    "Ubigeo": "AYAHUANCO"
+}, {
+    "id": 467,
+    "Codigo": "050403",
+    "Ubigeo": "HUAMANGUILLA"
+}, {
+    "id": 468,
+    "Codigo": "050404",
+    "Ubigeo": "IGUAIN"
+}, {
+    "id": 469,
+    "Codigo": "050405",
+    "Ubigeo": "LURICOCHA"
+}, {
+    "id": 470,
+    "Codigo": "050406",
+    "Ubigeo": "SANTILLANA"
+}, {
+    "id": 471,
+    "Codigo": "050407",
+    "Ubigeo": "SIVIA"
+}, {
+    "id": 472,
+    "Codigo": "050408",
+    "Ubigeo": "LLOCHEGUA"
+}, {
+    "id": 473,
+    "Codigo": "050501",
+    "Ubigeo": "SAN MIGUEL"
+}, {
+    "id": 474,
+    "Codigo": "050502",
+    "Ubigeo": "ANCO"
+}, {
+    "id": 475,
+    "Codigo": "050503",
+    "Ubigeo": "AYNA"
+}, {
+    "id": 476,
+    "Codigo": "050504",
+    "Ubigeo": "CHILCAS"
+}, {
+    "id": 477,
+    "Codigo": "050505",
+    "Ubigeo": "CHUNGUI"
+}, {
+    "id": 478,
+    "Codigo": "050506",
+    "Ubigeo": "LUIS CARRANZA"
+}, {
+    "id": 479,
+    "Codigo": "050507",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 480,
+    "Codigo": "050508",
+    "Ubigeo": "TAMBO"
+}, {
+    "id": 481,
+    "Codigo": "050601",
+    "Ubigeo": "PUQUIO"
+}, {
+    "id": 482,
+    "Codigo": "050602",
+    "Ubigeo": "AUCARA"
+}, {
+    "id": 483,
+    "Codigo": "050603",
+    "Ubigeo": "CABANA"
+}, {
+    "id": 484,
+    "Codigo": "050604",
+    "Ubigeo": "CARMEN SALCEDO"
+}, {
+    "id": 485,
+    "Codigo": "050605",
+    "Ubigeo": "CHAVIÑA"
+}, {
+    "id": 486,
+    "Codigo": "050606",
+    "Ubigeo": "CHIPAO"
+}, {
+    "id": 487,
+    "Codigo": "050607",
+    "Ubigeo": "HUAC-HUAS"
+}, {
+    "id": 488,
+    "Codigo": "050608",
+    "Ubigeo": "LARAMATE"
+}, {
+    "id": 489,
+    "Codigo": "050609",
+    "Ubigeo": "LEONCIO PRADO"
+}, {
+    "id": 490,
+    "Codigo": "050610",
+    "Ubigeo": "LLAUTA"
+}, {
+    "id": 491,
+    "Codigo": "050611",
+    "Ubigeo": "LUCANAS"
+}, {
+    "id": 492,
+    "Codigo": "050612",
+    "Ubigeo": "OCAÑA"
+}, {
+    "id": 493,
+    "Codigo": "050613",
+    "Ubigeo": "OTOCA"
+}, {
+    "id": 494,
+    "Codigo": "050614",
+    "Ubigeo": "SAISA"
+}, {
+    "id": 495,
+    "Codigo": "050615",
+    "Ubigeo": "SAN CRISTOBAL"
+}, {
+    "id": 496,
+    "Codigo": "050616",
+    "Ubigeo": "SAN JUAN"
+}, {
+    "id": 497,
+    "Codigo": "050617",
+    "Ubigeo": "SAN PEDRO"
+}, {
+    "id": 498,
+    "Codigo": "050618",
+    "Ubigeo": "SAN PEDRO DE PALCO"
+}, {
+    "id": 499,
+    "Codigo": "050619",
+    "Ubigeo": "SANCOS"
+}, {
+    "id": 500,
+    "Codigo": "050620",
+    "Ubigeo": "SANTA ANA DE HUAYCAHUACHO"
+}, {
+    "id": 501,
+    "Codigo": "050621",
+    "Ubigeo": "SANTA LUCIA"
+}, {
+    "id": 502,
+    "Codigo": "050701",
+    "Ubigeo": "CORACORA"
+}, {
+    "id": 503,
+    "Codigo": "050702",
+    "Ubigeo": "CHUMPI"
+}, {
+    "id": 504,
+    "Codigo": "050703",
+    "Ubigeo": "CORONEL CASTAÑEDA"
+}, {
+    "id": 505,
+    "Codigo": "050704",
+    "Ubigeo": "PACAPAUSA"
+}, {
+    "id": 506,
+    "Codigo": "050705",
+    "Ubigeo": "PULLO"
+}, {
+    "id": 507,
+    "Codigo": "050706",
+    "Ubigeo": "PUYUSCA"
+}, {
+    "id": 508,
+    "Codigo": "050707",
+    "Ubigeo": "SAN FRANCISCO DE RAVACAYCO"
+}, {
+    "id": 509,
+    "Codigo": "050708",
+    "Ubigeo": "UPAHUACHO"
+}, {
+    "id": 510,
+    "Codigo": "050801",
+    "Ubigeo": "PAUSA"
+}, {
+    "id": 511,
+    "Codigo": "050802",
+    "Ubigeo": "COLTA"
+}, {
+    "id": 512,
+    "Codigo": "050803",
+    "Ubigeo": "CORCULLA"
+}, {
+    "id": 513,
+    "Codigo": "050804",
+    "Ubigeo": "LAMPA"
+}, {
+    "id": 514,
+    "Codigo": "050805",
+    "Ubigeo": "MARCABAMBA"
+}, {
+    "id": 515,
+    "Codigo": "050806",
+    "Ubigeo": "OYOLO"
+}, {
+    "id": 516,
+    "Codigo": "050807",
+    "Ubigeo": "PARARCA"
+}, {
+    "id": 517,
+    "Codigo": "050808",
+    "Ubigeo": "SAN JAVIER DE ALPABAMBA"
+}, {
+    "id": 518,
+    "Codigo": "050809",
+    "Ubigeo": "SAN JOSE DE USHUA"
+}, {
+    "id": 519,
+    "Codigo": "050810",
+    "Ubigeo": "SARA SARA"
+}, {
+    "id": 520,
+    "Codigo": "050901",
+    "Ubigeo": "QUEROBAMBA"
+}, {
+    "id": 521,
+    "Codigo": "050902",
+    "Ubigeo": "BELEN"
+}, {
+    "id": 522,
+    "Codigo": "050903",
+    "Ubigeo": "CHALCOS"
+}, {
+    "id": 523,
+    "Codigo": "050904",
+    "Ubigeo": "CHILCAYOC"
+}, {
+    "id": 524,
+    "Codigo": "050905",
+    "Ubigeo": "HUACAÑA"
+}, {
+    "id": 525,
+    "Codigo": "050906",
+    "Ubigeo": "MORCOLLA"
+}, {
+    "id": 526,
+    "Codigo": "050907",
+    "Ubigeo": "PAICO"
+}, {
+    "id": 527,
+    "Codigo": "050908",
+    "Ubigeo": "SAN PEDRO DE LARCAY"
+}, {
+    "id": 528,
+    "Codigo": "050909",
+    "Ubigeo": "SAN SALVADOR DE QUIJE"
+}, {
+    "id": 529,
+    "Codigo": "050910",
+    "Ubigeo": "SANTIAGO DE PAUCARAY"
+}, {
+    "id": 530,
+    "Codigo": "050911",
+    "Ubigeo": "SORAS"
+}, {
+    "id": 531,
+    "Codigo": "051001",
+    "Ubigeo": "HUANCAPI"
+}, {
+    "id": 532,
+    "Codigo": "051002",
+    "Ubigeo": "ALCAMENCA"
+}, {
+    "id": 533,
+    "Codigo": "051003",
+    "Ubigeo": "APONGO"
+}, {
+    "id": 534,
+    "Codigo": "051004",
+    "Ubigeo": "ASQUIPATA"
+}, {
+    "id": 535,
+    "Codigo": "051005",
+    "Ubigeo": "CANARIA"
+}, {
+    "id": 536,
+    "Codigo": "051006",
+    "Ubigeo": "CAYARA"
+}, {
+    "id": 537,
+    "Codigo": "051007",
+    "Ubigeo": "COLCA"
+}, {
+    "id": 538,
+    "Codigo": "051008",
+    "Ubigeo": "HUAMANQUIQUIA"
+}, {
+    "id": 539,
+    "Codigo": "051009",
+    "Ubigeo": "HUANCARAYLLA"
+}, {
+    "id": 540,
+    "Codigo": "051010",
+    "Ubigeo": "HUAYA"
+}, {
+    "id": 541,
+    "Codigo": "051011",
+    "Ubigeo": "SARHUA"
+}, {
+    "id": 542,
+    "Codigo": "051012",
+    "Ubigeo": "VILCANCHOS"
+}, {
+    "id": 543,
+    "Codigo": "051101",
+    "Ubigeo": "VILCAS HUAMAN"
+}, {
+    "id": 544,
+    "Codigo": "051102",
+    "Ubigeo": "ACCOMARCA"
+}, {
+    "id": 545,
+    "Codigo": "051103",
+    "Ubigeo": "CARHUANCA"
+}, {
+    "id": 546,
+    "Codigo": "051104",
+    "Ubigeo": "CONCEPCION"
+}, {
+    "id": 547,
+    "Codigo": "051105",
+    "Ubigeo": "HUAMBALPA"
+}, {
+    "id": 548,
+    "Codigo": "051106",
+    "Ubigeo": "INDEPENDENCIA"
+}, {
+    "id": 549,
+    "Codigo": "051107",
+    "Ubigeo": "SAURAMA"
+}, {
+    "id": 550,
+    "Codigo": "051108",
+    "Ubigeo": "VISCHONGO"
+}, {
+    "id": 551,
+    "Codigo": "060101",
+    "Ubigeo": "CAJAMARCA"
+}, {
+    "id": 552,
+    "Codigo": "060102",
+    "Ubigeo": "ASUNCION"
+}, {
+    "id": 553,
+    "Codigo": "060103",
+    "Ubigeo": "CHETILLA"
+}, {
+    "id": 554,
+    "Codigo": "060104",
+    "Ubigeo": "COSPAN"
+}, {
+    "id": 555,
+    "Codigo": "060105",
+    "Ubigeo": "ENCAÑADA"
+}, {
+    "id": 556,
+    "Codigo": "060106",
+    "Ubigeo": "JESUS"
+}, {
+    "id": 557,
+    "Codigo": "060107",
+    "Ubigeo": "LLACANORA"
+}, {
+    "id": 558,
+    "Codigo": "060108",
+    "Ubigeo": "LOS BAÑOS DEL INCA"
+}, {
+    "id": 559,
+    "Codigo": "060109",
+    "Ubigeo": "MAGDALENA"
+}, {
+    "id": 560,
+    "Codigo": "060110",
+    "Ubigeo": "MATARA"
+}, {
+    "id": 561,
+    "Codigo": "060111",
+    "Ubigeo": "NAMORA"
+}, {
+    "id": 562,
+    "Codigo": "060112",
+    "Ubigeo": "SAN JUAN"
+}, {
+    "id": 563,
+    "Codigo": "060201",
+    "Ubigeo": "CAJABAMBA"
+}, {
+    "id": 564,
+    "Codigo": "060202",
+    "Ubigeo": "CACHACHI"
+}, {
+    "id": 565,
+    "Codigo": "060203",
+    "Ubigeo": "CONDEBAMBA"
+}, {
+    "id": 566,
+    "Codigo": "060204",
+    "Ubigeo": "SITACOCHA"
+}, {
+    "id": 567,
+    "Codigo": "060301",
+    "Ubigeo": "CELENDIN"
+}, {
+    "id": 568,
+    "Codigo": "060302",
+    "Ubigeo": "CHUMUCH"
+}, {
+    "id": 569,
+    "Codigo": "060303",
+    "Ubigeo": "CORTEGANA"
+}, {
+    "id": 570,
+    "Codigo": "060304",
+    "Ubigeo": "HUASMIN"
+}, {
+    "id": 571,
+    "Codigo": "060305",
+    "Ubigeo": "JORGE CHAVEZ"
+}, {
+    "id": 572,
+    "Codigo": "060306",
+    "Ubigeo": "JOSE GALVEZ"
+}, {
+    "id": 573,
+    "Codigo": "060307",
+    "Ubigeo": "MIGUEL IGLESIAS"
+}, {
+    "id": 574,
+    "Codigo": "060308",
+    "Ubigeo": "OXAMARCA"
+}, {
+    "id": 575,
+    "Codigo": "060309",
+    "Ubigeo": "SOROCHUCO"
+}, {
+    "id": 576,
+    "Codigo": "060310",
+    "Ubigeo": "SUCRE"
+}, {
+    "id": 577,
+    "Codigo": "060311",
+    "Ubigeo": "UTCO"
+}, {
+    "id": 578,
+    "Codigo": "060312",
+    "Ubigeo": "LA LIBERTAD DE PALLAN"
+}, {
+    "id": 579,
+    "Codigo": "060401",
+    "Ubigeo": "CHOTA"
+}, {
+    "id": 580,
+    "Codigo": "060402",
+    "Ubigeo": "ANGUIA"
+}, {
+    "id": 581,
+    "Codigo": "060403",
+    "Ubigeo": "CHADIN"
+}, {
+    "id": 582,
+    "Codigo": "060404",
+    "Ubigeo": "CHIGUIRIP"
+}, {
+    "id": 583,
+    "Codigo": "060405",
+    "Ubigeo": "CHIMBAN"
+}, {
+    "id": 584,
+    "Codigo": "060406",
+    "Ubigeo": "CHOROPAMPA"
+}, {
+    "id": 585,
+    "Codigo": "060407",
+    "Ubigeo": "COCHABAMBA"
+}, {
+    "id": 586,
+    "Codigo": "060408",
+    "Ubigeo": "CONCHAN"
+}, {
+    "id": 587,
+    "Codigo": "060409",
+    "Ubigeo": "HUAMBOS"
+}, {
+    "id": 588,
+    "Codigo": "060410",
+    "Ubigeo": "LAJAS"
+}, {
+    "id": 589,
+    "Codigo": "060411",
+    "Ubigeo": "LLAMA"
+}, {
+    "id": 590,
+    "Codigo": "060412",
+    "Ubigeo": "MIRACOSTA"
+}, {
+    "id": 591,
+    "Codigo": "060413",
+    "Ubigeo": "PACCHA"
+}, {
+    "id": 592,
+    "Codigo": "060414",
+    "Ubigeo": "PION"
+}, {
+    "id": 593,
+    "Codigo": "060415",
+    "Ubigeo": "QUEROCOTO"
+}, {
+    "id": 594,
+    "Codigo": "060416",
+    "Ubigeo": "SAN JUAN DE LICUPIS"
+}, {
+    "id": 595,
+    "Codigo": "060417",
+    "Ubigeo": "TACABAMBA"
+}, {
+    "id": 596,
+    "Codigo": "060418",
+    "Ubigeo": "TOCMOCHE"
+}, {
+    "id": 597,
+    "Codigo": "060419",
+    "Ubigeo": "CHALAMARCA"
+}, {
+    "id": 598,
+    "Codigo": "060501",
+    "Ubigeo": "CONTUMAZA"
+}, {
+    "id": 599,
+    "Codigo": "060502",
+    "Ubigeo": "CHILETE"
+}, {
+    "id": 600,
+    "Codigo": "060503",
+    "Ubigeo": "CUPISNIQUE"
+}, {
+    "id": 601,
+    "Codigo": "060504",
+    "Ubigeo": "GUZMANGO"
+}, {
+    "id": 602,
+    "Codigo": "060505",
+    "Ubigeo": "SAN BENITO"
+}, {
+    "id": 603,
+    "Codigo": "060506",
+    "Ubigeo": "SANTA CRUZ DE TOLED"
+}, {
+    "id": 604,
+    "Codigo": "060507",
+    "Ubigeo": "TANTARICA"
+}, {
+    "id": 605,
+    "Codigo": "060508",
+    "Ubigeo": "YONAN"
+}, {
+    "id": 606,
+    "Codigo": "060601",
+    "Ubigeo": "CUTERVO"
+}, {
+    "id": 607,
+    "Codigo": "060602",
+    "Ubigeo": "CALLAYUC"
+}, {
+    "id": 608,
+    "Codigo": "060603",
+    "Ubigeo": "CHOROS"
+}, {
+    "id": 609,
+    "Codigo": "060604",
+    "Ubigeo": "CUJILLO"
+}, {
+    "id": 610,
+    "Codigo": "060605",
+    "Ubigeo": "LA RAMADA"
+}, {
+    "id": 611,
+    "Codigo": "060606",
+    "Ubigeo": "PIMPINGOS"
+}, {
+    "id": 612,
+    "Codigo": "060607",
+    "Ubigeo": "QUEROCOTILLO"
+}, {
+    "id": 613,
+    "Codigo": "060608",
+    "Ubigeo": "SAN ANDRES DE CUTERVO"
+}, {
+    "id": 614,
+    "Codigo": "060609",
+    "Ubigeo": "SAN JUAN DE CUTERVO"
+}, {
+    "id": 615,
+    "Codigo": "060610",
+    "Ubigeo": "SAN LUIS DE LUCMA"
+}, {
+    "id": 616,
+    "Codigo": "060611",
+    "Ubigeo": "SANTA CRUZ"
+}, {
+    "id": 617,
+    "Codigo": "060612",
+    "Ubigeo": "SANTO DOMINGO DE LA CAPILLA"
+}, {
+    "id": 618,
+    "Codigo": "060613",
+    "Ubigeo": "SANTO TOMAS"
+}, {
+    "id": 619,
+    "Codigo": "060614",
+    "Ubigeo": "SOCOTA"
+}, {
+    "id": 620,
+    "Codigo": "060615",
+    "Ubigeo": "TORIBIO CASANOVA"
+}, {
+    "id": 621,
+    "Codigo": "060701",
+    "Ubigeo": "BAMBAMARCA"
+}, {
+    "id": 622,
+    "Codigo": "060702",
+    "Ubigeo": "CHUGUR"
+}, {
+    "id": 623,
+    "Codigo": "060703",
+    "Ubigeo": "HUALGAYOC"
+}, {
+    "id": 624,
+    "Codigo": "060801",
+    "Ubigeo": "JAEN"
+}, {
+    "id": 625,
+    "Codigo": "060802",
+    "Ubigeo": "BELLAVISTA"
+}, {
+    "id": 626,
+    "Codigo": "060803",
+    "Ubigeo": "CHONTALI"
+}, {
+    "id": 627,
+    "Codigo": "060804",
+    "Ubigeo": "COLASAY"
+}, {
+    "id": 628,
+    "Codigo": "060805",
+    "Ubigeo": "HUABAL"
+}, {
+    "id": 629,
+    "Codigo": "060806",
+    "Ubigeo": "LAS PIRIAS"
+}, {
+    "id": 630,
+    "Codigo": "060807",
+    "Ubigeo": "POMAHUACA"
+}, {
+    "id": 631,
+    "Codigo": "060808",
+    "Ubigeo": "PUCARA"
+}, {
+    "id": 632,
+    "Codigo": "060809",
+    "Ubigeo": "SALLIQUE"
+}, {
+    "id": 633,
+    "Codigo": "060810",
+    "Ubigeo": "SAN FELIPE"
+}, {
+    "id": 634,
+    "Codigo": "060811",
+    "Ubigeo": "SAN JOSE DEL ALTO"
+}, {
+    "id": 635,
+    "Codigo": "060812",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 636,
+    "Codigo": "060901",
+    "Ubigeo": "SAN IGNACIO"
+}, {
+    "id": 637,
+    "Codigo": "060902",
+    "Ubigeo": "CHIRINOS"
+}, {
+    "id": 638,
+    "Codigo": "060903",
+    "Ubigeo": "HUARANGO"
+}, {
+    "id": 639,
+    "Codigo": "060904",
+    "Ubigeo": "LA COIPA"
+}, {
+    "id": 640,
+    "Codigo": "060905",
+    "Ubigeo": "NAMBALLE"
+}, {
+    "id": 641,
+    "Codigo": "060906",
+    "Ubigeo": "SAN JOSE DE LOURDES"
+}, {
+    "id": 642,
+    "Codigo": "060907",
+    "Ubigeo": "TABACONAS"
+}, {
+    "id": 643,
+    "Codigo": "061001",
+    "Ubigeo": "PEDRO GALVEZ"
+}, {
+    "id": 644,
+    "Codigo": "061002",
+    "Ubigeo": "CHANCAY"
+}, {
+    "id": 645,
+    "Codigo": "061003",
+    "Ubigeo": "EDUARDO VILLANUEVA"
+}, {
+    "id": 646,
+    "Codigo": "061004",
+    "Ubigeo": "GREGORIO PITA"
+}, {
+    "id": 647,
+    "Codigo": "061005",
+    "Ubigeo": "ICHOCAN"
+}, {
+    "id": 648,
+    "Codigo": "061006",
+    "Ubigeo": "JOSE MANUEL QUIROZ"
+}, {
+    "id": 649,
+    "Codigo": "061007",
+    "Ubigeo": "JOSE SABOGAL"
+}, {
+    "id": 650,
+    "Codigo": "061101",
+    "Ubigeo": "SAN MIGUEL"
+}, {
+    "id": 651,
+    "Codigo": "061102",
+    "Ubigeo": "BOLIVAR"
+}, {
+    "id": 652,
+    "Codigo": "061103",
+    "Ubigeo": "CALQUIS"
+}, {
+    "id": 653,
+    "Codigo": "061104",
+    "Ubigeo": "CATILLUC"
+}, {
+    "id": 654,
+    "Codigo": "061105",
+    "Ubigeo": "EL PRADO"
+}, {
+    "id": 655,
+    "Codigo": "061106",
+    "Ubigeo": "LA FLORIDA"
+}, {
+    "id": 656,
+    "Codigo": "061107",
+    "Ubigeo": "LLAPA"
+}, {
+    "id": 657,
+    "Codigo": "061108",
+    "Ubigeo": "NANCHOC"
+}, {
+    "id": 658,
+    "Codigo": "061109",
+    "Ubigeo": "NIEPOS"
+}, {
+    "id": 659,
+    "Codigo": "061110",
+    "Ubigeo": "SAN GREGORIO"
+}, {
+    "id": 660,
+    "Codigo": "061111",
+    "Ubigeo": "SAN SILVESTRE DE COCHAN"
+}, {
+    "id": 661,
+    "Codigo": "061112",
+    "Ubigeo": "TONGOD"
+}, {
+    "id": 662,
+    "Codigo": "061113",
+    "Ubigeo": "UNION AGUA BLANCA"
+}, {
+    "id": 663,
+    "Codigo": "061201",
+    "Ubigeo": "SAN PABLO"
+}, {
+    "id": 664,
+    "Codigo": "061202",
+    "Ubigeo": "SAN BERNARDINO"
+}, {
+    "id": 665,
+    "Codigo": "061203",
+    "Ubigeo": "SAN LUIS"
+}, {
+    "id": 666,
+    "Codigo": "061204",
+    "Ubigeo": "TUMBADEN"
+}, {
+    "id": 667,
+    "Codigo": "061301",
+    "Ubigeo": "SANTA CRUZ"
+}, {
+    "id": 668,
+    "Codigo": "061302",
+    "Ubigeo": "ANDABAMBA"
+}, {
+    "id": 669,
+    "Codigo": "061303",
+    "Ubigeo": "CATACHE"
+}, {
+    "id": 670,
+    "Codigo": "061304",
+    "Ubigeo": "CHANCAYBAÑOS"
+}, {
+    "id": 671,
+    "Codigo": "061305",
+    "Ubigeo": "LA ESPERANZA"
+}, {
+    "id": 672,
+    "Codigo": "061306",
+    "Ubigeo": "NINABAMBA"
+}, {
+    "id": 673,
+    "Codigo": "061307",
+    "Ubigeo": "PULAN"
+}, {
+    "id": 674,
+    "Codigo": "061308",
+    "Ubigeo": "SAUCEPAMPA"
+}, {
+    "id": 675,
+    "Codigo": "061309",
+    "Ubigeo": "SEXI"
+}, {
+    "id": 676,
+    "Codigo": "061310",
+    "Ubigeo": "UTICYACU"
+}, {
+    "id": 677,
+    "Codigo": "061311",
+    "Ubigeo": "YAUYUCAN"
+}, {
+    "id": 678,
+    "Codigo": "070101",
+    "Ubigeo": "CALLAO"
+}, {
+    "id": 679,
+    "Codigo": "070102",
+    "Ubigeo": "BELLAVISTA"
+}, {
+    "id": 680,
+    "Codigo": "070103",
+    "Ubigeo": "CARMEN DE LA LEGUA REYNOSO"
+}, {
+    "id": 681,
+    "Codigo": "070104",
+    "Ubigeo": "LA PERLA"
+}, {
+    "id": 682,
+    "Codigo": "070105",
+    "Ubigeo": "LA PUNTA"
+}, {
+    "id": 683,
+    "Codigo": "070106",
+    "Ubigeo": "VENTANILLA"
+}, {
+    "id": 684,
+    "Codigo": "080101",
+    "Ubigeo": "CUSCO"
+}, {
+    "id": 685,
+    "Codigo": "080102",
+    "Ubigeo": "CCORCA"
+}, {
+    "id": 686,
+    "Codigo": "080103",
+    "Ubigeo": "POROY"
+}, {
+    "id": 687,
+    "Codigo": "080104",
+    "Ubigeo": "SAN JERONIMO"
+}, {
+    "id": 688,
+    "Codigo": "080105",
+    "Ubigeo": "SAN SEBASTIAN"
+}, {
+    "id": 689,
+    "Codigo": "080106",
+    "Ubigeo": "SANTIAGO"
+}, {
+    "id": 690,
+    "Codigo": "080107",
+    "Ubigeo": "SAYLLA"
+}, {
+    "id": 691,
+    "Codigo": "080108",
+    "Ubigeo": "WANCHAQ"
+}, {
+    "id": 692,
+    "Codigo": "080201",
+    "Ubigeo": "ACOMAYO"
+}, {
+    "id": 693,
+    "Codigo": "080202",
+    "Ubigeo": "ACOPIA"
+}, {
+    "id": 694,
+    "Codigo": "080203",
+    "Ubigeo": "ACOS"
+}, {
+    "id": 695,
+    "Codigo": "080204",
+    "Ubigeo": "MOSOC LLACTA"
+}, {
+    "id": 696,
+    "Codigo": "080205",
+    "Ubigeo": "POMACANCHI"
+}, {
+    "id": 697,
+    "Codigo": "080206",
+    "Ubigeo": "RONDOCAN"
+}, {
+    "id": 698,
+    "Codigo": "080207",
+    "Ubigeo": "SANGARARA"
+}, {
+    "id": 699,
+    "Codigo": "080301",
+    "Ubigeo": "ANTA"
+}, {
+    "id": 700,
+    "Codigo": "080302",
+    "Ubigeo": "ANCAHUASI"
+}, {
+    "id": 701,
+    "Codigo": "080303",
+    "Ubigeo": "CACHIMAYO"
+}, {
+    "id": 702,
+    "Codigo": "080304",
+    "Ubigeo": "CHINCHAYPUJIO"
+}, {
+    "id": 703,
+    "Codigo": "080305",
+    "Ubigeo": "HUAROCONDO"
+}, {
+    "id": 704,
+    "Codigo": "080306",
+    "Ubigeo": "LIMATAMBO"
+}, {
+    "id": 705,
+    "Codigo": "080307",
+    "Ubigeo": "MOLLEPATA"
+}, {
+    "id": 706,
+    "Codigo": "080308",
+    "Ubigeo": "PUCYURA"
+}, {
+    "id": 707,
+    "Codigo": "080309",
+    "Ubigeo": "ZURITE"
+}, {
+    "id": 708,
+    "Codigo": "080401",
+    "Ubigeo": "CALCA"
+}, {
+    "id": 709,
+    "Codigo": "080402",
+    "Ubigeo": "COYA"
+}, {
+    "id": 710,
+    "Codigo": "080403",
+    "Ubigeo": "LAMAY"
+}, {
+    "id": 711,
+    "Codigo": "080404",
+    "Ubigeo": "LARES"
+}, {
+    "id": 712,
+    "Codigo": "080405",
+    "Ubigeo": "PISAC"
+}, {
+    "id": 713,
+    "Codigo": "080406",
+    "Ubigeo": "SAN SALVADOR"
+}, {
+    "id": 714,
+    "Codigo": "080407",
+    "Ubigeo": "TARAY"
+}, {
+    "id": 715,
+    "Codigo": "080408",
+    "Ubigeo": "YANATILE"
+}, {
+    "id": 716,
+    "Codigo": "080501",
+    "Ubigeo": "YANAOCA"
+}, {
+    "id": 717,
+    "Codigo": "080502",
+    "Ubigeo": "CHECCA"
+}, {
+    "id": 718,
+    "Codigo": "080503",
+    "Ubigeo": "KUNTURKANKI"
+}, {
+    "id": 719,
+    "Codigo": "080504",
+    "Ubigeo": "LANGUI"
+}, {
+    "id": 720,
+    "Codigo": "080505",
+    "Ubigeo": "LAYO"
+}, {
+    "id": 721,
+    "Codigo": "080506",
+    "Ubigeo": "PAMPAMARCA"
+}, {
+    "id": 722,
+    "Codigo": "080507",
+    "Ubigeo": "QUEHUE"
+}, {
+    "id": 723,
+    "Codigo": "080508",
+    "Ubigeo": "TUPAC AMARU"
+}, {
+    "id": 724,
+    "Codigo": "080601",
+    "Ubigeo": "SICUANI"
+}, {
+    "id": 725,
+    "Codigo": "080602",
+    "Ubigeo": "CHECACUPE"
+}, {
+    "id": 726,
+    "Codigo": "080603",
+    "Ubigeo": "COMBAPATA"
+}, {
+    "id": 727,
+    "Codigo": "080604",
+    "Ubigeo": "MARANGANI"
+}, {
+    "id": 728,
+    "Codigo": "080605",
+    "Ubigeo": "PITUMARCA"
+}, {
+    "id": 729,
+    "Codigo": "080606",
+    "Ubigeo": "SAN PABLO"
+}, {
+    "id": 730,
+    "Codigo": "080607",
+    "Ubigeo": "SAN PEDRO"
+}, {
+    "id": 731,
+    "Codigo": "080608",
+    "Ubigeo": "TINTA"
+}, {
+    "id": 732,
+    "Codigo": "080701",
+    "Ubigeo": "SANTO TOMAS"
+}, {
+    "id": 733,
+    "Codigo": "080702",
+    "Ubigeo": "CAPACMARCA"
+}, {
+    "id": 734,
+    "Codigo": "080703",
+    "Ubigeo": "CHAMACA"
+}, {
+    "id": 735,
+    "Codigo": "080704",
+    "Ubigeo": "COLQUEMARCA"
+}, {
+    "id": 736,
+    "Codigo": "080705",
+    "Ubigeo": "LIVITACA"
+}, {
+    "id": 737,
+    "Codigo": "080706",
+    "Ubigeo": "LLUSCO"
+}, {
+    "id": 738,
+    "Codigo": "080707",
+    "Ubigeo": "QUIÑOTA"
+}, {
+    "id": 739,
+    "Codigo": "080708",
+    "Ubigeo": "VELILLE"
+}, {
+    "id": 740,
+    "Codigo": "080801",
+    "Ubigeo": "ESPINAR"
+}, {
+    "id": 741,
+    "Codigo": "080802",
+    "Ubigeo": "CONDOROMA"
+}, {
+    "id": 742,
+    "Codigo": "080803",
+    "Ubigeo": "COPORAQUE"
+}, {
+    "id": 743,
+    "Codigo": "080804",
+    "Ubigeo": "OCORURO"
+}, {
+    "id": 744,
+    "Codigo": "080805",
+    "Ubigeo": "PALLPATA"
+}, {
+    "id": 745,
+    "Codigo": "080806",
+    "Ubigeo": "PICHIGUA"
+}, {
+    "id": 746,
+    "Codigo": "080807",
+    "Ubigeo": "SUYCKUTAMBO"
+}, {
+    "id": 747,
+    "Codigo": "080808",
+    "Ubigeo": "ALTO PICHIGUA"
+}, {
+    "id": 748,
+    "Codigo": "080901",
+    "Ubigeo": "SANTA ANA"
+}, {
+    "id": 749,
+    "Codigo": "080902",
+    "Ubigeo": "ECHARATE"
+}, {
+    "id": 750,
+    "Codigo": "080903",
+    "Ubigeo": "HUAYOPATA"
+}, {
+    "id": 751,
+    "Codigo": "080904",
+    "Ubigeo": "MARANURA"
+}, {
+    "id": 752,
+    "Codigo": "080905",
+    "Ubigeo": "OCOBAMBA"
+}, {
+    "id": 753,
+    "Codigo": "080906",
+    "Ubigeo": "QUELLOUNO"
+}, {
+    "id": 754,
+    "Codigo": "080907",
+    "Ubigeo": "KIMBIRI"
+}, {
+    "id": 755,
+    "Codigo": "080908",
+    "Ubigeo": "SANTA TERESA"
+}, {
+    "id": 756,
+    "Codigo": "080909",
+    "Ubigeo": "VILCABAMBA"
+}, {
+    "id": 757,
+    "Codigo": "080910",
+    "Ubigeo": "PICHARI"
+}, {
+    "id": 758,
+    "Codigo": "081001",
+    "Ubigeo": "PARURO"
+}, {
+    "id": 759,
+    "Codigo": "081002",
+    "Ubigeo": "ACCHA"
+}, {
+    "id": 760,
+    "Codigo": "081003",
+    "Ubigeo": "CCAPI"
+}, {
+    "id": 761,
+    "Codigo": "081004",
+    "Ubigeo": "COLCHA"
+}, {
+    "id": 762,
+    "Codigo": "081005",
+    "Ubigeo": "HUANOQUITE"
+}, {
+    "id": 763,
+    "Codigo": "081006",
+    "Ubigeo": "OMACHA"
+}, {
+    "id": 764,
+    "Codigo": "081007",
+    "Ubigeo": "PACCARITAMBO"
+}, {
+    "id": 765,
+    "Codigo": "081008",
+    "Ubigeo": "PILLPINTO"
+}, {
+    "id": 766,
+    "Codigo": "081009",
+    "Ubigeo": "YAURISQUE"
+}, {
+    "id": 767,
+    "Codigo": "081101",
+    "Ubigeo": "PAUCARTAMBO"
+}, {
+    "id": 768,
+    "Codigo": "081102",
+    "Ubigeo": "CAICAY"
+}, {
+    "id": 769,
+    "Codigo": "081103",
+    "Ubigeo": "CHALLABAMBA"
+}, {
+    "id": 770,
+    "Codigo": "081104",
+    "Ubigeo": "COLQUEPATA"
+}, {
+    "id": 771,
+    "Codigo": "081105",
+    "Ubigeo": "HUANCARANI"
+}, {
+    "id": 772,
+    "Codigo": "081106",
+    "Ubigeo": "KOSÑIPATA"
+}, {
+    "id": 773,
+    "Codigo": "081201",
+    "Ubigeo": "URCOS"
+}, {
+    "id": 774,
+    "Codigo": "081202",
+    "Ubigeo": "ANDAHUAYLILLAS"
+}, {
+    "id": 775,
+    "Codigo": "081203",
+    "Ubigeo": "CAMANTI"
+}, {
+    "id": 776,
+    "Codigo": "081204",
+    "Ubigeo": "CCARHUAYO"
+}, {
+    "id": 777,
+    "Codigo": "081205",
+    "Ubigeo": "CCATCA"
+}, {
+    "id": 778,
+    "Codigo": "081206",
+    "Ubigeo": "CUSIPATA"
+}, {
+    "id": 779,
+    "Codigo": "081207",
+    "Ubigeo": "HUARO"
+}, {
+    "id": 780,
+    "Codigo": "081208",
+    "Ubigeo": "LUCRE"
+}, {
+    "id": 781,
+    "Codigo": "081209",
+    "Ubigeo": "MARCAPATA"
+}, {
+    "id": 782,
+    "Codigo": "081210",
+    "Ubigeo": "OCONGATE"
+}, {
+    "id": 783,
+    "Codigo": "081211",
+    "Ubigeo": "OROPESA"
+}, {
+    "id": 784,
+    "Codigo": "081212",
+    "Ubigeo": "QUIQUIJANA"
+}, {
+    "id": 785,
+    "Codigo": "081301",
+    "Ubigeo": "URUBAMBA"
+}, {
+    "id": 786,
+    "Codigo": "081302",
+    "Ubigeo": "CHINCHERO"
+}, {
+    "id": 787,
+    "Codigo": "081303",
+    "Ubigeo": "HUAYLLABAMBA"
+}, {
+    "id": 788,
+    "Codigo": "081304",
+    "Ubigeo": "MACHUPICCHU"
+}, {
+    "id": 789,
+    "Codigo": "081305",
+    "Ubigeo": "MARAS"
+}, {
+    "id": 790,
+    "Codigo": "081306",
+    "Ubigeo": "OLLANTAYTAMBO"
+}, {
+    "id": 791,
+    "Codigo": "081307",
+    "Ubigeo": "YUCAY"
+}, {
+    "id": 792,
+    "Codigo": "090101",
+    "Ubigeo": "HUANCAVELICA"
+}, {
+    "id": 793,
+    "Codigo": "090102",
+    "Ubigeo": "ACOBAMBILLA"
+}, {
+    "id": 794,
+    "Codigo": "090103",
+    "Ubigeo": "ACORIA"
+}, {
+    "id": 795,
+    "Codigo": "090104",
+    "Ubigeo": "CONAYCA"
+}, {
+    "id": 796,
+    "Codigo": "090105",
+    "Ubigeo": "CUENCA"
+}, {
+    "id": 797,
+    "Codigo": "090106",
+    "Ubigeo": "HUACHOCOLPA"
+}, {
+    "id": 798,
+    "Codigo": "090107",
+    "Ubigeo": "HUAYLLAHUARA"
+}, {
+    "id": 799,
+    "Codigo": "090108",
+    "Ubigeo": "IZCUCHACA"
+}, {
+    "id": 800,
+    "Codigo": "090109",
+    "Ubigeo": "LARIA"
+}, {
+    "id": 801,
+    "Codigo": "090110",
+    "Ubigeo": "MANTA"
+}, {
+    "id": 802,
+    "Codigo": "090111",
+    "Ubigeo": "MARISCAL CACERES"
+}, {
+    "id": 803,
+    "Codigo": "090112",
+    "Ubigeo": "MOYA"
+}, {
+    "id": 804,
+    "Codigo": "090113",
+    "Ubigeo": "NUEVO OCCORO"
+}, {
+    "id": 805,
+    "Codigo": "090114",
+    "Ubigeo": "PALCA"
+}, {
+    "id": 806,
+    "Codigo": "090115",
+    "Ubigeo": "PILCHACA"
+}, {
+    "id": 807,
+    "Codigo": "090116",
+    "Ubigeo": "VILCA"
+}, {
+    "id": 808,
+    "Codigo": "090117",
+    "Ubigeo": "YAULI"
+}, {
+    "id": 809,
+    "Codigo": "090118",
+    "Ubigeo": "ASCENSION"
+}, {
+    "id": 810,
+    "Codigo": "090119",
+    "Ubigeo": "HUANDO"
+}, {
+    "id": 811,
+    "Codigo": "090201",
+    "Ubigeo": "ACOBAMBA"
+}, {
+    "id": 812,
+    "Codigo": "090202",
+    "Ubigeo": "ANDABAMBA"
+}, {
+    "id": 813,
+    "Codigo": "090203",
+    "Ubigeo": "ANTA"
+}, {
+    "id": 814,
+    "Codigo": "090204",
+    "Ubigeo": "CAJA"
+}, {
+    "id": 815,
+    "Codigo": "090205",
+    "Ubigeo": "MARCAS"
+}, {
+    "id": 816,
+    "Codigo": "090206",
+    "Ubigeo": "PAUCARA"
+}, {
+    "id": 817,
+    "Codigo": "090207",
+    "Ubigeo": "POMACOCHA"
+}, {
+    "id": 818,
+    "Codigo": "090208",
+    "Ubigeo": "ROSARIO"
+}, {
+    "id": 819,
+    "Codigo": "090301",
+    "Ubigeo": "LIRCAY"
+}, {
+    "id": 820,
+    "Codigo": "090302",
+    "Ubigeo": "ANCHONGA"
+}, {
+    "id": 821,
+    "Codigo": "090303",
+    "Ubigeo": "CALLANMARCA"
+}, {
+    "id": 822,
+    "Codigo": "090304",
+    "Ubigeo": "CCOCHACCASA"
+}, {
+    "id": 823,
+    "Codigo": "090305",
+    "Ubigeo": "CHINCHO"
+}, {
+    "id": 824,
+    "Codigo": "090306",
+    "Ubigeo": "CONGALLA"
+}, {
+    "id": 825,
+    "Codigo": "090307",
+    "Ubigeo": "HUANCA-HUANCA"
+}, {
+    "id": 826,
+    "Codigo": "090308",
+    "Ubigeo": "HUAYLLAY GRANDE"
+}, {
+    "id": 827,
+    "Codigo": "090309",
+    "Ubigeo": "JULCAMARCA"
+}, {
+    "id": 828,
+    "Codigo": "090310",
+    "Ubigeo": "SAN ANTONIO DE ANTAPARCO"
+}, {
+    "id": 829,
+    "Codigo": "090311",
+    "Ubigeo": "SANTO TOMAS DE PATA"
+}, {
+    "id": 830,
+    "Codigo": "090312",
+    "Ubigeo": "SECCLLA"
+}, {
+    "id": 831,
+    "Codigo": "090401",
+    "Ubigeo": "CASTROVIRREYNA"
+}, {
+    "id": 832,
+    "Codigo": "090402",
+    "Ubigeo": "ARMA"
+}, {
+    "id": 833,
+    "Codigo": "090403",
+    "Ubigeo": "AURAHUA"
+}, {
+    "id": 834,
+    "Codigo": "090404",
+    "Ubigeo": "CAPILLAS"
+}, {
+    "id": 835,
+    "Codigo": "090405",
+    "Ubigeo": "CHUPAMARCA"
+}, {
+    "id": 836,
+    "Codigo": "090406",
+    "Ubigeo": "COCAS"
+}, {
+    "id": 837,
+    "Codigo": "090407",
+    "Ubigeo": "HUACHOS"
+}, {
+    "id": 838,
+    "Codigo": "090408",
+    "Ubigeo": "HUAMATAMBO"
+}, {
+    "id": 839,
+    "Codigo": "090409",
+    "Ubigeo": "MOLLEPAMPA"
+}, {
+    "id": 840,
+    "Codigo": "090410",
+    "Ubigeo": "SAN JUAN"
+}, {
+    "id": 841,
+    "Codigo": "090411",
+    "Ubigeo": "SANTA ANA"
+}, {
+    "id": 842,
+    "Codigo": "090412",
+    "Ubigeo": "TANTARA"
+}, {
+    "id": 843,
+    "Codigo": "090413",
+    "Ubigeo": "TICRAPO"
+}, {
+    "id": 844,
+    "Codigo": "090501",
+    "Ubigeo": "CHURCAMPA"
+}, {
+    "id": 845,
+    "Codigo": "090502",
+    "Ubigeo": "ANCO"
+}, {
+    "id": 846,
+    "Codigo": "090503",
+    "Ubigeo": "CHINCHIHUASI"
+}, {
+    "id": 847,
+    "Codigo": "090504",
+    "Ubigeo": "EL CARMEN"
+}, {
+    "id": 848,
+    "Codigo": "090505",
+    "Ubigeo": "LA MERCED"
+}, {
+    "id": 849,
+    "Codigo": "090506",
+    "Ubigeo": "LOCROJA"
+}, {
+    "id": 850,
+    "Codigo": "090507",
+    "Ubigeo": "PAUCARBAMBA"
+}, {
+    "id": 851,
+    "Codigo": "090508",
+    "Ubigeo": "SAN MIGUEL DE MAYOCC"
+}, {
+    "id": 852,
+    "Codigo": "090509",
+    "Ubigeo": "SAN PEDRO DE CORIS"
+}, {
+    "id": 853,
+    "Codigo": "090510",
+    "Ubigeo": "PACHAMARCA"
+}, {
+    "id": 854,
+    "Codigo": "090601",
+    "Ubigeo": "HUAYTARA"
+}, {
+    "id": 855,
+    "Codigo": "090602",
+    "Ubigeo": "AYAVI"
+}, {
+    "id": 856,
+    "Codigo": "090603",
+    "Ubigeo": "CORDOVA"
+}, {
+    "id": 857,
+    "Codigo": "090604",
+    "Ubigeo": "HUAYACUNDO ARMA"
+}, {
+    "id": 858,
+    "Codigo": "090605",
+    "Ubigeo": "LARAMARCA"
+}, {
+    "id": 859,
+    "Codigo": "090606",
+    "Ubigeo": "OCOYO"
+}, {
+    "id": 860,
+    "Codigo": "090607",
+    "Ubigeo": "PILPICHACA"
+}, {
+    "id": 861,
+    "Codigo": "090608",
+    "Ubigeo": "QUERCO"
+}, {
+    "id": 862,
+    "Codigo": "090609",
+    "Ubigeo": "QUITO-ARMA"
+}, {
+    "id": 863,
+    "Codigo": "090610",
+    "Ubigeo": "SAN ANTONIO DE CUSICANCHA"
+}, {
+    "id": 864,
+    "Codigo": "090611",
+    "Ubigeo": "SAN FRANCISCO DE SANGAYAICO"
+}, {
+    "id": 865,
+    "Codigo": "090612",
+    "Ubigeo": "SAN ISIDRO"
+}, {
+    "id": 866,
+    "Codigo": "090613",
+    "Ubigeo": "SANTIAGO DE CHOCORVOS"
+}, {
+    "id": 867,
+    "Codigo": "090614",
+    "Ubigeo": "SANTIAGO DE QUIRAHUARA"
+}, {
+    "id": 868,
+    "Codigo": "090615",
+    "Ubigeo": "SANTO DOMINGO DE CAPILLAS"
+}, {
+    "id": 869,
+    "Codigo": "090616",
+    "Ubigeo": "TAMBO"
+}, {
+    "id": 870,
+    "Codigo": "090701",
+    "Ubigeo": "PAMPAS"
+}, {
+    "id": 871,
+    "Codigo": "090702",
+    "Ubigeo": "ACOSTAMBO"
+}, {
+    "id": 872,
+    "Codigo": "090703",
+    "Ubigeo": "ACRAQUIA"
+}, {
+    "id": 873,
+    "Codigo": "090704",
+    "Ubigeo": "AHUAYCHA"
+}, {
+    "id": 874,
+    "Codigo": "090705",
+    "Ubigeo": "COLCABAMBA"
+}, {
+    "id": 875,
+    "Codigo": "090706",
+    "Ubigeo": "DANIEL HERNANDEZ"
+}, {
+    "id": 876,
+    "Codigo": "090707",
+    "Ubigeo": "HUACHOCOLPA"
+}, {
+    "id": 877,
+    "Codigo": "090709",
+    "Ubigeo": "HUARIBAMBA"
+}, {
+    "id": 878,
+    "Codigo": "090710",
+    "Ubigeo": "ÑAHUIMPUQUIO"
+}, {
+    "id": 879,
+    "Codigo": "090711",
+    "Ubigeo": "PAZOS"
+}, {
+    "id": 880,
+    "Codigo": "090713",
+    "Ubigeo": "QUISHUAR"
+}, {
+    "id": 881,
+    "Codigo": "090714",
+    "Ubigeo": "SALCABAMBA"
+}, {
+    "id": 882,
+    "Codigo": "090715",
+    "Ubigeo": "SALCAHUASI"
+}, {
+    "id": 883,
+    "Codigo": "090716",
+    "Ubigeo": "SAN MARCOS DE ROCCHAC"
+}, {
+    "id": 884,
+    "Codigo": "090717",
+    "Ubigeo": "SURCUBAMBA"
+}, {
+    "id": 885,
+    "Codigo": "090718",
+    "Ubigeo": "TINTAY PUNCU"
+}, {
+    "id": 886,
+    "Codigo": "100101",
+    "Ubigeo": "HUANUCO"
+}, {
+    "id": 887,
+    "Codigo": "100102",
+    "Ubigeo": "AMARILIS"
+}, {
+    "id": 888,
+    "Codigo": "100103",
+    "Ubigeo": "CHINCHAO"
+}, {
+    "id": 889,
+    "Codigo": "100104",
+    "Ubigeo": "CHURUBAMBA"
+}, {
+    "id": 890,
+    "Codigo": "100105",
+    "Ubigeo": "MARGOS"
+}, {
+    "id": 891,
+    "Codigo": "100106",
+    "Ubigeo": "QUISQUI"
+}, {
+    "id": 892,
+    "Codigo": "100107",
+    "Ubigeo": "SAN FRANCISCO DE CAYRAN"
+}, {
+    "id": 893,
+    "Codigo": "100108",
+    "Ubigeo": "SAN PEDRO DE CHAULAN"
+}, {
+    "id": 894,
+    "Codigo": "100109",
+    "Ubigeo": "SANTA MARIA DEL VALLE"
+}, {
+    "id": 895,
+    "Codigo": "100110",
+    "Ubigeo": "YARUMAYO"
+}, {
+    "id": 896,
+    "Codigo": "100111",
+    "Ubigeo": "PILLCO MARCA"
+}, {
+    "id": 897,
+    "Codigo": "100201",
+    "Ubigeo": "AMBO"
+}, {
+    "id": 898,
+    "Codigo": "100202",
+    "Ubigeo": "CAYNA"
+}, {
+    "id": 899,
+    "Codigo": "100203",
+    "Ubigeo": "COLPAS"
+}, {
+    "id": 900,
+    "Codigo": "100204",
+    "Ubigeo": "CONCHAMARCA"
+}, {
+    "id": 901,
+    "Codigo": "100205",
+    "Ubigeo": "HUACAR"
+}, {
+    "id": 902,
+    "Codigo": "100206",
+    "Ubigeo": "SAN FRANCISCO"
+}, {
+    "id": 903,
+    "Codigo": "100207",
+    "Ubigeo": "SAN RAFAEL"
+}, {
+    "id": 904,
+    "Codigo": "100208",
+    "Ubigeo": "TOMAY KICHWA"
+}, {
+    "id": 905,
+    "Codigo": "100301",
+    "Ubigeo": "LA UNION"
+}, {
+    "id": 906,
+    "Codigo": "100307",
+    "Ubigeo": "CHUQUIS"
+}, {
+    "id": 907,
+    "Codigo": "100311",
+    "Ubigeo": "MARIAS"
+}, {
+    "id": 908,
+    "Codigo": "100313",
+    "Ubigeo": "PACHAS"
+}, {
+    "id": 909,
+    "Codigo": "100316",
+    "Ubigeo": "QUIVILLA"
+}, {
+    "id": 910,
+    "Codigo": "100317",
+    "Ubigeo": "RIPAN"
+}, {
+    "id": 911,
+    "Codigo": "100321",
+    "Ubigeo": "SHUNQUI"
+}, {
+    "id": 912,
+    "Codigo": "100322",
+    "Ubigeo": "SILLAPATA"
+}, {
+    "id": 913,
+    "Codigo": "100323",
+    "Ubigeo": "YANAS"
+}, {
+    "id": 914,
+    "Codigo": "100401",
+    "Ubigeo": "HUACAYBAMBA"
+}, {
+    "id": 915,
+    "Codigo": "100402",
+    "Ubigeo": "CANCHABAMBA"
+}, {
+    "id": 916,
+    "Codigo": "100403",
+    "Ubigeo": "COCHABAMBA"
+}, {
+    "id": 917,
+    "Codigo": "100404",
+    "Ubigeo": "PINRA"
+}, {
+    "id": 918,
+    "Codigo": "100501",
+    "Ubigeo": "LLATA"
+}, {
+    "id": 919,
+    "Codigo": "100502",
+    "Ubigeo": "ARANCAY"
+}, {
+    "id": 920,
+    "Codigo": "100503",
+    "Ubigeo": "CHAVIN DE PARIARCA"
+}, {
+    "id": 921,
+    "Codigo": "100504",
+    "Ubigeo": "JACAS GRANDE"
+}, {
+    "id": 922,
+    "Codigo": "100505",
+    "Ubigeo": "JIRCAN"
+}, {
+    "id": 923,
+    "Codigo": "100506",
+    "Ubigeo": "MIRAFLORES"
+}, {
+    "id": 924,
+    "Codigo": "100507",
+    "Ubigeo": "MONZON"
+}, {
+    "id": 925,
+    "Codigo": "100508",
+    "Ubigeo": "PUNCHAO"
+}, {
+    "id": 926,
+    "Codigo": "100509",
+    "Ubigeo": "PUÑOS"
+}, {
+    "id": 927,
+    "Codigo": "100510",
+    "Ubigeo": "SINGA"
+}, {
+    "id": 928,
+    "Codigo": "100511",
+    "Ubigeo": "TANTAMAYO"
+}, {
+    "id": 929,
+    "Codigo": "100601",
+    "Ubigeo": "RUPA-RUPA"
+}, {
+    "id": 930,
+    "Codigo": "100602",
+    "Ubigeo": "DANIEL ALOMIA ROBLES"
+}, {
+    "id": 931,
+    "Codigo": "100603",
+    "Ubigeo": "HERMILIO VALDIZAN"
+}, {
+    "id": 932,
+    "Codigo": "100604",
+    "Ubigeo": "JOSE CRESPO Y CASTILLO"
+}, {
+    "id": 933,
+    "Codigo": "100605",
+    "Ubigeo": "LUYANDO"
+}, {
+    "id": 934,
+    "Codigo": "100606",
+    "Ubigeo": "MARIANO DAMASO BERAUN"
+}, {
+    "id": 935,
+    "Codigo": "100701",
+    "Ubigeo": "HUACRACHUCO"
+}, {
+    "id": 936,
+    "Codigo": "100702",
+    "Ubigeo": "CHOLON"
+}, {
+    "id": 937,
+    "Codigo": "100703",
+    "Ubigeo": "SAN BUENAVENTURA"
+}, {
+    "id": 938,
+    "Codigo": "100801",
+    "Ubigeo": "PANAO"
+}, {
+    "id": 939,
+    "Codigo": "100802",
+    "Ubigeo": "CHAGLLA"
+}, {
+    "id": 940,
+    "Codigo": "100803",
+    "Ubigeo": "MOLINO"
+}, {
+    "id": 941,
+    "Codigo": "100804",
+    "Ubigeo": "UMARI"
+}, {
+    "id": 942,
+    "Codigo": "100901",
+    "Ubigeo": "PUERTO INCA"
+}, {
+    "id": 943,
+    "Codigo": "100902",
+    "Ubigeo": "CODO DEL POZUZO"
+}, {
+    "id": 944,
+    "Codigo": "100903",
+    "Ubigeo": "HONORIA"
+}, {
+    "id": 945,
+    "Codigo": "100904",
+    "Ubigeo": "TOURNAVISTA"
+}, {
+    "id": 946,
+    "Codigo": "100905",
+    "Ubigeo": "YUYAPICHIS"
+}, {
+    "id": 947,
+    "Codigo": "101001",
+    "Ubigeo": "JESUS"
+}, {
+    "id": 948,
+    "Codigo": "101002",
+    "Ubigeo": "BAÑOS"
+}, {
+    "id": 949,
+    "Codigo": "101003",
+    "Ubigeo": "JIVIA"
+}, {
+    "id": 950,
+    "Codigo": "101004",
+    "Ubigeo": "QUEROPALCA"
+}, {
+    "id": 951,
+    "Codigo": "101005",
+    "Ubigeo": "RONDOS"
+}, {
+    "id": 952,
+    "Codigo": "101006",
+    "Ubigeo": "SAN FRANCISCO DE ASIS"
+}, {
+    "id": 953,
+    "Codigo": "101007",
+    "Ubigeo": "SAN MIGUEL DE CAURI"
+}, {
+    "id": 954,
+    "Codigo": "101101",
+    "Ubigeo": "CHAVINILLO"
+}, {
+    "id": 955,
+    "Codigo": "101102",
+    "Ubigeo": "CAHUAC"
+}, {
+    "id": 956,
+    "Codigo": "101103",
+    "Ubigeo": "CHACABAMBA"
+}, {
+    "id": 957,
+    "Codigo": "101104",
+    "Ubigeo": "APARICIO POMARES"
+}, {
+    "id": 958,
+    "Codigo": "101105",
+    "Ubigeo": "JACAS CHICO"
+}, {
+    "id": 959,
+    "Codigo": "101106",
+    "Ubigeo": "OBAS"
+}, {
+    "id": 960,
+    "Codigo": "101107",
+    "Ubigeo": "PAMPAMARCA"
+}, {
+    "id": 961,
+    "Codigo": "101108",
+    "Ubigeo": "CHORAS"
+}, {
+    "id": 962,
+    "Codigo": "110101",
+    "Ubigeo": "ICA"
+}, {
+    "id": 963,
+    "Codigo": "110102",
+    "Ubigeo": "LA TINGUIÑA"
+}, {
+    "id": 964,
+    "Codigo": "110103",
+    "Ubigeo": "LOS AQUIJES"
+}, {
+    "id": 965,
+    "Codigo": "110104",
+    "Ubigeo": "OCUCAJE"
+}, {
+    "id": 966,
+    "Codigo": "110105",
+    "Ubigeo": "PACHACUTEC"
+}, {
+    "id": 967,
+    "Codigo": "110106",
+    "Ubigeo": "PARCONA"
+}, {
+    "id": 968,
+    "Codigo": "110107",
+    "Ubigeo": "PUEBLO NUEVO"
+}, {
+    "id": 969,
+    "Codigo": "110108",
+    "Ubigeo": "SALAS"
+}, {
+    "id": 970,
+    "Codigo": "110109",
+    "Ubigeo": "SAN JOSE DE LOS MOLINOS"
+}, {
+    "id": 971,
+    "Codigo": "110110",
+    "Ubigeo": "SAN JUAN BAUTISTA"
+}, {
+    "id": 972,
+    "Codigo": "110111",
+    "Ubigeo": "SANTIAGO"
+}, {
+    "id": 973,
+    "Codigo": "110112",
+    "Ubigeo": "SUBTANJALLA"
+}, {
+    "id": 974,
+    "Codigo": "110113",
+    "Ubigeo": "TATE"
+}, {
+    "id": 975,
+    "Codigo": "110114",
+    "Ubigeo": "YAUCA DEL ROSARIO"
+}, {
+    "id": 976,
+    "Codigo": "110201",
+    "Ubigeo": "CHINCHA ALTA"
+}, {
+    "id": 977,
+    "Codigo": "110202",
+    "Ubigeo": "ALTO LARAN"
+}, {
+    "id": 978,
+    "Codigo": "110203",
+    "Ubigeo": "CHAVIN"
+}, {
+    "id": 979,
+    "Codigo": "110204",
+    "Ubigeo": "CHINCHA BAJA"
+}, {
+    "id": 980,
+    "Codigo": "110205",
+    "Ubigeo": "EL CARMEN"
+}, {
+    "id": 981,
+    "Codigo": "110206",
+    "Ubigeo": "GROCIO PRADO"
+}, {
+    "id": 982,
+    "Codigo": "110207",
+    "Ubigeo": "PUEBLO NUEVO"
+}, {
+    "id": 983,
+    "Codigo": "110208",
+    "Ubigeo": "SAN JUAN DE YANAC"
+}, {
+    "id": 984,
+    "Codigo": "110209",
+    "Ubigeo": "SAN PEDRO DE HUACARPANA"
+}, {
+    "id": 985,
+    "Codigo": "110210",
+    "Ubigeo": "SUNAMPE"
+}, {
+    "id": 986,
+    "Codigo": "110211",
+    "Ubigeo": "TAMBO DE MORA"
+}, {
+    "id": 987,
+    "Codigo": "110301",
+    "Ubigeo": "NAZCA"
+}, {
+    "id": 988,
+    "Codigo": "110302",
+    "Ubigeo": "CHANGUILLO"
+}, {
+    "id": 989,
+    "Codigo": "110303",
+    "Ubigeo": "EL INGENIO"
+}, {
+    "id": 990,
+    "Codigo": "110304",
+    "Ubigeo": "MARCONA"
+}, {
+    "id": 991,
+    "Codigo": "110305",
+    "Ubigeo": "VISTA ALEGRE"
+}, {
+    "id": 992,
+    "Codigo": "110401",
+    "Ubigeo": "PALPA"
+}, {
+    "id": 993,
+    "Codigo": "110402",
+    "Ubigeo": "LLIPATA"
+}, {
+    "id": 994,
+    "Codigo": "110403",
+    "Ubigeo": "RIO GRANDE"
+}, {
+    "id": 995,
+    "Codigo": "110404",
+    "Ubigeo": "SANTA CRUZ"
+}, {
+    "id": 996,
+    "Codigo": "110405",
+    "Ubigeo": "TIBILLO"
+}, {
+    "id": 997,
+    "Codigo": "110501",
+    "Ubigeo": "PISCO"
+}, {
+    "id": 998,
+    "Codigo": "110502",
+    "Ubigeo": "HUANCANO"
+}, {
+    "id": 999,
+    "Codigo": "110503",
+    "Ubigeo": "HUMAY"
+}, {
+    "id": 1000,
+    "Codigo": "110504",
+    "Ubigeo": "INDEPENDENCIA"
+}, {
+    "id": 1001,
+    "Codigo": "110505",
+    "Ubigeo": "PARACAS"
+}, {
+    "id": 1002,
+    "Codigo": "110506",
+    "Ubigeo": "SAN ANDRES"
+}, {
+    "id": 1003,
+    "Codigo": "110507",
+    "Ubigeo": "SAN CLEMENTE"
+}, {
+    "id": 1004,
+    "Codigo": "110508",
+    "Ubigeo": "TUPAC AMARU INCA"
+}, {
+    "id": 1005,
+    "Codigo": "120101",
+    "Ubigeo": "HUANCAYO"
+}, {
+    "id": 1006,
+    "Codigo": "120104",
+    "Ubigeo": "CARHUACALLANGA"
+}, {
+    "id": 1007,
+    "Codigo": "120105",
+    "Ubigeo": "CHACAPAMPA"
+}, {
+    "id": 1008,
+    "Codigo": "120106",
+    "Ubigeo": "CHICCHE"
+}, {
+    "id": 1009,
+    "Codigo": "120107",
+    "Ubigeo": "CHILCA"
+}, {
+    "id": 1010,
+    "Codigo": "120108",
+    "Ubigeo": "CHONGOS ALTO"
+}, {
+    "id": 1011,
+    "Codigo": "120111",
+    "Ubigeo": "CHUPURO"
+}, {
+    "id": 1012,
+    "Codigo": "120112",
+    "Ubigeo": "COLCA"
+}, {
+    "id": 1013,
+    "Codigo": "120113",
+    "Ubigeo": "CULLHUAS"
+}, {
+    "id": 1014,
+    "Codigo": "120114",
+    "Ubigeo": "EL TAMBO"
+}, {
+    "id": 1015,
+    "Codigo": "120116",
+    "Ubigeo": "HUACRAPUQUIO"
+}, {
+    "id": 1016,
+    "Codigo": "120117",
+    "Ubigeo": "HUALHUAS"
+}, {
+    "id": 1017,
+    "Codigo": "120119",
+    "Ubigeo": "HUANCAN"
+}, {
+    "id": 1018,
+    "Codigo": "120120",
+    "Ubigeo": "HUASICANCHA"
+}, {
+    "id": 1019,
+    "Codigo": "120121",
+    "Ubigeo": "HUAYUCACHI"
+}, {
+    "id": 1020,
+    "Codigo": "120122",
+    "Ubigeo": "INGENIO"
+}, {
+    "id": 1021,
+    "Codigo": "120124",
+    "Ubigeo": "PARIAHUANCA"
+}, {
+    "id": 1022,
+    "Codigo": "120125",
+    "Ubigeo": "PILCOMAYO"
+}, {
+    "id": 1023,
+    "Codigo": "120126",
+    "Ubigeo": "PUCARA"
+}, {
+    "id": 1024,
+    "Codigo": "120127",
+    "Ubigeo": "QUICHUAY"
+}, {
+    "id": 1025,
+    "Codigo": "120128",
+    "Ubigeo": "QUILCAS"
+}, {
+    "id": 1026,
+    "Codigo": "120129",
+    "Ubigeo": "SAN AGUSTIN"
+}, {
+    "id": 1027,
+    "Codigo": "120130",
+    "Ubigeo": "SAN JERONIMO DE TUNAN"
+}, {
+    "id": 1028,
+    "Codigo": "120132",
+    "Ubigeo": "SAÑO"
+}, {
+    "id": 1029,
+    "Codigo": "120133",
+    "Ubigeo": "SAPALLANGA"
+}, {
+    "id": 1030,
+    "Codigo": "120134",
+    "Ubigeo": "SICAYA"
+}, {
+    "id": 1031,
+    "Codigo": "120135",
+    "Ubigeo": "SANTO DOMINGO DE ACOBAMBA"
+}, {
+    "id": 1032,
+    "Codigo": "120136",
+    "Ubigeo": "VIQUES"
+}, {
+    "id": 1033,
+    "Codigo": "120201",
+    "Ubigeo": "CONCEPCION"
+}, {
+    "id": 1034,
+    "Codigo": "120202",
+    "Ubigeo": "ACO"
+}, {
+    "id": 1035,
+    "Codigo": "120203",
+    "Ubigeo": "ANDAMARCA"
+}, {
+    "id": 1036,
+    "Codigo": "120204",
+    "Ubigeo": "CHAMBARA"
+}, {
+    "id": 1037,
+    "Codigo": "120205",
+    "Ubigeo": "COCHAS"
+}, {
+    "id": 1038,
+    "Codigo": "120206",
+    "Ubigeo": "COMAS"
+}, {
+    "id": 1039,
+    "Codigo": "120207",
+    "Ubigeo": "HEROINAS TOLEDO"
+}, {
+    "id": 1040,
+    "Codigo": "120208",
+    "Ubigeo": "MANZANARES"
+}, {
+    "id": 1041,
+    "Codigo": "120209",
+    "Ubigeo": "MARISCAL CASTILLA"
+}, {
+    "id": 1042,
+    "Codigo": "120210",
+    "Ubigeo": "MATAHUASI"
+}, {
+    "id": 1043,
+    "Codigo": "120211",
+    "Ubigeo": "MITO"
+}, {
+    "id": 1044,
+    "Codigo": "120212",
+    "Ubigeo": "NUEVE DE JULIO"
+}, {
+    "id": 1045,
+    "Codigo": "120213",
+    "Ubigeo": "ORCOTUNA"
+}, {
+    "id": 1046,
+    "Codigo": "120214",
+    "Ubigeo": "SAN JOSE DE QUERO"
+}, {
+    "id": 1047,
+    "Codigo": "120215",
+    "Ubigeo": "SANTA ROSA DE OCOPA"
+}, {
+    "id": 1048,
+    "Codigo": "120301",
+    "Ubigeo": "CHANCHAMAYO"
+}, {
+    "id": 1049,
+    "Codigo": "120302",
+    "Ubigeo": "PERENE"
+}, {
+    "id": 1050,
+    "Codigo": "120303",
+    "Ubigeo": "PICHANAQUI"
+}, {
+    "id": 1051,
+    "Codigo": "120304",
+    "Ubigeo": "SAN LUIS DE SHUARO"
+}, {
+    "id": 1052,
+    "Codigo": "120305",
+    "Ubigeo": "SAN RAMON"
+}, {
+    "id": 1053,
+    "Codigo": "120306",
+    "Ubigeo": "VITOC"
+}, {
+    "id": 1054,
+    "Codigo": "120401",
+    "Ubigeo": "JAUJA"
+}, {
+    "id": 1055,
+    "Codigo": "120402",
+    "Ubigeo": "ACOLLA"
+}, {
+    "id": 1056,
+    "Codigo": "120403",
+    "Ubigeo": "APATA"
+}, {
+    "id": 1057,
+    "Codigo": "120404",
+    "Ubigeo": "ATAURA"
+}, {
+    "id": 1058,
+    "Codigo": "120405",
+    "Ubigeo": "CANCHAYLLO"
+}, {
+    "id": 1059,
+    "Codigo": "120406",
+    "Ubigeo": "CURICACA"
+}, {
+    "id": 1060,
+    "Codigo": "120407",
+    "Ubigeo": "EL MANTARO"
+}, {
+    "id": 1061,
+    "Codigo": "120408",
+    "Ubigeo": "HUAMALI"
+}, {
+    "id": 1062,
+    "Codigo": "120409",
+    "Ubigeo": "HUARIPAMPA"
+}, {
+    "id": 1063,
+    "Codigo": "120410",
+    "Ubigeo": "HUERTAS"
+}, {
+    "id": 1064,
+    "Codigo": "120411",
+    "Ubigeo": "JANJAILLO"
+}, {
+    "id": 1065,
+    "Codigo": "120412",
+    "Ubigeo": "JULCAN"
+}, {
+    "id": 1066,
+    "Codigo": "120413",
+    "Ubigeo": "LEONOR ORDOÑEZ"
+}, {
+    "id": 1067,
+    "Codigo": "120414",
+    "Ubigeo": "LLOCLLAPAMPA"
+}, {
+    "id": 1068,
+    "Codigo": "120415",
+    "Ubigeo": "MARCO"
+}, {
+    "id": 1069,
+    "Codigo": "120416",
+    "Ubigeo": "MASMA"
+}, {
+    "id": 1070,
+    "Codigo": "120417",
+    "Ubigeo": "MASMA CHICCHE"
+}, {
+    "id": 1071,
+    "Codigo": "120418",
+    "Ubigeo": "MOLINOS"
+}, {
+    "id": 1072,
+    "Codigo": "120419",
+    "Ubigeo": "MONOBAMBA"
+}, {
+    "id": 1073,
+    "Codigo": "120420",
+    "Ubigeo": "MUQUI"
+}, {
+    "id": 1074,
+    "Codigo": "120421",
+    "Ubigeo": "MUQUIYAUYO"
+}, {
+    "id": 1075,
+    "Codigo": "120422",
+    "Ubigeo": "PACA"
+}, {
+    "id": 1076,
+    "Codigo": "120423",
+    "Ubigeo": "PACCHA"
+}, {
+    "id": 1077,
+    "Codigo": "120424",
+    "Ubigeo": "PANCAN"
+}, {
+    "id": 1078,
+    "Codigo": "120425",
+    "Ubigeo": "PARCO"
+}, {
+    "id": 1079,
+    "Codigo": "120426",
+    "Ubigeo": "POMACANCHA"
+}, {
+    "id": 1080,
+    "Codigo": "120427",
+    "Ubigeo": "RICRAN"
+}, {
+    "id": 1081,
+    "Codigo": "120428",
+    "Ubigeo": "SAN LORENZO"
+}, {
+    "id": 1082,
+    "Codigo": "120429",
+    "Ubigeo": "SAN PEDRO DE CHUNAN"
+}, {
+    "id": 1083,
+    "Codigo": "120430",
+    "Ubigeo": "SAUSA"
+}, {
+    "id": 1084,
+    "Codigo": "120431",
+    "Ubigeo": "SINCOS"
+}, {
+    "id": 1085,
+    "Codigo": "120432",
+    "Ubigeo": "TUNAN MARCA"
+}, {
+    "id": 1086,
+    "Codigo": "120433",
+    "Ubigeo": "YAULI"
+}, {
+    "id": 1087,
+    "Codigo": "120434",
+    "Ubigeo": "YAUYOS"
+}, {
+    "id": 1088,
+    "Codigo": "120501",
+    "Ubigeo": "JUNIN"
+}, {
+    "id": 1089,
+    "Codigo": "120502",
+    "Ubigeo": "CARHUAMAYO"
+}, {
+    "id": 1090,
+    "Codigo": "120503",
+    "Ubigeo": "ONDORES"
+}, {
+    "id": 1091,
+    "Codigo": "120504",
+    "Ubigeo": "ULCUMAYO"
+}, {
+    "id": 1092,
+    "Codigo": "120601",
+    "Ubigeo": "SATIPO"
+}, {
+    "id": 1093,
+    "Codigo": "120602",
+    "Ubigeo": "COVIRIALI"
+}, {
+    "id": 1094,
+    "Codigo": "120603",
+    "Ubigeo": "LLAYLLA"
+}, {
+    "id": 1095,
+    "Codigo": "120604",
+    "Ubigeo": "MAZAMARI"
+}, {
+    "id": 1096,
+    "Codigo": "120605",
+    "Ubigeo": "PAMPA HERMOSA"
+}, {
+    "id": 1097,
+    "Codigo": "120606",
+    "Ubigeo": "PANGOA"
+}, {
+    "id": 1098,
+    "Codigo": "120607",
+    "Ubigeo": "RIO NEGRO"
+}, {
+    "id": 1099,
+    "Codigo": "120608",
+    "Ubigeo": "RIO TAMBO"
+}, {
+    "id": 1100,
+    "Codigo": "120701",
+    "Ubigeo": "TARMA"
+}, {
+    "id": 1101,
+    "Codigo": "120702",
+    "Ubigeo": "ACOBAMBA"
+}, {
+    "id": 1102,
+    "Codigo": "120703",
+    "Ubigeo": "HUARICOLCA"
+}, {
+    "id": 1103,
+    "Codigo": "120704",
+    "Ubigeo": "HUASAHUASI"
+}, {
+    "id": 1104,
+    "Codigo": "120705",
+    "Ubigeo": "LA UNION"
+}, {
+    "id": 1105,
+    "Codigo": "120706",
+    "Ubigeo": "PALCA"
+}, {
+    "id": 1106,
+    "Codigo": "120707",
+    "Ubigeo": "PALCAMAYO"
+}, {
+    "id": 1107,
+    "Codigo": "120708",
+    "Ubigeo": "SAN PEDRO DE CAJAS"
+}, {
+    "id": 1108,
+    "Codigo": "120709",
+    "Ubigeo": "TAPO"
+}, {
+    "id": 1109,
+    "Codigo": "120801",
+    "Ubigeo": "LA OROYA"
+}, {
+    "id": 1110,
+    "Codigo": "120802",
+    "Ubigeo": "CHACAPALPA"
+}, {
+    "id": 1111,
+    "Codigo": "120803",
+    "Ubigeo": "HUAY-HUAY"
+}, {
+    "id": 1112,
+    "Codigo": "120804",
+    "Ubigeo": "MARCAPOMACOCHA"
+}, {
+    "id": 1113,
+    "Codigo": "120805",
+    "Ubigeo": "MOROCOCHA"
+}, {
+    "id": 1114,
+    "Codigo": "120806",
+    "Ubigeo": "PACCHA"
+}, {
+    "id": 1115,
+    "Codigo": "120807",
+    "Ubigeo": "SANTA BARBARA DE CARHUACAY"
+}, {
+    "id": 1116,
+    "Codigo": "120808",
+    "Ubigeo": "SANTA ROSA DE SACCO"
+}, {
+    "id": 1117,
+    "Codigo": "120809",
+    "Ubigeo": "SUITUCANCHA"
+}, {
+    "id": 1118,
+    "Codigo": "120810",
+    "Ubigeo": "YAULI"
+}, {
+    "id": 1119,
+    "Codigo": "120901",
+    "Ubigeo": "CHUPACA"
+}, {
+    "id": 1120,
+    "Codigo": "120902",
+    "Ubigeo": "AHUAC"
+}, {
+    "id": 1121,
+    "Codigo": "120903",
+    "Ubigeo": "CHONGOS BAJO"
+}, {
+    "id": 1122,
+    "Codigo": "120904",
+    "Ubigeo": "HUACHAC"
+}, {
+    "id": 1123,
+    "Codigo": "120905",
+    "Ubigeo": "HUAMANCACA CHICO"
+}, {
+    "id": 1124,
+    "Codigo": "120906",
+    "Ubigeo": "SAN JUAN DE ISCOS"
+}, {
+    "id": 1125,
+    "Codigo": "120907",
+    "Ubigeo": "SAN JUAN DE JARPA"
+}, {
+    "id": 1126,
+    "Codigo": "120908",
+    "Ubigeo": "TRES DE DICIEMBRE"
+}, {
+    "id": 1127,
+    "Codigo": "120909",
+    "Ubigeo": "YANACANCHA"
+}, {
+    "id": 1128,
+    "Codigo": "130101",
+    "Ubigeo": "TRUJILLO"
+}, {
+    "id": 1129,
+    "Codigo": "130102",
+    "Ubigeo": "EL PORVENIR"
+}, {
+    "id": 1130,
+    "Codigo": "130103",
+    "Ubigeo": "FLORENCIA DE MORA"
+}, {
+    "id": 1131,
+    "Codigo": "130104",
+    "Ubigeo": "HUANCHACO"
+}, {
+    "id": 1132,
+    "Codigo": "130105",
+    "Ubigeo": "LA ESPERANZA"
+}, {
+    "id": 1133,
+    "Codigo": "130106",
+    "Ubigeo": "LAREDO"
+}, {
+    "id": 1134,
+    "Codigo": "130107",
+    "Ubigeo": "MOCHE"
+}, {
+    "id": 1135,
+    "Codigo": "130108",
+    "Ubigeo": "POROTO"
+}, {
+    "id": 1136,
+    "Codigo": "130109",
+    "Ubigeo": "SALAVERRY"
+}, {
+    "id": 1137,
+    "Codigo": "130110",
+    "Ubigeo": "SIMBAL"
+}, {
+    "id": 1138,
+    "Codigo": "130111",
+    "Ubigeo": "VICTOR LARCO HERRERA"
+}, {
+    "id": 1139,
+    "Codigo": "130201",
+    "Ubigeo": "ASCOPE"
+}, {
+    "id": 1140,
+    "Codigo": "130202",
+    "Ubigeo": "CHICAMA"
+}, {
+    "id": 1141,
+    "Codigo": "130203",
+    "Ubigeo": "CHOCOPE"
+}, {
+    "id": 1142,
+    "Codigo": "130204",
+    "Ubigeo": "MAGDALENA DE CAO"
+}, {
+    "id": 1143,
+    "Codigo": "130205",
+    "Ubigeo": "PAIJAN"
+}, {
+    "id": 1144,
+    "Codigo": "130206",
+    "Ubigeo": "RAZURI"
+}, {
+    "id": 1145,
+    "Codigo": "130207",
+    "Ubigeo": "SANTIAGO DE CAO"
+}, {
+    "id": 1146,
+    "Codigo": "130208",
+    "Ubigeo": "CASA GRANDE"
+}, {
+    "id": 1147,
+    "Codigo": "130301",
+    "Ubigeo": "BOLIVAR"
+}, {
+    "id": 1148,
+    "Codigo": "130302",
+    "Ubigeo": "BAMBAMARCA"
+}, {
+    "id": 1149,
+    "Codigo": "130303",
+    "Ubigeo": "CONDORMARCA"
+}, {
+    "id": 1150,
+    "Codigo": "130304",
+    "Ubigeo": "LONGOTEA"
+}, {
+    "id": 1151,
+    "Codigo": "130305",
+    "Ubigeo": "UCHUMARCA"
+}, {
+    "id": 1152,
+    "Codigo": "130306",
+    "Ubigeo": "UCUNCHA"
+}, {
+    "id": 1153,
+    "Codigo": "130401",
+    "Ubigeo": "CHEPEN"
+}, {
+    "id": 1154,
+    "Codigo": "130402",
+    "Ubigeo": "PACANGA"
+}, {
+    "id": 1155,
+    "Codigo": "130403",
+    "Ubigeo": "PUEBLO NUEVO"
+}, {
+    "id": 1156,
+    "Codigo": "130501",
+    "Ubigeo": "JULCAN"
+}, {
+    "id": 1157,
+    "Codigo": "130502",
+    "Ubigeo": "CALAMARCA"
+}, {
+    "id": 1158,
+    "Codigo": "130503",
+    "Ubigeo": "CARABAMBA"
+}, {
+    "id": 1159,
+    "Codigo": "130504",
+    "Ubigeo": "HUASO"
+}, {
+    "id": 1160,
+    "Codigo": "130601",
+    "Ubigeo": "OTUZCO"
+}, {
+    "id": 1161,
+    "Codigo": "130602",
+    "Ubigeo": "AGALLPAMPA"
+}, {
+    "id": 1162,
+    "Codigo": "130604",
+    "Ubigeo": "CHARAT"
+}, {
+    "id": 1163,
+    "Codigo": "130605",
+    "Ubigeo": "HUARANCHAL"
+}, {
+    "id": 1164,
+    "Codigo": "130606",
+    "Ubigeo": "LA CUESTA"
+}, {
+    "id": 1165,
+    "Codigo": "130608",
+    "Ubigeo": "MACHE"
+}, {
+    "id": 1166,
+    "Codigo": "130610",
+    "Ubigeo": "PARANDAY"
+}, {
+    "id": 1167,
+    "Codigo": "130611",
+    "Ubigeo": "SALPO"
+}, {
+    "id": 1168,
+    "Codigo": "130613",
+    "Ubigeo": "SINSICAP"
+}, {
+    "id": 1169,
+    "Codigo": "130614",
+    "Ubigeo": "USQUIL"
+}, {
+    "id": 1170,
+    "Codigo": "130701",
+    "Ubigeo": "SAN PEDRO DE LLOC"
+}, {
+    "id": 1171,
+    "Codigo": "130702",
+    "Ubigeo": "GUADALUPE"
+}, {
+    "id": 1172,
+    "Codigo": "130703",
+    "Ubigeo": "JEQUETEPEQUE"
+}, {
+    "id": 1173,
+    "Codigo": "130704",
+    "Ubigeo": "PACASMAYO"
+}, {
+    "id": 1174,
+    "Codigo": "130705",
+    "Ubigeo": "SAN JOSE"
+}, {
+    "id": 1175,
+    "Codigo": "130801",
+    "Ubigeo": "TAYABAMBA"
+}, {
+    "id": 1176,
+    "Codigo": "130802",
+    "Ubigeo": "BULDIBUYO"
+}, {
+    "id": 1177,
+    "Codigo": "130803",
+    "Ubigeo": "CHILLIA"
+}, {
+    "id": 1178,
+    "Codigo": "130804",
+    "Ubigeo": "HUANCASPATA"
+}, {
+    "id": 1179,
+    "Codigo": "130805",
+    "Ubigeo": "HUAYLILLAS"
+}, {
+    "id": 1180,
+    "Codigo": "130806",
+    "Ubigeo": "HUAYO"
+}, {
+    "id": 1181,
+    "Codigo": "130807",
+    "Ubigeo": "ONGON"
+}, {
+    "id": 1182,
+    "Codigo": "130808",
+    "Ubigeo": "PARCOY"
+}, {
+    "id": 1183,
+    "Codigo": "130809",
+    "Ubigeo": "PATAZ"
+}, {
+    "id": 1184,
+    "Codigo": "130810",
+    "Ubigeo": "PIAS"
+}, {
+    "id": 1185,
+    "Codigo": "130811",
+    "Ubigeo": "SANTIAGO DE CHALLAS"
+}, {
+    "id": 1186,
+    "Codigo": "130812",
+    "Ubigeo": "TAURIJA"
+}, {
+    "id": 1187,
+    "Codigo": "130813",
+    "Ubigeo": "URPAY"
+}, {
+    "id": 1188,
+    "Codigo": "130901",
+    "Ubigeo": "HUAMACHUCO"
+}, {
+    "id": 1189,
+    "Codigo": "130902",
+    "Ubigeo": "CHUGAY"
+}, {
+    "id": 1190,
+    "Codigo": "130903",
+    "Ubigeo": "COCHORCO"
+}, {
+    "id": 1191,
+    "Codigo": "130904",
+    "Ubigeo": "CURGOS"
+}, {
+    "id": 1192,
+    "Codigo": "130905",
+    "Ubigeo": "MARCABAL"
+}, {
+    "id": 1193,
+    "Codigo": "130906",
+    "Ubigeo": "SANAGORAN"
+}, {
+    "id": 1194,
+    "Codigo": "130907",
+    "Ubigeo": "SARIN"
+}, {
+    "id": 1195,
+    "Codigo": "130908",
+    "Ubigeo": "SARTIMBAMBA"
+}, {
+    "id": 1196,
+    "Codigo": "131001",
+    "Ubigeo": "SANTIAGO DE CHUCO"
+}, {
+    "id": 1197,
+    "Codigo": "131002",
+    "Ubigeo": "ANGASMARCA"
+}, {
+    "id": 1198,
+    "Codigo": "131003",
+    "Ubigeo": "CACHICADAN"
+}, {
+    "id": 1199,
+    "Codigo": "131004",
+    "Ubigeo": "MOLLEBAMBA"
+}, {
+    "id": 1200,
+    "Codigo": "131005",
+    "Ubigeo": "MOLLEPATA"
+}, {
+    "id": 1201,
+    "Codigo": "131006",
+    "Ubigeo": "QUIRUVILCA"
+}, {
+    "id": 1202,
+    "Codigo": "131007",
+    "Ubigeo": "SANTA CRUZ DE CHUCA"
+}, {
+    "id": 1203,
+    "Codigo": "131008",
+    "Ubigeo": "SITABAMBA"
+}, {
+    "id": 1204,
+    "Codigo": "131101",
+    "Ubigeo": "CASCAS"
+}, {
+    "id": 1205,
+    "Codigo": "131102",
+    "Ubigeo": "LUCMA"
+}, {
+    "id": 1206,
+    "Codigo": "131103",
+    "Ubigeo": "COMPIN"
+}, {
+    "id": 1207,
+    "Codigo": "131104",
+    "Ubigeo": "SAYAPULLO"
+}, {
+    "id": 1208,
+    "Codigo": "131201",
+    "Ubigeo": "VIRU"
+}, {
+    "id": 1209,
+    "Codigo": "131202",
+    "Ubigeo": "CHAO"
+}, {
+    "id": 1210,
+    "Codigo": "131203",
+    "Ubigeo": "GUADALUPITO"
+}, {
+    "id": 1211,
+    "Codigo": "140101",
+    "Ubigeo": "CHICLAYO"
+}, {
+    "id": 1212,
+    "Codigo": "140102",
+    "Ubigeo": "CHONGOYAPE"
+}, {
+    "id": 1213,
+    "Codigo": "140103",
+    "Ubigeo": "ETEN"
+}, {
+    "id": 1214,
+    "Codigo": "140104",
+    "Ubigeo": "ETEN PUERTO"
+}, {
+    "id": 1215,
+    "Codigo": "140105",
+    "Ubigeo": "JOSE LEONARDO ORTIZ"
+}, {
+    "id": 1216,
+    "Codigo": "140106",
+    "Ubigeo": "LA VICTORIA"
+}, {
+    "id": 1217,
+    "Codigo": "140107",
+    "Ubigeo": "LAGUNAS"
+}, {
+    "id": 1218,
+    "Codigo": "140108",
+    "Ubigeo": "MONSEFU"
+}, {
+    "id": 1219,
+    "Codigo": "140109",
+    "Ubigeo": "NUEVA ARICA"
+}, {
+    "id": 1220,
+    "Codigo": "140110",
+    "Ubigeo": "OYOTUN"
+}, {
+    "id": 1221,
+    "Codigo": "140111",
+    "Ubigeo": "PICSI"
+}, {
+    "id": 1222,
+    "Codigo": "140112",
+    "Ubigeo": "PIMENTEL"
+}, {
+    "id": 1223,
+    "Codigo": "140113",
+    "Ubigeo": "REQUE"
+}, {
+    "id": 1224,
+    "Codigo": "140114",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 1225,
+    "Codigo": "140115",
+    "Ubigeo": "SAÑA"
+}, {
+    "id": 1226,
+    "Codigo": "140116",
+    "Ubigeo": "CAYALTI"
+}, {
+    "id": 1227,
+    "Codigo": "140117",
+    "Ubigeo": "PATAPO"
+}, {
+    "id": 1228,
+    "Codigo": "140118",
+    "Ubigeo": "POMALCA"
+}, {
+    "id": 1229,
+    "Codigo": "140119",
+    "Ubigeo": "PUCALA"
+}, {
+    "id": 1230,
+    "Codigo": "140120",
+    "Ubigeo": "TUMAN"
+}, {
+    "id": 1231,
+    "Codigo": "140201",
+    "Ubigeo": "FERREÑAFE"
+}, {
+    "id": 1232,
+    "Codigo": "140202",
+    "Ubigeo": "CAÑARIS"
+}, {
+    "id": 1233,
+    "Codigo": "140203",
+    "Ubigeo": "INCAHUASI"
+}, {
+    "id": 1234,
+    "Codigo": "140204",
+    "Ubigeo": "MANUEL ANTONIO MESONES MURO"
+}, {
+    "id": 1235,
+    "Codigo": "140205",
+    "Ubigeo": "PITIPO"
+}, {
+    "id": 1236,
+    "Codigo": "140206",
+    "Ubigeo": "PUEBLO NUEVO"
+}, {
+    "id": 1237,
+    "Codigo": "140301",
+    "Ubigeo": "LAMBAYEQUE"
+}, {
+    "id": 1238,
+    "Codigo": "140302",
+    "Ubigeo": "CHOCHOPE"
+}, {
+    "id": 1239,
+    "Codigo": "140303",
+    "Ubigeo": "ILLIMO"
+}, {
+    "id": 1240,
+    "Codigo": "140304",
+    "Ubigeo": "JAYANCA"
+}, {
+    "id": 1241,
+    "Codigo": "140305",
+    "Ubigeo": "MOCHUMI"
+}, {
+    "id": 1242,
+    "Codigo": "140306",
+    "Ubigeo": "MORROPE"
+}, {
+    "id": 1243,
+    "Codigo": "140307",
+    "Ubigeo": "MOTUPE"
+}, {
+    "id": 1244,
+    "Codigo": "140308",
+    "Ubigeo": "OLMOS"
+}, {
+    "id": 1245,
+    "Codigo": "140309",
+    "Ubigeo": "PACORA"
+}, {
+    "id": 1246,
+    "Codigo": "140310",
+    "Ubigeo": "SALAS"
+}, {
+    "id": 1247,
+    "Codigo": "140311",
+    "Ubigeo": "SAN JOSE"
+}, {
+    "id": 1248,
+    "Codigo": "140312",
+    "Ubigeo": "TUCUME"
+}, {
+    "id": 1249,
+    "Codigo": "150101",
+    "Ubigeo": "LIMA"
+}, {
+    "id": 1250,
+    "Codigo": "150102",
+    "Ubigeo": "ANCON"
+}, {
+    "id": 1251,
+    "Codigo": "150103",
+    "Ubigeo": "ATE"
+}, {
+    "id": 1252,
+    "Codigo": "150104",
+    "Ubigeo": "BARRANCO"
+}, {
+    "id": 1253,
+    "Codigo": "150105",
+    "Ubigeo": "BREÑA"
+}, {
+    "id": 1254,
+    "Codigo": "150106",
+    "Ubigeo": "CARABAYLLO"
+}, {
+    "id": 1255,
+    "Codigo": "150107",
+    "Ubigeo": "CHACLACAYO"
+}, {
+    "id": 1256,
+    "Codigo": "150108",
+    "Ubigeo": "CHORRILLOS"
+}, {
+    "id": 1257,
+    "Codigo": "150109",
+    "Ubigeo": "CIENEGUILLA"
+}, {
+    "id": 1258,
+    "Codigo": "150110",
+    "Ubigeo": "COMAS"
+}, {
+    "id": 1259,
+    "Codigo": "150111",
+    "Ubigeo": "EL AGUSTINO"
+}, {
+    "id": 1260,
+    "Codigo": "150112",
+    "Ubigeo": "INDEPENDENCIA"
+}, {
+    "id": 1261,
+    "Codigo": "150113",
+    "Ubigeo": "JESUS MARIA"
+}, {
+    "id": 1262,
+    "Codigo": "150114",
+    "Ubigeo": "LA MOLINA"
+}, {
+    "id": 1263,
+    "Codigo": "150115",
+    "Ubigeo": "LA VICTORIA"
+}, {
+    "id": 1264,
+    "Codigo": "150116",
+    "Ubigeo": "LINCE"
+}, {
+    "id": 1265,
+    "Codigo": "150117",
+    "Ubigeo": "LOS OLIVOS"
+}, {
+    "id": 1266,
+    "Codigo": "150118",
+    "Ubigeo": "LURIGANCHO"
+}, {
+    "id": 1267,
+    "Codigo": "150119",
+    "Ubigeo": "LURIN"
+}, {
+    "id": 1268,
+    "Codigo": "150120",
+    "Ubigeo": "MAGDALENA DEL MAR"
+}, {
+    "id": 1269,
+    "Codigo": "150121",
+    "Ubigeo": "PUEBLO LIBRE"
+}, {
+    "id": 1270,
+    "Codigo": "150122",
+    "Ubigeo": "MIRAFLORES"
+}, {
+    "id": 1271,
+    "Codigo": "150123",
+    "Ubigeo": "PACHACAMAC"
+}, {
+    "id": 1272,
+    "Codigo": "150124",
+    "Ubigeo": "PUCUSANA"
+}, {
+    "id": 1273,
+    "Codigo": "150125",
+    "Ubigeo": "PUENTE PIEDRA"
+}, {
+    "id": 1274,
+    "Codigo": "150126",
+    "Ubigeo": "PUNTA HERMOSA"
+}, {
+    "id": 1275,
+    "Codigo": "150127",
+    "Ubigeo": "PUNTA NEGRA"
+}, {
+    "id": 1276,
+    "Codigo": "150128",
+    "Ubigeo": "RIMAC"
+}, {
+    "id": 1277,
+    "Codigo": "150129",
+    "Ubigeo": "SAN BARTOLO"
+}, {
+    "id": 1278,
+    "Codigo": "150130",
+    "Ubigeo": "SAN BORJA"
+}, {
+    "id": 1279,
+    "Codigo": "150131",
+    "Ubigeo": "SAN ISIDRO"
+}, {
+    "id": 1280,
+    "Codigo": "150132",
+    "Ubigeo": "SAN JUAN DE LURIGANCHO"
+}, {
+    "id": 1281,
+    "Codigo": "150133",
+    "Ubigeo": "SAN JUAN DE MIRAFLORES"
+}, {
+    "id": 1282,
+    "Codigo": "150134",
+    "Ubigeo": "SAN LUIS"
+}, {
+    "id": 1283,
+    "Codigo": "150135",
+    "Ubigeo": "SAN MARTIN DE PORRES"
+}, {
+    "id": 1284,
+    "Codigo": "150136",
+    "Ubigeo": "SAN MIGUEL"
+}, {
+    "id": 1285,
+    "Codigo": "150137",
+    "Ubigeo": "SANTA ANITA"
+}, {
+    "id": 1286,
+    "Codigo": "150138",
+    "Ubigeo": "SANTA MARIA DEL MAR"
+}, {
+    "id": 1287,
+    "Codigo": "150139",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 1288,
+    "Codigo": "150140",
+    "Ubigeo": "SANTIAGO DE SURCO"
+}, {
+    "id": 1289,
+    "Codigo": "150141",
+    "Ubigeo": "SURQUILLO"
+}, {
+    "id": 1290,
+    "Codigo": "150142",
+    "Ubigeo": "VILLA EL SALVADOR"
+}, {
+    "id": 1291,
+    "Codigo": "150143",
+    "Ubigeo": "VILLA MARIA DEL TRIUNFO"
+}, {
+    "id": 1292,
+    "Codigo": "150201",
+    "Ubigeo": "BARRANCA"
+}, {
+    "id": 1293,
+    "Codigo": "150202",
+    "Ubigeo": "PARAMONGA"
+}, {
+    "id": 1294,
+    "Codigo": "150203",
+    "Ubigeo": "PATIVILCA"
+}, {
+    "id": 1295,
+    "Codigo": "150204",
+    "Ubigeo": "SUPE"
+}, {
+    "id": 1296,
+    "Codigo": "150205",
+    "Ubigeo": "SUPE PUERTO"
+}, {
+    "id": 1297,
+    "Codigo": "150301",
+    "Ubigeo": "CAJATAMBO"
+}, {
+    "id": 1298,
+    "Codigo": "150302",
+    "Ubigeo": "COPA"
+}, {
+    "id": 1299,
+    "Codigo": "150303",
+    "Ubigeo": "GORGOR"
+}, {
+    "id": 1300,
+    "Codigo": "150304",
+    "Ubigeo": "HUANCAPON"
+}, {
+    "id": 1301,
+    "Codigo": "150305",
+    "Ubigeo": "MANAS"
+}, {
+    "id": 1302,
+    "Codigo": "150401",
+    "Ubigeo": "CANTA"
+}, {
+    "id": 1303,
+    "Codigo": "150402",
+    "Ubigeo": "ARAHUAY"
+}, {
+    "id": 1304,
+    "Codigo": "150403",
+    "Ubigeo": "HUAMANTANGA"
+}, {
+    "id": 1305,
+    "Codigo": "150404",
+    "Ubigeo": "HUAROS"
+}, {
+    "id": 1306,
+    "Codigo": "150405",
+    "Ubigeo": "LACHAQUI"
+}, {
+    "id": 1307,
+    "Codigo": "150406",
+    "Ubigeo": "SAN BUENAVENTURA"
+}, {
+    "id": 1308,
+    "Codigo": "150407",
+    "Ubigeo": "SANTA ROSA DE QUIVES"
+}, {
+    "id": 1309,
+    "Codigo": "150501",
+    "Ubigeo": "SAN VICENTE DE CAÑETE"
+}, {
+    "id": 1310,
+    "Codigo": "150502",
+    "Ubigeo": "ASIA"
+}, {
+    "id": 1311,
+    "Codigo": "150503",
+    "Ubigeo": "CALANGO"
+}, {
+    "id": 1312,
+    "Codigo": "150504",
+    "Ubigeo": "CERRO AZUL"
+}, {
+    "id": 1313,
+    "Codigo": "150505",
+    "Ubigeo": "CHILCA"
+}, {
+    "id": 1314,
+    "Codigo": "150506",
+    "Ubigeo": "COAYLLO"
+}, {
+    "id": 1315,
+    "Codigo": "150507",
+    "Ubigeo": "IMPERIAL"
+}, {
+    "id": 1316,
+    "Codigo": "150508",
+    "Ubigeo": "LUNAHUANA"
+}, {
+    "id": 1317,
+    "Codigo": "150509",
+    "Ubigeo": "MALA"
+}, {
+    "id": 1318,
+    "Codigo": "150510",
+    "Ubigeo": "NUEVO IMPERIAL"
+}, {
+    "id": 1319,
+    "Codigo": "150511",
+    "Ubigeo": "PACARAN"
+}, {
+    "id": 1320,
+    "Codigo": "150512",
+    "Ubigeo": "QUILMANA"
+}, {
+    "id": 1321,
+    "Codigo": "150513",
+    "Ubigeo": "SAN ANTONIO"
+}, {
+    "id": 1322,
+    "Codigo": "150514",
+    "Ubigeo": "SAN LUIS"
+}, {
+    "id": 1323,
+    "Codigo": "150515",
+    "Ubigeo": "SANTA CRUZ DE FLORES"
+}, {
+    "id": 1324,
+    "Codigo": "150516",
+    "Ubigeo": "ZUÑIGA"
+}, {
+    "id": 1325,
+    "Codigo": "150601",
+    "Ubigeo": "HUARAL"
+}, {
+    "id": 1326,
+    "Codigo": "150602",
+    "Ubigeo": "ATAVILLOS ALTO"
+}, {
+    "id": 1327,
+    "Codigo": "150603",
+    "Ubigeo": "ATAVILLOS BAJO"
+}, {
+    "id": 1328,
+    "Codigo": "150604",
+    "Ubigeo": "AUCALLAMA"
+}, {
+    "id": 1329,
+    "Codigo": "150605",
+    "Ubigeo": "CHANCAY"
+}, {
+    "id": 1330,
+    "Codigo": "150606",
+    "Ubigeo": "IHUARI"
+}, {
+    "id": 1331,
+    "Codigo": "150607",
+    "Ubigeo": "LAMPIAN"
+}, {
+    "id": 1332,
+    "Codigo": "150608",
+    "Ubigeo": "PACARAOS"
+}, {
+    "id": 1333,
+    "Codigo": "150609",
+    "Ubigeo": "SAN MIGUEL DE ACOS"
+}, {
+    "id": 1334,
+    "Codigo": "150610",
+    "Ubigeo": "SANTA CRUZ DE ANDAMARCA"
+}, {
+    "id": 1335,
+    "Codigo": "150611",
+    "Ubigeo": "SUMBILCA"
+}, {
+    "id": 1336,
+    "Codigo": "150612",
+    "Ubigeo": "VEINTISIETE DE NOVIEMBRE"
+}, {
+    "id": 1337,
+    "Codigo": "150701",
+    "Ubigeo": "MATUCANA"
+}, {
+    "id": 1338,
+    "Codigo": "150702",
+    "Ubigeo": "ANTIOQUIA"
+}, {
+    "id": 1339,
+    "Codigo": "150703",
+    "Ubigeo": "CALLAHUANCA"
+}, {
+    "id": 1340,
+    "Codigo": "150704",
+    "Ubigeo": "CARAMPOMA"
+}, {
+    "id": 1341,
+    "Codigo": "150705",
+    "Ubigeo": "CHICLA"
+}, {
+    "id": 1342,
+    "Codigo": "150706",
+    "Ubigeo": "CUENCA"
+}, {
+    "id": 1343,
+    "Codigo": "150707",
+    "Ubigeo": "HUACHUPAMPA"
+}, {
+    "id": 1344,
+    "Codigo": "150708",
+    "Ubigeo": "HUANZA"
+}, {
+    "id": 1345,
+    "Codigo": "150709",
+    "Ubigeo": "HUAROCHIRI"
+}, {
+    "id": 1346,
+    "Codigo": "150710",
+    "Ubigeo": "LAHUAYTAMBO"
+}, {
+    "id": 1347,
+    "Codigo": "150711",
+    "Ubigeo": "LANGA"
+}, {
+    "id": 1348,
+    "Codigo": "150712",
+    "Ubigeo": "LARAOS"
+}, {
+    "id": 1349,
+    "Codigo": "150713",
+    "Ubigeo": "MARIATANA"
+}, {
+    "id": 1350,
+    "Codigo": "150714",
+    "Ubigeo": "RICARDO PALMA"
+}, {
+    "id": 1351,
+    "Codigo": "150715",
+    "Ubigeo": "SAN ANDRES DE TUPICOCHA"
+}, {
+    "id": 1352,
+    "Codigo": "150716",
+    "Ubigeo": "SAN ANTONIO"
+}, {
+    "id": 1353,
+    "Codigo": "150717",
+    "Ubigeo": "SAN BARTOLOME"
+}, {
+    "id": 1354,
+    "Codigo": "150718",
+    "Ubigeo": "SAN DAMIAN"
+}, {
+    "id": 1355,
+    "Codigo": "150719",
+    "Ubigeo": "SAN JUAN DE IRIS"
+}, {
+    "id": 1356,
+    "Codigo": "150720",
+    "Ubigeo": "SAN JUAN DE TANTARANCHE"
+}, {
+    "id": 1357,
+    "Codigo": "150721",
+    "Ubigeo": "SAN LORENZO DE QUINTI"
+}, {
+    "id": 1358,
+    "Codigo": "150722",
+    "Ubigeo": "SAN MATEO"
+}, {
+    "id": 1359,
+    "Codigo": "150723",
+    "Ubigeo": "SAN MATEO DE OTAO"
+}, {
+    "id": 1360,
+    "Codigo": "150724",
+    "Ubigeo": "SAN PEDRO DE CASTA"
+}, {
+    "id": 1361,
+    "Codigo": "150725",
+    "Ubigeo": "SAN PEDRO DE HUANCAYRE"
+}, {
+    "id": 1362,
+    "Codigo": "150726",
+    "Ubigeo": "SANGALLAYA"
+}, {
+    "id": 1363,
+    "Codigo": "150727",
+    "Ubigeo": "SANTA CRUZ DE COCACHACRA"
+}, {
+    "id": 1364,
+    "Codigo": "150728",
+    "Ubigeo": "SANTA EULALIA"
+}, {
+    "id": 1365,
+    "Codigo": "150729",
+    "Ubigeo": "SANTIAGO DE ANCHUCAYA"
+}, {
+    "id": 1366,
+    "Codigo": "150730",
+    "Ubigeo": "SANTIAGO DE TUNA"
+}, {
+    "id": 1367,
+    "Codigo": "150731",
+    "Ubigeo": "SANTO DOMINGO DE LOS OLLEROS"
+}, {
+    "id": 1368,
+    "Codigo": "150732",
+    "Ubigeo": "SURCO"
+}, {
+    "id": 1369,
+    "Codigo": "150801",
+    "Ubigeo": "HUACHO"
+}, {
+    "id": 1370,
+    "Codigo": "150802",
+    "Ubigeo": "AMBAR"
+}, {
+    "id": 1371,
+    "Codigo": "150803",
+    "Ubigeo": "CALETA DE CARQUIN"
+}, {
+    "id": 1372,
+    "Codigo": "150804",
+    "Ubigeo": "CHECRAS"
+}, {
+    "id": 1373,
+    "Codigo": "150805",
+    "Ubigeo": "HUALMAY"
+}, {
+    "id": 1374,
+    "Codigo": "150806",
+    "Ubigeo": "HUAURA"
+}, {
+    "id": 1375,
+    "Codigo": "150807",
+    "Ubigeo": "LEONCIO PRADO"
+}, {
+    "id": 1376,
+    "Codigo": "150808",
+    "Ubigeo": "PACCHO"
+}, {
+    "id": 1377,
+    "Codigo": "150809",
+    "Ubigeo": "SANTA LEONOR"
+}, {
+    "id": 1378,
+    "Codigo": "150810",
+    "Ubigeo": "SANTA MARIA"
+}, {
+    "id": 1379,
+    "Codigo": "150811",
+    "Ubigeo": "SAYAN"
+}, {
+    "id": 1380,
+    "Codigo": "150812",
+    "Ubigeo": "VEGUETA"
+}, {
+    "id": 1381,
+    "Codigo": "150901",
+    "Ubigeo": "OYON"
+}, {
+    "id": 1382,
+    "Codigo": "150902",
+    "Ubigeo": "ANDAJES"
+}, {
+    "id": 1383,
+    "Codigo": "150903",
+    "Ubigeo": "CAUJUL"
+}, {
+    "id": 1384,
+    "Codigo": "150904",
+    "Ubigeo": "COCHAMARCA"
+}, {
+    "id": 1385,
+    "Codigo": "150905",
+    "Ubigeo": "NAVAN"
+}, {
+    "id": 1386,
+    "Codigo": "150906",
+    "Ubigeo": "PACHANGARA"
+}, {
+    "id": 1387,
+    "Codigo": "151001",
+    "Ubigeo": "YAUYOS"
+}, {
+    "id": 1388,
+    "Codigo": "151002",
+    "Ubigeo": "ALIS"
+}, {
+    "id": 1389,
+    "Codigo": "151003",
+    "Ubigeo": "ALLAUCA"
+}, {
+    "id": 1390,
+    "Codigo": "151004",
+    "Ubigeo": "AYAVIRI"
+}, {
+    "id": 1391,
+    "Codigo": "151005",
+    "Ubigeo": "AZANGARO"
+}, {
+    "id": 1392,
+    "Codigo": "151006",
+    "Ubigeo": "CACRA"
+}, {
+    "id": 1393,
+    "Codigo": "151007",
+    "Ubigeo": "CARANIA"
+}, {
+    "id": 1394,
+    "Codigo": "151008",
+    "Ubigeo": "CATAHUASI"
+}, {
+    "id": 1395,
+    "Codigo": "151009",
+    "Ubigeo": "CHOCOS"
+}, {
+    "id": 1396,
+    "Codigo": "151010",
+    "Ubigeo": "COCHAS"
+}, {
+    "id": 1397,
+    "Codigo": "151011",
+    "Ubigeo": "COLONIA"
+}, {
+    "id": 1398,
+    "Codigo": "151012",
+    "Ubigeo": "HONGOS"
+}, {
+    "id": 1399,
+    "Codigo": "151013",
+    "Ubigeo": "HUAMPARA"
+}, {
+    "id": 1400,
+    "Codigo": "151014",
+    "Ubigeo": "HUANCAYA"
+}, {
+    "id": 1401,
+    "Codigo": "151015",
+    "Ubigeo": "HUANGASCAR"
+}, {
+    "id": 1402,
+    "Codigo": "151016",
+    "Ubigeo": "HUANTAN"
+}, {
+    "id": 1403,
+    "Codigo": "151017",
+    "Ubigeo": "HUAÑEC"
+}, {
+    "id": 1404,
+    "Codigo": "151018",
+    "Ubigeo": "LARAOS"
+}, {
+    "id": 1405,
+    "Codigo": "151019",
+    "Ubigeo": "LINCHA"
+}, {
+    "id": 1406,
+    "Codigo": "151020",
+    "Ubigeo": "MADEAN"
+}, {
+    "id": 1407,
+    "Codigo": "151021",
+    "Ubigeo": "MIRAFLORES"
+}, {
+    "id": 1408,
+    "Codigo": "151022",
+    "Ubigeo": "OMAS"
+}, {
+    "id": 1409,
+    "Codigo": "151023",
+    "Ubigeo": "PUTINZA"
+}, {
+    "id": 1410,
+    "Codigo": "151024",
+    "Ubigeo": "QUINCHES"
+}, {
+    "id": 1411,
+    "Codigo": "151025",
+    "Ubigeo": "QUINOCAY"
+}, {
+    "id": 1412,
+    "Codigo": "151026",
+    "Ubigeo": "SAN JOAQUIN"
+}, {
+    "id": 1413,
+    "Codigo": "151027",
+    "Ubigeo": "SAN PEDRO DE PILAS"
+}, {
+    "id": 1414,
+    "Codigo": "151028",
+    "Ubigeo": "TANTA"
+}, {
+    "id": 1415,
+    "Codigo": "151029",
+    "Ubigeo": "TAURIPAMPA"
+}, {
+    "id": 1416,
+    "Codigo": "151030",
+    "Ubigeo": "TOMAS"
+}, {
+    "id": 1417,
+    "Codigo": "151031",
+    "Ubigeo": "TUPE"
+}, {
+    "id": 1418,
+    "Codigo": "151032",
+    "Ubigeo": "VIÑAC"
+}, {
+    "id": 1419,
+    "Codigo": "151033",
+    "Ubigeo": "VITIS"
+}, {
+    "id": 1420,
+    "Codigo": "160101",
+    "Ubigeo": "IQUITOS"
+}, {
+    "id": 1421,
+    "Codigo": "160102",
+    "Ubigeo": "ALTO NANAY"
+}, {
+    "id": 1422,
+    "Codigo": "160103",
+    "Ubigeo": "FERNANDO LORES"
+}, {
+    "id": 1423,
+    "Codigo": "160104",
+    "Ubigeo": "INDIANA"
+}, {
+    "id": 1424,
+    "Codigo": "160105",
+    "Ubigeo": "LAS AMAZONAS"
+}, {
+    "id": 1425,
+    "Codigo": "160106",
+    "Ubigeo": "MAZAN"
+}, {
+    "id": 1426,
+    "Codigo": "160107",
+    "Ubigeo": "NAPO"
+}, {
+    "id": 1427,
+    "Codigo": "160108",
+    "Ubigeo": "PUNCHANA"
+}, {
+    "id": 1428,
+    "Codigo": "160109",
+    "Ubigeo": "PUTUMAYO"
+}, {
+    "id": 1429,
+    "Codigo": "160110",
+    "Ubigeo": "TORRES CAUSANA"
+}, {
+    "id": 1430,
+    "Codigo": "160112",
+    "Ubigeo": "BELEN"
+}, {
+    "id": 1431,
+    "Codigo": "160113",
+    "Ubigeo": "SAN JUAN BAUTISTA"
+}, {
+    "id": 1432,
+    "Codigo": "160114",
+    "Ubigeo": "TENIENTE MANUEL CLAVERO"
+}, {
+    "id": 1433,
+    "Codigo": "160201",
+    "Ubigeo": "YURIMAGUAS"
+}, {
+    "id": 1434,
+    "Codigo": "160202",
+    "Ubigeo": "BALSAPUERTO"
+}, {
+    "id": 1435,
+    "Codigo": "160205",
+    "Ubigeo": "JEBEROS"
+}, {
+    "id": 1436,
+    "Codigo": "160206",
+    "Ubigeo": "LAGUNAS"
+}, {
+    "id": 1437,
+    "Codigo": "160210",
+    "Ubigeo": "SANTA CRUZ"
+}, {
+    "id": 1438,
+    "Codigo": "160211",
+    "Ubigeo": "TENIENTE CESAR LOPEZ ROJAS"
+}, {
+    "id": 1439,
+    "Codigo": "160301",
+    "Ubigeo": "NAUTA"
+}, {
+    "id": 1440,
+    "Codigo": "160302",
+    "Ubigeo": "PARINARI"
+}, {
+    "id": 1441,
+    "Codigo": "160303",
+    "Ubigeo": "TIGRE"
+}, {
+    "id": 1442,
+    "Codigo": "160304",
+    "Ubigeo": "TROMPETEROS"
+}, {
+    "id": 1443,
+    "Codigo": "160305",
+    "Ubigeo": "URARINAS"
+}, {
+    "id": 1444,
+    "Codigo": "160401",
+    "Ubigeo": "RAMON CASTILLA"
+}, {
+    "id": 1445,
+    "Codigo": "160402",
+    "Ubigeo": "PEBAS"
+}, {
+    "id": 1446,
+    "Codigo": "160403",
+    "Ubigeo": "YAVARI"
+}, {
+    "id": 1447,
+    "Codigo": "160404",
+    "Ubigeo": "SAN PABLO"
+}, {
+    "id": 1448,
+    "Codigo": "160501",
+    "Ubigeo": "REQUENA"
+}, {
+    "id": 1449,
+    "Codigo": "160502",
+    "Ubigeo": "ALTO TAPICHE"
+}, {
+    "id": 1450,
+    "Codigo": "160503",
+    "Ubigeo": "CAPELO"
+}, {
+    "id": 1451,
+    "Codigo": "160504",
+    "Ubigeo": "EMILIO SAN MARTIN"
+}, {
+    "id": 1452,
+    "Codigo": "160505",
+    "Ubigeo": "MAQUIA"
+}, {
+    "id": 1453,
+    "Codigo": "160506",
+    "Ubigeo": "PUINAHUA"
+}, {
+    "id": 1454,
+    "Codigo": "160507",
+    "Ubigeo": "SAQUENA"
+}, {
+    "id": 1455,
+    "Codigo": "160508",
+    "Ubigeo": "SOPLIN"
+}, {
+    "id": 1456,
+    "Codigo": "160509",
+    "Ubigeo": "TAPICHE"
+}, {
+    "id": 1457,
+    "Codigo": "160510",
+    "Ubigeo": "JENARO HERRERA"
+}, {
+    "id": 1458,
+    "Codigo": "160511",
+    "Ubigeo": "YAQUERANA"
+}, {
+    "id": 1459,
+    "Codigo": "160601",
+    "Ubigeo": "CONTAMANA"
+}, {
+    "id": 1460,
+    "Codigo": "160602",
+    "Ubigeo": "INAHUAYA"
+}, {
+    "id": 1461,
+    "Codigo": "160603",
+    "Ubigeo": "PADRE MARQUEZ"
+}, {
+    "id": 1462,
+    "Codigo": "160604",
+    "Ubigeo": "PAMPA HERMOSA"
+}, {
+    "id": 1463,
+    "Codigo": "160605",
+    "Ubigeo": "SARAYACU"
+}, {
+    "id": 1464,
+    "Codigo": "160606",
+    "Ubigeo": "VARGAS GUERRA"
+}, {
+    "id": 1465,
+    "Codigo": "160701",
+    "Ubigeo": "BARRANCA"
+}, {
+    "id": 1466,
+    "Codigo": "160702",
+    "Ubigeo": "CAHUAPANAS"
+}, {
+    "id": 1467,
+    "Codigo": "160703",
+    "Ubigeo": "MANSERICHE"
+}, {
+    "id": 1468,
+    "Codigo": "160704",
+    "Ubigeo": "MORONA"
+}, {
+    "id": 1469,
+    "Codigo": "160705",
+    "Ubigeo": "PASTAZA"
+}, {
+    "id": 1470,
+    "Codigo": "160706",
+    "Ubigeo": "ANDOAS"
+}, {
+    "id": 1471,
+    "Codigo": "170101",
+    "Ubigeo": "TAMBOPATA"
+}, {
+    "id": 1472,
+    "Codigo": "170102",
+    "Ubigeo": "INAMBARI"
+}, {
+    "id": 1473,
+    "Codigo": "170103",
+    "Ubigeo": "LAS PIEDRAS"
+}, {
+    "id": 1474,
+    "Codigo": "170104",
+    "Ubigeo": "LABERINTO"
+}, {
+    "id": 1475,
+    "Codigo": "170201",
+    "Ubigeo": "MANU"
+}, {
+    "id": 1476,
+    "Codigo": "170202",
+    "Ubigeo": "FITZCARRALD"
+}, {
+    "id": 1477,
+    "Codigo": "170203",
+    "Ubigeo": "MADRE DE DIOS"
+}, {
+    "id": 1478,
+    "Codigo": "170204",
+    "Ubigeo": "HUEPETUHE"
+}, {
+    "id": 1479,
+    "Codigo": "170301",
+    "Ubigeo": "IÑAPARI"
+}, {
+    "id": 1480,
+    "Codigo": "170302",
+    "Ubigeo": "IBERIA"
+}, {
+    "id": 1481,
+    "Codigo": "170303",
+    "Ubigeo": "TAHUAMANU"
+}, {
+    "id": 1482,
+    "Codigo": "180101",
+    "Ubigeo": "MOQUEGUA"
+}, {
+    "id": 1483,
+    "Codigo": "180102",
+    "Ubigeo": "CARUMAS"
+}, {
+    "id": 1484,
+    "Codigo": "180103",
+    "Ubigeo": "CUCHUMBAYA"
+}, {
+    "id": 1485,
+    "Codigo": "180104",
+    "Ubigeo": "SAMEGUA"
+}, {
+    "id": 1486,
+    "Codigo": "180105",
+    "Ubigeo": "SAN CRISTOBAL"
+}, {
+    "id": 1487,
+    "Codigo": "180106",
+    "Ubigeo": "TORATA"
+}, {
+    "id": 1488,
+    "Codigo": "180201",
+    "Ubigeo": "OMATE"
+}, {
+    "id": 1489,
+    "Codigo": "180202",
+    "Ubigeo": "CHOJATA"
+}, {
+    "id": 1490,
+    "Codigo": "180203",
+    "Ubigeo": "COALAQUE"
+}, {
+    "id": 1491,
+    "Codigo": "180204",
+    "Ubigeo": "ICHUÑA"
+}, {
+    "id": 1492,
+    "Codigo": "180205",
+    "Ubigeo": "LA CAPILLA"
+}, {
+    "id": 1493,
+    "Codigo": "180206",
+    "Ubigeo": "LLOQUE"
+}, {
+    "id": 1494,
+    "Codigo": "180207",
+    "Ubigeo": "MATALAQUE"
+}, {
+    "id": 1495,
+    "Codigo": "180208",
+    "Ubigeo": "PUQUINA"
+}, {
+    "id": 1496,
+    "Codigo": "180209",
+    "Ubigeo": "QUINISTAQUILLAS"
+}, {
+    "id": 1497,
+    "Codigo": "180210",
+    "Ubigeo": "UBINAS"
+}, {
+    "id": 1498,
+    "Codigo": "180211",
+    "Ubigeo": "YUNGA"
+}, {
+    "id": 1499,
+    "Codigo": "180301",
+    "Ubigeo": "ILO"
+}, {
+    "id": 1500,
+    "Codigo": "180302",
+    "Ubigeo": "EL ALGARROBAL"
+}, {
+    "id": 1501,
+    "Codigo": "180303",
+    "Ubigeo": "PACOCHA"
+}, {
+    "id": 1502,
+    "Codigo": "190101",
+    "Ubigeo": "CHAUPIMARCA"
+}, {
+    "id": 1503,
+    "Codigo": "190102",
+    "Ubigeo": "HUACHON"
+}, {
+    "id": 1504,
+    "Codigo": "190103",
+    "Ubigeo": "HUARIACA"
+}, {
+    "id": 1505,
+    "Codigo": "190104",
+    "Ubigeo": "HUAYLLAY"
+}, {
+    "id": 1506,
+    "Codigo": "190105",
+    "Ubigeo": "NINACACA"
+}, {
+    "id": 1507,
+    "Codigo": "190106",
+    "Ubigeo": "PALLANCHACRA"
+}, {
+    "id": 1508,
+    "Codigo": "190107",
+    "Ubigeo": "PAUCARTAMBO"
+}, {
+    "id": 1509,
+    "Codigo": "190108",
+    "Ubigeo": "SAN FRANCISCO DE ASIS DE YARUSYACAN"
+}, {
+    "id": 1510,
+    "Codigo": "190109",
+    "Ubigeo": "SIMON BOLIVAR"
+}, {
+    "id": 1511,
+    "Codigo": "190110",
+    "Ubigeo": "TICLACAYAN"
+}, {
+    "id": 1512,
+    "Codigo": "190111",
+    "Ubigeo": "TINYAHUARCO"
+}, {
+    "id": 1513,
+    "Codigo": "190112",
+    "Ubigeo": "VICCO"
+}, {
+    "id": 1514,
+    "Codigo": "190113",
+    "Ubigeo": "YANACANCHA"
+}, {
+    "id": 1515,
+    "Codigo": "190201",
+    "Ubigeo": "YANAHUANCA"
+}, {
+    "id": 1516,
+    "Codigo": "190202",
+    "Ubigeo": "CHACAYAN"
+}, {
+    "id": 1517,
+    "Codigo": "190203",
+    "Ubigeo": "GOYLLARISQUIZGA"
+}, {
+    "id": 1518,
+    "Codigo": "190204",
+    "Ubigeo": "PAUCAR"
+}, {
+    "id": 1519,
+    "Codigo": "190205",
+    "Ubigeo": "SAN PEDRO DE PILLAO"
+}, {
+    "id": 1520,
+    "Codigo": "190206",
+    "Ubigeo": "SANTA ANA DE TUSI"
+}, {
+    "id": 1521,
+    "Codigo": "190207",
+    "Ubigeo": "TAPUC"
+}, {
+    "id": 1522,
+    "Codigo": "190208",
+    "Ubigeo": "VILCABAMBA"
+}, {
+    "id": 1523,
+    "Codigo": "190301",
+    "Ubigeo": "OXAPAMPA"
+}, {
+    "id": 1524,
+    "Codigo": "190302",
+    "Ubigeo": "CHONTABAMBA"
+}, {
+    "id": 1525,
+    "Codigo": "190303",
+    "Ubigeo": "HUANCABAMBA"
+}, {
+    "id": 1526,
+    "Codigo": "190304",
+    "Ubigeo": "PALCAZU"
+}, {
+    "id": 1527,
+    "Codigo": "190305",
+    "Ubigeo": "POZUZO"
+}, {
+    "id": 1528,
+    "Codigo": "190306",
+    "Ubigeo": "PUERTO BERMUDEZ"
+}, {
+    "id": 1529,
+    "Codigo": "190307",
+    "Ubigeo": "VILLA RICA"
+}, {
+    "id": 1530,
+    "Codigo": "200101",
+    "Ubigeo": "PIURA"
+}, {
+    "id": 1531,
+    "Codigo": "200104",
+    "Ubigeo": "CASTILLA"
+}, {
+    "id": 1532,
+    "Codigo": "200105",
+    "Ubigeo": "CATACAOS"
+}, {
+    "id": 1533,
+    "Codigo": "200107",
+    "Ubigeo": "CURA MORI"
+}, {
+    "id": 1534,
+    "Codigo": "200108",
+    "Ubigeo": "EL TALLAN"
+}, {
+    "id": 1535,
+    "Codigo": "200109",
+    "Ubigeo": "LA ARENA"
+}, {
+    "id": 1536,
+    "Codigo": "200110",
+    "Ubigeo": "LA UNION"
+}, {
+    "id": 1537,
+    "Codigo": "200111",
+    "Ubigeo": "LAS LOMAS"
+}, {
+    "id": 1538,
+    "Codigo": "200114",
+    "Ubigeo": "TAMBO GRANDE"
+}, {
+    "id": 1539,
+    "Codigo": "200201",
+    "Ubigeo": "AYABACA"
+}, {
+    "id": 1540,
+    "Codigo": "200202",
+    "Ubigeo": "FRIAS"
+}, {
+    "id": 1541,
+    "Codigo": "200203",
+    "Ubigeo": "JILILI"
+}, {
+    "id": 1542,
+    "Codigo": "200204",
+    "Ubigeo": "LAGUNAS"
+}, {
+    "id": 1543,
+    "Codigo": "200205",
+    "Ubigeo": "MONTERO"
+}, {
+    "id": 1544,
+    "Codigo": "200206",
+    "Ubigeo": "PACAIPAMPA"
+}, {
+    "id": 1545,
+    "Codigo": "200207",
+    "Ubigeo": "PAIMAS"
+}, {
+    "id": 1546,
+    "Codigo": "200208",
+    "Ubigeo": "SAPILLICA"
+}, {
+    "id": 1547,
+    "Codigo": "200209",
+    "Ubigeo": "SICCHEZ"
+}, {
+    "id": 1548,
+    "Codigo": "200210",
+    "Ubigeo": "SUYO"
+}, {
+    "id": 1549,
+    "Codigo": "200301",
+    "Ubigeo": "HUANCABAMBA"
+}, {
+    "id": 1550,
+    "Codigo": "200302",
+    "Ubigeo": "CANCHAQUE"
+}, {
+    "id": 1551,
+    "Codigo": "200303",
+    "Ubigeo": "EL CARMEN DE LA FRONTERA"
+}, {
+    "id": 1552,
+    "Codigo": "200304",
+    "Ubigeo": "HUARMACA"
+}, {
+    "id": 1553,
+    "Codigo": "200305",
+    "Ubigeo": "LALAQUIZ"
+}, {
+    "id": 1554,
+    "Codigo": "200306",
+    "Ubigeo": "SAN MIGUEL DE EL FAIQUE"
+}, {
+    "id": 1555,
+    "Codigo": "200307",
+    "Ubigeo": "SONDOR"
+}, {
+    "id": 1556,
+    "Codigo": "200308",
+    "Ubigeo": "SONDORILLO"
+}, {
+    "id": 1557,
+    "Codigo": "200401",
+    "Ubigeo": "CHULUCANAS"
+}, {
+    "id": 1558,
+    "Codigo": "200402",
+    "Ubigeo": "BUENOS AIRES"
+}, {
+    "id": 1559,
+    "Codigo": "200403",
+    "Ubigeo": "CHALACO"
+}, {
+    "id": 1560,
+    "Codigo": "200404",
+    "Ubigeo": "LA MATANZA"
+}, {
+    "id": 1561,
+    "Codigo": "200405",
+    "Ubigeo": "MORROPON"
+}, {
+    "id": 1562,
+    "Codigo": "200406",
+    "Ubigeo": "SALITRAL"
+}, {
+    "id": 1563,
+    "Codigo": "200407",
+    "Ubigeo": "SAN JUAN DE BIGOTE"
+}, {
+    "id": 1564,
+    "Codigo": "200408",
+    "Ubigeo": "SANTA CATALINA DE MOSSA"
+}, {
+    "id": 1565,
+    "Codigo": "200409",
+    "Ubigeo": "SANTO DOMINGO"
+}, {
+    "id": 1566,
+    "Codigo": "200410",
+    "Ubigeo": "YAMANGO"
+}, {
+    "id": 1567,
+    "Codigo": "200501",
+    "Ubigeo": "PAITA"
+}, {
+    "id": 1568,
+    "Codigo": "200502",
+    "Ubigeo": "AMOTAPE"
+}, {
+    "id": 1569,
+    "Codigo": "200503",
+    "Ubigeo": "ARENAL"
+}, {
+    "id": 1570,
+    "Codigo": "200504",
+    "Ubigeo": "COLAN"
+}, {
+    "id": 1571,
+    "Codigo": "200505",
+    "Ubigeo": "LA HUACA"
+}, {
+    "id": 1572,
+    "Codigo": "200506",
+    "Ubigeo": "TAMARINDO"
+}, {
+    "id": 1573,
+    "Codigo": "200507",
+    "Ubigeo": "VICHAYAL"
+}, {
+    "id": 1574,
+    "Codigo": "200601",
+    "Ubigeo": "SULLANA"
+}, {
+    "id": 1575,
+    "Codigo": "200602",
+    "Ubigeo": "BELLAVISTA"
+}, {
+    "id": 1576,
+    "Codigo": "200603",
+    "Ubigeo": "IGNACIO ESCUDERO"
+}, {
+    "id": 1577,
+    "Codigo": "200604",
+    "Ubigeo": "LANCONES"
+}, {
+    "id": 1578,
+    "Codigo": "200605",
+    "Ubigeo": "MARCAVELICA"
+}, {
+    "id": 1579,
+    "Codigo": "200606",
+    "Ubigeo": "MIGUEL CHECA"
+}, {
+    "id": 1580,
+    "Codigo": "200607",
+    "Ubigeo": "QUERECOTILLO"
+}, {
+    "id": 1581,
+    "Codigo": "200608",
+    "Ubigeo": "SALITRAL"
+}, {
+    "id": 1582,
+    "Codigo": "200701",
+    "Ubigeo": "PARIÑAS"
+}, {
+    "id": 1583,
+    "Codigo": "200702",
+    "Ubigeo": "EL ALTO"
+}, {
+    "id": 1584,
+    "Codigo": "200703",
+    "Ubigeo": "LA BREA"
+}, {
+    "id": 1585,
+    "Codigo": "200704",
+    "Ubigeo": "LOBITOS"
+}, {
+    "id": 1586,
+    "Codigo": "200705",
+    "Ubigeo": "LOS ORGANOS"
+}, {
+    "id": 1587,
+    "Codigo": "200706",
+    "Ubigeo": "MANCORA"
+}, {
+    "id": 1588,
+    "Codigo": "200801",
+    "Ubigeo": "SECHURA"
+}, {
+    "id": 1589,
+    "Codigo": "200802",
+    "Ubigeo": "BELLAVISTA DE LA UNION"
+}, {
+    "id": 1590,
+    "Codigo": "200803",
+    "Ubigeo": "BERNAL"
+}, {
+    "id": 1591,
+    "Codigo": "200804",
+    "Ubigeo": "CRISTO NOS VALGA"
+}, {
+    "id": 1592,
+    "Codigo": "200805",
+    "Ubigeo": "VICE"
+}, {
+    "id": 1593,
+    "Codigo": "200806",
+    "Ubigeo": "RINCONADA LLICUAR"
+}, {
+    "id": 1594,
+    "Codigo": "210101",
+    "Ubigeo": "PUNO"
+}, {
+    "id": 1595,
+    "Codigo": "210102",
+    "Ubigeo": "ACORA"
+}, {
+    "id": 1596,
+    "Codigo": "210103",
+    "Ubigeo": "AMANTANI"
+}, {
+    "id": 1597,
+    "Codigo": "210104",
+    "Ubigeo": "ATUNCOLLA"
+}, {
+    "id": 1598,
+    "Codigo": "210105",
+    "Ubigeo": "CAPACHICA"
+}, {
+    "id": 1599,
+    "Codigo": "210106",
+    "Ubigeo": "CHUCUITO"
+}, {
+    "id": 1600,
+    "Codigo": "210107",
+    "Ubigeo": "COATA"
+}, {
+    "id": 1601,
+    "Codigo": "210108",
+    "Ubigeo": "HUATA"
+}, {
+    "id": 1602,
+    "Codigo": "210109",
+    "Ubigeo": "MAÑAZO"
+}, {
+    "id": 1603,
+    "Codigo": "210110",
+    "Ubigeo": "PAUCARCOLLA"
+}, {
+    "id": 1604,
+    "Codigo": "210111",
+    "Ubigeo": "PICHACANI"
+}, {
+    "id": 1605,
+    "Codigo": "210112",
+    "Ubigeo": "PLATERIA"
+}, {
+    "id": 1606,
+    "Codigo": "210113",
+    "Ubigeo": "SAN ANTONIO"
+}, {
+    "id": 1607,
+    "Codigo": "210114",
+    "Ubigeo": "TIQUILLACA"
+}, {
+    "id": 1608,
+    "Codigo": "210115",
+    "Ubigeo": "VILQUE"
+}, {
+    "id": 1609,
+    "Codigo": "210201",
+    "Ubigeo": "AZANGARO"
+}, {
+    "id": 1610,
+    "Codigo": "210202",
+    "Ubigeo": "ACHAYA"
+}, {
+    "id": 1611,
+    "Codigo": "210203",
+    "Ubigeo": "ARAPA"
+}, {
+    "id": 1612,
+    "Codigo": "210204",
+    "Ubigeo": "ASILLO"
+}, {
+    "id": 1613,
+    "Codigo": "210205",
+    "Ubigeo": "CAMINACA"
+}, {
+    "id": 1614,
+    "Codigo": "210206",
+    "Ubigeo": "CHUPA"
+}, {
+    "id": 1615,
+    "Codigo": "210207",
+    "Ubigeo": "JOSE DOMINGO CHOQUEHUANCA"
+}, {
+    "id": 1616,
+    "Codigo": "210208",
+    "Ubigeo": "MUÑANI"
+}, {
+    "id": 1617,
+    "Codigo": "210209",
+    "Ubigeo": "POTONI"
+}, {
+    "id": 1618,
+    "Codigo": "210210",
+    "Ubigeo": "SAMAN"
+}, {
+    "id": 1619,
+    "Codigo": "210211",
+    "Ubigeo": "SAN ANTON"
+}, {
+    "id": 1620,
+    "Codigo": "210212",
+    "Ubigeo": "SAN JOSE"
+}, {
+    "id": 1621,
+    "Codigo": "210213",
+    "Ubigeo": "SAN JUAN DE SALINAS"
+}, {
+    "id": 1622,
+    "Codigo": "210214",
+    "Ubigeo": "SANTIAGO DE PUPUJA"
+}, {
+    "id": 1623,
+    "Codigo": "210215",
+    "Ubigeo": "TIRAPATA"
+}, {
+    "id": 1624,
+    "Codigo": "210301",
+    "Ubigeo": "MACUSANI"
+}, {
+    "id": 1625,
+    "Codigo": "210302",
+    "Ubigeo": "AJOYANI"
+}, {
+    "id": 1626,
+    "Codigo": "210303",
+    "Ubigeo": "AYAPATA"
+}, {
+    "id": 1627,
+    "Codigo": "210304",
+    "Ubigeo": "COASA"
+}, {
+    "id": 1628,
+    "Codigo": "210305",
+    "Ubigeo": "CORANI"
+}, {
+    "id": 1629,
+    "Codigo": "210306",
+    "Ubigeo": "CRUCERO"
+}, {
+    "id": 1630,
+    "Codigo": "210307",
+    "Ubigeo": "ITUATA"
+}, {
+    "id": 1631,
+    "Codigo": "210308",
+    "Ubigeo": "OLLACHEA"
+}, {
+    "id": 1632,
+    "Codigo": "210309",
+    "Ubigeo": "SAN GABAN"
+}, {
+    "id": 1633,
+    "Codigo": "210310",
+    "Ubigeo": "USICAYOS"
+}, {
+    "id": 1634,
+    "Codigo": "210401",
+    "Ubigeo": "JULI"
+}, {
+    "id": 1635,
+    "Codigo": "210402",
+    "Ubigeo": "DESAGUADERO"
+}, {
+    "id": 1636,
+    "Codigo": "210403",
+    "Ubigeo": "HUACULLANI"
+}, {
+    "id": 1637,
+    "Codigo": "210404",
+    "Ubigeo": "KELLUYO"
+}, {
+    "id": 1638,
+    "Codigo": "210405",
+    "Ubigeo": "PISACOMA"
+}, {
+    "id": 1639,
+    "Codigo": "210406",
+    "Ubigeo": "POMATA"
+}, {
+    "id": 1640,
+    "Codigo": "210407",
+    "Ubigeo": "ZEPITA"
+}, {
+    "id": 1641,
+    "Codigo": "210501",
+    "Ubigeo": "ILAVE"
+}, {
+    "id": 1642,
+    "Codigo": "210502",
+    "Ubigeo": "CAPAZO"
+}, {
+    "id": 1643,
+    "Codigo": "210503",
+    "Ubigeo": "PILCUYO"
+}, {
+    "id": 1644,
+    "Codigo": "210504",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 1645,
+    "Codigo": "210505",
+    "Ubigeo": "CONDURIRI"
+}, {
+    "id": 1646,
+    "Codigo": "210601",
+    "Ubigeo": "HUANCANE"
+}, {
+    "id": 1647,
+    "Codigo": "210602",
+    "Ubigeo": "COJATA"
+}, {
+    "id": 1648,
+    "Codigo": "210603",
+    "Ubigeo": "HUATASANI"
+}, {
+    "id": 1649,
+    "Codigo": "210604",
+    "Ubigeo": "INCHUPALLA"
+}, {
+    "id": 1650,
+    "Codigo": "210605",
+    "Ubigeo": "PUSI"
+}, {
+    "id": 1651,
+    "Codigo": "210606",
+    "Ubigeo": "ROSASPATA"
+}, {
+    "id": 1652,
+    "Codigo": "210607",
+    "Ubigeo": "TARACO"
+}, {
+    "id": 1653,
+    "Codigo": "210608",
+    "Ubigeo": "VILQUE CHICO"
+}, {
+    "id": 1654,
+    "Codigo": "210701",
+    "Ubigeo": "LAMPA"
+}, {
+    "id": 1655,
+    "Codigo": "210702",
+    "Ubigeo": "CABANILLA"
+}, {
+    "id": 1656,
+    "Codigo": "210703",
+    "Ubigeo": "CALAPUJA"
+}, {
+    "id": 1657,
+    "Codigo": "210704",
+    "Ubigeo": "NICASIO"
+}, {
+    "id": 1658,
+    "Codigo": "210705",
+    "Ubigeo": "OCUVIRI"
+}, {
+    "id": 1659,
+    "Codigo": "210706",
+    "Ubigeo": "PALCA"
+}, {
+    "id": 1660,
+    "Codigo": "210707",
+    "Ubigeo": "PARATIA"
+}, {
+    "id": 1661,
+    "Codigo": "210708",
+    "Ubigeo": "PUCARA"
+}, {
+    "id": 1662,
+    "Codigo": "210709",
+    "Ubigeo": "SANTA LUCIA"
+}, {
+    "id": 1663,
+    "Codigo": "210710",
+    "Ubigeo": "VILAVILA"
+}, {
+    "id": 1664,
+    "Codigo": "210801",
+    "Ubigeo": "AYAVIRI"
+}, {
+    "id": 1665,
+    "Codigo": "210802",
+    "Ubigeo": "ANTAUTA"
+}, {
+    "id": 1666,
+    "Codigo": "210803",
+    "Ubigeo": "CUPI"
+}, {
+    "id": 1667,
+    "Codigo": "210804",
+    "Ubigeo": "LLALLI"
+}, {
+    "id": 1668,
+    "Codigo": "210805",
+    "Ubigeo": "MACARI"
+}, {
+    "id": 1669,
+    "Codigo": "210806",
+    "Ubigeo": "NUÑOA"
+}, {
+    "id": 1670,
+    "Codigo": "210807",
+    "Ubigeo": "ORURILLO"
+}, {
+    "id": 1671,
+    "Codigo": "210808",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 1672,
+    "Codigo": "210809",
+    "Ubigeo": "UMACHIRI"
+}, {
+    "id": 1673,
+    "Codigo": "210901",
+    "Ubigeo": "MOHO"
+}, {
+    "id": 1674,
+    "Codigo": "210902",
+    "Ubigeo": "CONIMA"
+}, {
+    "id": 1675,
+    "Codigo": "210903",
+    "Ubigeo": "HUAYRAPATA"
+}, {
+    "id": 1676,
+    "Codigo": "210904",
+    "Ubigeo": "TILALI"
+}, {
+    "id": 1677,
+    "Codigo": "211001",
+    "Ubigeo": "PUTINA"
+}, {
+    "id": 1678,
+    "Codigo": "211002",
+    "Ubigeo": "ANANEA"
+}, {
+    "id": 1679,
+    "Codigo": "211003",
+    "Ubigeo": "PEDRO VILCA APAZA"
+}, {
+    "id": 1680,
+    "Codigo": "211004",
+    "Ubigeo": "QUILCAPUNCU"
+}, {
+    "id": 1681,
+    "Codigo": "211005",
+    "Ubigeo": "SINA"
+}, {
+    "id": 1682,
+    "Codigo": "211101",
+    "Ubigeo": "JULIACA"
+}, {
+    "id": 1683,
+    "Codigo": "211102",
+    "Ubigeo": "CABANA"
+}, {
+    "id": 1684,
+    "Codigo": "211103",
+    "Ubigeo": "CABANILLAS"
+}, {
+    "id": 1685,
+    "Codigo": "211104",
+    "Ubigeo": "CARACOTO"
+}, {
+    "id": 1686,
+    "Codigo": "211201",
+    "Ubigeo": "SANDIA"
+}, {
+    "id": 1687,
+    "Codigo": "211202",
+    "Ubigeo": "CUYOCUYO"
+}, {
+    "id": 1688,
+    "Codigo": "211203",
+    "Ubigeo": "LIMBANI"
+}, {
+    "id": 1689,
+    "Codigo": "211204",
+    "Ubigeo": "PATAMBUCO"
+}, {
+    "id": 1690,
+    "Codigo": "211205",
+    "Ubigeo": "PHARA"
+}, {
+    "id": 1691,
+    "Codigo": "211206",
+    "Ubigeo": "QUIACA"
+}, {
+    "id": 1692,
+    "Codigo": "211207",
+    "Ubigeo": "SAN JUAN DEL ORO"
+}, {
+    "id": 1693,
+    "Codigo": "211208",
+    "Ubigeo": "YANAHUAYA"
+}, {
+    "id": 1694,
+    "Codigo": "211209",
+    "Ubigeo": "ALTO INAMBARI"
+}, {
+    "id": 1695,
+    "Codigo": "211210",
+    "Ubigeo": "SAN PEDRO DE PUTINA PUNCO"
+}, {
+    "id": 1696,
+    "Codigo": "211301",
+    "Ubigeo": "YUNGUYO"
+}, {
+    "id": 1697,
+    "Codigo": "211302",
+    "Ubigeo": "ANAPIA"
+}, {
+    "id": 1698,
+    "Codigo": "211303",
+    "Ubigeo": "COPANI"
+}, {
+    "id": 1699,
+    "Codigo": "211304",
+    "Ubigeo": "CUTURAPI"
+}, {
+    "id": 1700,
+    "Codigo": "211305",
+    "Ubigeo": "OLLARAYA"
+}, {
+    "id": 1701,
+    "Codigo": "211306",
+    "Ubigeo": "TINICACHI"
+}, {
+    "id": 1702,
+    "Codigo": "211307",
+    "Ubigeo": "UNICACHI"
+}, {
+    "id": 1703,
+    "Codigo": "220101",
+    "Ubigeo": "MOYOBAMBA"
+}, {
+    "id": 1704,
+    "Codigo": "220102",
+    "Ubigeo": "CALZADA"
+}, {
+    "id": 1705,
+    "Codigo": "220103",
+    "Ubigeo": "HABANA"
+}, {
+    "id": 1706,
+    "Codigo": "220104",
+    "Ubigeo": "JEPELACIO"
+}, {
+    "id": 1707,
+    "Codigo": "220105",
+    "Ubigeo": "SORITOR"
+}, {
+    "id": 1708,
+    "Codigo": "220106",
+    "Ubigeo": "YANTALO"
+}, {
+    "id": 1709,
+    "Codigo": "220201",
+    "Ubigeo": "BELLAVISTA"
+}, {
+    "id": 1710,
+    "Codigo": "220202",
+    "Ubigeo": "ALTO BIAVO"
+}, {
+    "id": 1711,
+    "Codigo": "220203",
+    "Ubigeo": "BAJO BIAVO"
+}, {
+    "id": 1712,
+    "Codigo": "220204",
+    "Ubigeo": "HUALLAGA"
+}, {
+    "id": 1713,
+    "Codigo": "220205",
+    "Ubigeo": "SAN PABLO"
+}, {
+    "id": 1714,
+    "Codigo": "220206",
+    "Ubigeo": "SAN RAFAEL"
+}, {
+    "id": 1715,
+    "Codigo": "220301",
+    "Ubigeo": "SAN JOSE DE SISA"
+}, {
+    "id": 1716,
+    "Codigo": "220302",
+    "Ubigeo": "AGUA BLANCA"
+}, {
+    "id": 1717,
+    "Codigo": "220303",
+    "Ubigeo": "SAN MARTIN"
+}, {
+    "id": 1718,
+    "Codigo": "220304",
+    "Ubigeo": "SANTA ROSA"
+}, {
+    "id": 1719,
+    "Codigo": "220305",
+    "Ubigeo": "SHATOJA"
+}, {
+    "id": 1720,
+    "Codigo": "220401",
+    "Ubigeo": "SAPOSOA"
+}, {
+    "id": 1721,
+    "Codigo": "220402",
+    "Ubigeo": "ALTO SAPOSOA"
+}, {
+    "id": 1722,
+    "Codigo": "220403",
+    "Ubigeo": "EL ESLABON"
+}, {
+    "id": 1723,
+    "Codigo": "220404",
+    "Ubigeo": "PISCOYACU"
+}, {
+    "id": 1724,
+    "Codigo": "220405",
+    "Ubigeo": "SACANCHE"
+}, {
+    "id": 1725,
+    "Codigo": "220406",
+    "Ubigeo": "TINGO DE SAPOSOA"
+}, {
+    "id": 1726,
+    "Codigo": "220501",
+    "Ubigeo": "LAMAS"
+}, {
+    "id": 1727,
+    "Codigo": "220502",
+    "Ubigeo": "ALONSO DE ALVARADO"
+}, {
+    "id": 1728,
+    "Codigo": "220503",
+    "Ubigeo": "BARRANQUITA"
+}, {
+    "id": 1729,
+    "Codigo": "220504",
+    "Ubigeo": "CAYNARACHI"
+}, {
+    "id": 1730,
+    "Codigo": "220505",
+    "Ubigeo": "CUÑUMBUQUI"
+}, {
+    "id": 1731,
+    "Codigo": "220506",
+    "Ubigeo": "PINTO RECODO"
+}, {
+    "id": 1732,
+    "Codigo": "220507",
+    "Ubigeo": "RUMISAPA"
+}, {
+    "id": 1733,
+    "Codigo": "220508",
+    "Ubigeo": "SAN ROQUE DE CUMBAZA"
+}, {
+    "id": 1734,
+    "Codigo": "220509",
+    "Ubigeo": "SHANAO"
+}, {
+    "id": 1735,
+    "Codigo": "220510",
+    "Ubigeo": "TABALOSOS"
+}, {
+    "id": 1736,
+    "Codigo": "220511",
+    "Ubigeo": "ZAPATERO"
+}, {
+    "id": 1737,
+    "Codigo": "220601",
+    "Ubigeo": "JUANJUI"
+}, {
+    "id": 1738,
+    "Codigo": "220602",
+    "Ubigeo": "CAMPANILLA"
+}, {
+    "id": 1739,
+    "Codigo": "220603",
+    "Ubigeo": "HUICUNGO"
+}, {
+    "id": 1740,
+    "Codigo": "220604",
+    "Ubigeo": "PACHIZA"
+}, {
+    "id": 1741,
+    "Codigo": "220605",
+    "Ubigeo": "PAJARILLO"
+}, {
+    "id": 1742,
+    "Codigo": "220701",
+    "Ubigeo": "PICOTA"
+}, {
+    "id": 1743,
+    "Codigo": "220702",
+    "Ubigeo": "BUENOS AIRES"
+}, {
+    "id": 1744,
+    "Codigo": "220703",
+    "Ubigeo": "CASPISAPA"
+}, {
+    "id": 1745,
+    "Codigo": "220704",
+    "Ubigeo": "PILLUANA"
+}, {
+    "id": 1746,
+    "Codigo": "220705",
+    "Ubigeo": "PUCACACA"
+}, {
+    "id": 1747,
+    "Codigo": "220706",
+    "Ubigeo": "SAN CRISTOBAL"
+}, {
+    "id": 1748,
+    "Codigo": "220707",
+    "Ubigeo": "SAN HILARION"
+}, {
+    "id": 1749,
+    "Codigo": "220708",
+    "Ubigeo": "SHAMBOYACU"
+}, {
+    "id": 1750,
+    "Codigo": "220709",
+    "Ubigeo": "TINGO DE PONASA"
+}, {
+    "id": 1751,
+    "Codigo": "220710",
+    "Ubigeo": "TRES UNIDOS"
+}, {
+    "id": 1752,
+    "Codigo": "220801",
+    "Ubigeo": "RIOJA"
+}, {
+    "id": 1753,
+    "Codigo": "220802",
+    "Ubigeo": "AWAJUN"
+}, {
+    "id": 1754,
+    "Codigo": "220803",
+    "Ubigeo": "ELIAS SOPLIN VARGAS"
+}, {
+    "id": 1755,
+    "Codigo": "220804",
+    "Ubigeo": "NUEVA CAJAMARCA"
+}, {
+    "id": 1756,
+    "Codigo": "220805",
+    "Ubigeo": "PARDO MIGUEL"
+}, {
+    "id": 1757,
+    "Codigo": "220806",
+    "Ubigeo": "POSIC"
+}, {
+    "id": 1758,
+    "Codigo": "220807",
+    "Ubigeo": "SAN FERNANDO"
+}, {
+    "id": 1759,
+    "Codigo": "220808",
+    "Ubigeo": "YORONGOS"
+}, {
+    "id": 1760,
+    "Codigo": "220809",
+    "Ubigeo": "YURACYACU"
+}, {
+    "id": 1761,
+    "Codigo": "220901",
+    "Ubigeo": "TARAPOTO"
+}, {
+    "id": 1762,
+    "Codigo": "220902",
+    "Ubigeo": "ALBERTO LEVEAU"
+}, {
+    "id": 1763,
+    "Codigo": "220903",
+    "Ubigeo": "CACATACHI"
+}, {
+    "id": 1764,
+    "Codigo": "220904",
+    "Ubigeo": "CHAZUTA"
+}, {
+    "id": 1765,
+    "Codigo": "220905",
+    "Ubigeo": "CHIPURANA"
+}, {
+    "id": 1766,
+    "Codigo": "220906",
+    "Ubigeo": "EL PORVENIR"
+}, {
+    "id": 1767,
+    "Codigo": "220907",
+    "Ubigeo": "HUIMBAYOC"
+}, {
+    "id": 1768,
+    "Codigo": "220908",
+    "Ubigeo": "JUAN GUERRA"
+}, {
+    "id": 1769,
+    "Codigo": "220909",
+    "Ubigeo": "LA BANDA DE SHILCAYO"
+}, {
+    "id": 1770,
+    "Codigo": "220910",
+    "Ubigeo": "MORALES"
+}, {
+    "id": 1771,
+    "Codigo": "220911",
+    "Ubigeo": "PAPAPLAYA"
+}, {
+    "id": 1772,
+    "Codigo": "220912",
+    "Ubigeo": "SAN ANTONIO"
+}, {
+    "id": 1773,
+    "Codigo": "220913",
+    "Ubigeo": "SAUCE"
+}, {
+    "id": 1774,
+    "Codigo": "220914",
+    "Ubigeo": "SHAPAJA"
+}, {
+    "id": 1775,
+    "Codigo": "221001",
+    "Ubigeo": "TOCACHE"
+}, {
+    "id": 1776,
+    "Codigo": "221002",
+    "Ubigeo": "NUEVO PROGRESO"
+}, {
+    "id": 1777,
+    "Codigo": "221003",
+    "Ubigeo": "POLVORA"
+}, {
+    "id": 1778,
+    "Codigo": "221004",
+    "Ubigeo": "SHUNTE"
+}, {
+    "id": 1779,
+    "Codigo": "221005",
+    "Ubigeo": "UCHIZA"
+}, {
+    "id": 1780,
+    "Codigo": "230101",
+    "Ubigeo": "TACNA"
+}, {
+    "id": 1781,
+    "Codigo": "230102",
+    "Ubigeo": "ALTO DE LA ALIANZA"
+}, {
+    "id": 1782,
+    "Codigo": "230103",
+    "Ubigeo": "CALANA"
+}, {
+    "id": 1783,
+    "Codigo": "230104",
+    "Ubigeo": "CIUDAD NUEVA"
+}, {
+    "id": 1784,
+    "Codigo": "230105",
+    "Ubigeo": "INCLAN"
+}, {
+    "id": 1785,
+    "Codigo": "230106",
+    "Ubigeo": "PACHIA"
+}, {
+    "id": 1786,
+    "Codigo": "230107",
+    "Ubigeo": "PALCA"
+}, {
+    "id": 1787,
+    "Codigo": "230108",
+    "Ubigeo": "POCOLLAY"
+}, {
+    "id": 1788,
+    "Codigo": "230109",
+    "Ubigeo": "SAMA"
+}, {
+    "id": 1789,
+    "Codigo": "230110",
+    "Ubigeo": "CORONEL GREGORIO ALBARRACIN LANCHIPA"
+}, {
+    "id": 1791,
+    "Codigo": "230201",
+    "Ubigeo": "CANDARAVE"
+}, {
+    "id": 1792,
+    "Codigo": "230202",
+    "Ubigeo": "CAIRANI"
+}, {
+    "id": 1793,
+    "Codigo": "230203",
+    "Ubigeo": "CAMILACA"
+}, {
+    "id": 1794,
+    "Codigo": "230204",
+    "Ubigeo": "CURIBAYA"
+}, {
+    "id": 1795,
+    "Codigo": "230205",
+    "Ubigeo": "HUANUARA"
+}, {
+    "id": 1796,
+    "Codigo": "230206",
+    "Ubigeo": "QUILAHUANI"
+}, {
+    "id": 1797,
+    "Codigo": "230301",
+    "Ubigeo": "LOCUMBA"
+}, {
+    "id": 1798,
+    "Codigo": "230302",
+    "Ubigeo": "ILABAYA"
+}, {
+    "id": 1799,
+    "Codigo": "230303",
+    "Ubigeo": "ITE"
+}, {
+    "id": 1800,
+    "Codigo": "230401",
+    "Ubigeo": "TARATA"
+}, {
+    "id": 1801,
+    "Codigo": "230402",
+    "Ubigeo": "HEROES ALBARRACIN"
+}, {
+    "id": 1802,
+    "Codigo": "230403",
+    "Ubigeo": "ESTIQUE"
+}, {
+    "id": 1803,
+    "Codigo": "230404",
+    "Ubigeo": "ESTIQUE-PAMPA"
+}, {
+    "id": 1804,
+    "Codigo": "230405",
+    "Ubigeo": "SITAJARA"
+}, {
+    "id": 1805,
+    "Codigo": "230406",
+    "Ubigeo": "SUSAPAYA"
+}, {
+    "id": 1806,
+    "Codigo": "230407",
+    "Ubigeo": "TARUCACHI"
+}, {
+    "id": 1807,
+    "Codigo": "230408",
+    "Ubigeo": "TICACO"
+}, {
+    "id": 1808,
+    "Codigo": "240101",
+    "Ubigeo": "TUMBES"
+}, {
+    "id": 1809,
+    "Codigo": "240102",
+    "Ubigeo": "CORRALES"
+}, {
+    "id": 1810,
+    "Codigo": "240103",
+    "Ubigeo": "LA CRUZ"
+}, {
+    "id": 1811,
+    "Codigo": "240104",
+    "Ubigeo": "PAMPAS DE HOSPITAL"
+}, {
+    "id": 1812,
+    "Codigo": "240105",
+    "Ubigeo": "SAN JACINTO"
+}, {
+    "id": 1813,
+    "Codigo": "240106",
+    "Ubigeo": "SAN JUAN DE LA VIRGEN"
+}, {
+    "id": 1814,
+    "Codigo": "240201",
+    "Ubigeo": "ZORRITOS"
+}, {
+    "id": 1815,
+    "Codigo": "240202",
+    "Ubigeo": "CASITAS"
+}, {
+    "id": 1816,
+    "Codigo": "240203",
+    "Ubigeo": "CANOAS DE PUNTA SAL"
+}, {
+    "id": 1817,
+    "Codigo": "240301",
+    "Ubigeo": "ZARUMILLA"
+}, {
+    "id": 1818,
+    "Codigo": "240302",
+    "Ubigeo": "AGUAS VERDES"
+}, {
+    "id": 1819,
+    "Codigo": "240303",
+    "Ubigeo": "MATAPALO"
+}, {
+    "id": 1820,
+    "Codigo": "240304",
+    "Ubigeo": "PAPAYAL"
+}, {
+    "id": 1821,
+    "Codigo": "250101",
+    "Ubigeo": "CALLERIA"
+}, {
+    "id": 1822,
+    "Codigo": "250102",
+    "Ubigeo": "CAMPOVERDE"
+}, {
+    "id": 1823,
+    "Codigo": "250103",
+    "Ubigeo": "IPARIA"
+}, {
+    "id": 1824,
+    "Codigo": "250104",
+    "Ubigeo": "MASISEA"
+}, {
+    "id": 1825,
+    "Codigo": "250105",
+    "Ubigeo": "YARINACOCHA"
+}, {
+    "id": 1826,
+    "Codigo": "250106",
+    "Ubigeo": "NUEVA REQUENA"
+}, {
+    "id": 1827,
+    "Codigo": "250107",
+    "Ubigeo": "MANANTAY"
+}, {
+    "id": 1828,
+    "Codigo": "250201",
+    "Ubigeo": "RAYMONDI"
+}, {
+    "id": 1829,
+    "Codigo": "250202",
+    "Ubigeo": "SEPAHUA"
+}, {
+    "id": 1830,
+    "Codigo": "250203",
+    "Ubigeo": "TAHUANIA"
+}, {
+    "id": 1831,
+    "Codigo": "250204",
+    "Ubigeo": "YURUA"
+}, {
+    "id": 1832,
+    "Codigo": "250301",
+    "Ubigeo": "PADRE ABAD"
+}, {
+    "id": 1833,
+    "Codigo": "250302",
+    "Ubigeo": "IRAZOLA"
+}, {
+    "id": 1834,
+    "Codigo": "250303",
+    "Ubigeo": "CURIMANA"
+}, {
+    "id": 1835,
+    "Codigo": "250401",
+    "Ubigeo": "PURUS"
+}]

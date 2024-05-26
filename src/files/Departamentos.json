@@ -1,0 +1,101 @@
+[{
+    "id": 1,
+    "Codigo": "01",
+    "Departamento": "AMAZONAS"
+}, {
+    "id": 2,
+    "Codigo": "02",
+    "Departamento": "ANCASH"
+}, {
+    "id": 3,
+    "Codigo": "03",
+    "Departamento": "APURÍMAC"
+}, {
+    "id": 4,
+    "Codigo": "04",
+    "Departamento": "AREQUIPA"
+}, {
+    "id": 5,
+    "Codigo": "05",
+    "Departamento": "AYACUCHO"
+}, {
+    "id": 6,
+    "Codigo": "06",
+    "Departamento": "CAJAMARCA"
+}, {
+    "id": 7,
+    "Codigo": "07",
+    "Departamento": "CALLAO"
+}, {
+    "id": 8,
+    "Codigo": "08",
+    "Departamento": "CUSCO"
+}, {
+    "id": 9,
+    "Codigo": "09",
+    "Departamento": "HUANCAVELICA"
+}, {
+    "id": 10,
+    "Codigo": "10",
+    "Departamento": "HUÁNUCO"
+}, {
+    "id": 11,
+    "Codigo": "11",
+    "Departamento": "ICA"
+}, {
+    "id": 12,
+    "Codigo": "12",
+    "Departamento": "JUNÍN"
+}, {
+    "id": 13,
+    "Codigo": "13",
+    "Departamento": "LA LIBERTAD"
+}, {
+    "id": 14,
+    "Codigo": "14",
+    "Departamento": "LAMBAYEQUE"
+}, {
+    "id": 15,
+    "Codigo": "15",
+    "Departamento": "LIMA"
+}, {
+    "id": 16,
+    "Codigo": "16",
+    "Departamento": "LORETO"
+}, {
+    "id": 17,
+    "Codigo": "17",
+    "Departamento": "MADRE DE DIOS"
+}, {
+    "id": 18,
+    "Codigo": "18",
+    "Departamento": "MOQUEGUA"
+}, {
+    "id": 19,
+    "Codigo": "19",
+    "Departamento": "PASCO"
+}, {
+    "id": 20,
+    "Codigo": "20",
+    "Departamento": "PIURA"
+}, {
+    "id": 21,
+    "Codigo": "21",
+    "Departamento": "PUNO"
+}, {
+    "id": 22,
+    "Codigo": "22",
+    "Departamento": "SAN MARTÍN"
+}, {
+    "id": 23,
+    "Codigo": "23",
+    "Departamento": "TACNA"
+}, {
+    "id": 24,
+    "Codigo": "24",
+    "Departamento": "TUMBES"
+}, {
+    "id": 25,
+    "Codigo": "25",
+    "Departamento": "UCAYALI"
+}]

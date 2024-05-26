@@ -1,0 +1,15 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Carter+One&display=swap');
+
+
+html,body,#root{
+  height: 100%;
+}
+body {
+  margin: 0;
+}
+
+/* .ps-menu-button:hover {
+  background-color: red  !important;
+  
+} */

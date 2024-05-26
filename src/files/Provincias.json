@@ -1,0 +1,781 @@
+[{
+    "id": 1,
+    "Codigo": "0101",
+    "Provincia": "CHACHAPOYAS"
+}, {
+    "id": 2,
+    "Codigo": "0102",
+    "Provincia": "BAGUA"
+}, {
+    "id": 3,
+    "Codigo": "0103",
+    "Provincia": "BONGARA"
+}, {
+    "id": 4,
+    "Codigo": "0104",
+    "Provincia": "CONDORCANQUI"
+}, {
+    "id": 5,
+    "Codigo": "0105",
+    "Provincia": "LUYA"
+}, {
+    "id": 6,
+    "Codigo": "0106",
+    "Provincia": "RODRIGUEZ DE MENDOZA"
+}, {
+    "id": 7,
+    "Codigo": "0107",
+    "Provincia": "UTCUBAMBA"
+}, {
+    "id": 8,
+    "Codigo": "0201",
+    "Provincia": "HUARAZ"
+}, {
+    "id": 9,
+    "Codigo": "0202",
+    "Provincia": "AIJA"
+}, {
+    "id": 10,
+    "Codigo": "0203",
+    "Provincia": "ANTONIO RAYMONDI"
+}, {
+    "id": 11,
+    "Codigo": "0204",
+    "Provincia": "ASUNCION"
+}, {
+    "id": 12,
+    "Codigo": "0205",
+    "Provincia": "BOLOGNESI"
+}, {
+    "id": 13,
+    "Codigo": "0206",
+    "Provincia": "CARHUAZ"
+}, {
+    "id": 14,
+    "Codigo": "0207",
+    "Provincia": "CARLOS FERMIN FITZCARRALD"
+}, {
+    "id": 15,
+    "Codigo": "0208",
+    "Provincia": "CASMA"
+}, {
+    "id": 16,
+    "Codigo": "0209",
+    "Provincia": "CORONGO"
+}, {
+    "id": 17,
+    "Codigo": "0210",
+    "Provincia": "HUARI"
+}, {
+    "id": 18,
+    "Codigo": "0211",
+    "Provincia": "HUARMEY"
+}, {
+    "id": 19,
+    "Codigo": "0212",
+    "Provincia": "HUAYLAS"
+}, {
+    "id": 20,
+    "Codigo": "0213",
+    "Provincia": "MARISCAL LUZURIAGA"
+}, {
+    "id": 21,
+    "Codigo": "0214",
+    "Provincia": "OCROS"
+}, {
+    "id": 22,
+    "Codigo": "0215",
+    "Provincia": "PALLASCA"
+}, {
+    "id": 23,
+    "Codigo": "0216",
+    "Provincia": "POMABAMBA"
+}, {
+    "id": 24,
+    "Codigo": "0217",
+    "Provincia": "RECUAY"
+}, {
+    "id": 25,
+    "Codigo": "0218",
+    "Provincia": "SANTA"
+}, {
+    "id": 26,
+    "Codigo": "0219",
+    "Provincia": "SIHUAS"
+}, {
+    "id": 27,
+    "Codigo": "0220",
+    "Provincia": "YUNGAY"
+}, {
+    "id": 28,
+    "Codigo": "0301",
+    "Provincia": "ABANCAY"
+}, {
+    "id": 29,
+    "Codigo": "0302",
+    "Provincia": "ANDAHUAYLAS"
+}, {
+    "id": 30,
+    "Codigo": "0303",
+    "Provincia": "ANTABAMBA"
+}, {
+    "id": 31,
+    "Codigo": "0304",
+    "Provincia": "AYMARAES"
+}, {
+    "id": 32,
+    "Codigo": "0305",
+    "Provincia": "COTABAMBAS"
+}, {
+    "id": 33,
+    "Codigo": "0306",
+    "Provincia": "CHINCHEROS"
+}, {
+    "id": 34,
+    "Codigo": "0307",
+    "Provincia": "GRAU"
+}, {
+    "id": 35,
+    "Codigo": "0401",
+    "Provincia": "AREQUIPA"
+}, {
+    "id": 36,
+    "Codigo": "0402",
+    "Provincia": "CAMANA"
+}, {
+    "id": 37,
+    "Codigo": "0403",
+    "Provincia": "CARAVELI"
+}, {
+    "id": 38,
+    "Codigo": "0404",
+    "Provincia": "CASTILLA"
+}, {
+    "id": 39,
+    "Codigo": "0405",
+    "Provincia": "CAYLLOMA"
+}, {
+    "id": 40,
+    "Codigo": "0406",
+    "Provincia": "CONDESUYOS"
+}, {
+    "id": 41,
+    "Codigo": "0407",
+    "Provincia": "ISLAY"
+}, {
+    "id": 42,
+    "Codigo": "0408",
+    "Provincia": "LA UNION"
+}, {
+    "id": 43,
+    "Codigo": "0501",
+    "Provincia": "HUAMANGA"
+}, {
+    "id": 44,
+    "Codigo": "0502",
+    "Provincia": "CANGALLO"
+}, {
+    "id": 45,
+    "Codigo": "0503",
+    "Provincia": "HUANCA SANCOS"
+}, {
+    "id": 46,
+    "Codigo": "0504",
+    "Provincia": "HUANTA"
+}, {
+    "id": 47,
+    "Codigo": "0505",
+    "Provincia": "LA MAR"
+}, {
+    "id": 48,
+    "Codigo": "0506",
+    "Provincia": "LUCANAS"
+}, {
+    "id": 49,
+    "Codigo": "0507",
+    "Provincia": "PARINACOCHAS"
+}, {
+    "id": 50,
+    "Codigo": "0508",
+    "Provincia": "PAUCAR DEL SARA SARA"
+}, {
+    "id": 51,
+    "Codigo": "0509",
+    "Provincia": "SUCRE"
+}, {
+    "id": 52,
+    "Codigo": "0510",
+    "Provincia": "VICTOR FAJARDO"
+}, {
+    "id": 53,
+    "Codigo": "0511",
+    "Provincia": "VILCAS HUAMAN"
+}, {
+    "id": 54,
+    "Codigo": "0601",
+    "Provincia": "CAJAMARCA"
+}, {
+    "id": 55,
+    "Codigo": "0602",
+    "Provincia": "CAJABAMBA"
+}, {
+    "id": 56,
+    "Codigo": "0603",
+    "Provincia": "CELENDIN"
+}, {
+    "id": 57,
+    "Codigo": "0604",
+    "Provincia": "CHOTA"
+}, {
+    "id": 58,
+    "Codigo": "0605",
+    "Provincia": "CONTUMAZA"
+}, {
+    "id": 59,
+    "Codigo": "0606",
+    "Provincia": "CUTERVO"
+}, {
+    "id": 60,
+    "Codigo": "0607",
+    "Provincia": "HUALGAYOC"
+}, {
+    "id": 61,
+    "Codigo": "0608",
+    "Provincia": "JAEN"
+}, {
+    "id": 62,
+    "Codigo": "0609",
+    "Provincia": "SAN IGNACIO"
+}, {
+    "id": 63,
+    "Codigo": "0610",
+    "Provincia": "SAN MARCOS"
+}, {
+    "id": 64,
+    "Codigo": "0611",
+    "Provincia": "SAN MIGUEL"
+}, {
+    "id": 65,
+    "Codigo": "0612",
+    "Provincia": "SAN PABLO"
+}, {
+    "id": 66,
+    "Codigo": "0613",
+    "Provincia": "SANTA CRUZ"
+}, {
+    "id": 67,
+    "Codigo": "0701",
+    "Provincia": "PROV. CONST. DEL CALLAO"
+}, {
+    "id": 68,
+    "Codigo": "0801",
+    "Provincia": "CUSCO"
+}, {
+    "id": 69,
+    "Codigo": "0802",
+    "Provincia": "ACOMAYO"
+}, {
+    "id": 70,
+    "Codigo": "0803",
+    "Provincia": "ANTA"
+}, {
+    "id": 71,
+    "Codigo": "0804",
+    "Provincia": "CALCA"
+}, {
+    "id": 72,
+    "Codigo": "0805",
+    "Provincia": "CANAS"
+}, {
+    "id": 73,
+    "Codigo": "0806",
+    "Provincia": "CANCHIS"
+}, {
+    "id": 74,
+    "Codigo": "0807",
+    "Provincia": "CHUMBIVILCAS"
+}, {
+    "id": 75,
+    "Codigo": "0808",
+    "Provincia": "ESPINAR"
+}, {
+    "id": 76,
+    "Codigo": "0809",
+    "Provincia": "LA CONVENCION"
+}, {
+    "id": 77,
+    "Codigo": "0810",
+    "Provincia": "PARURO"
+}, {
+    "id": 78,
+    "Codigo": "0811",
+    "Provincia": "PAUCARTAMBO"
+}, {
+    "id": 79,
+    "Codigo": "0812",
+    "Provincia": "QUISPICANCHI"
+}, {
+    "id": 80,
+    "Codigo": "0813",
+    "Provincia": "URUBAMBA"
+}, {
+    "id": 81,
+    "Codigo": "0901",
+    "Provincia": "HUANCAVELICA"
+}, {
+    "id": 82,
+    "Codigo": "0902",
+    "Provincia": "ACOBAMBA"
+}, {
+    "id": 83,
+    "Codigo": "0903",
+    "Provincia": "ANGARAES"
+}, {
+    "id": 84,
+    "Codigo": "0904",
+    "Provincia": "CASTROVIRREYNA"
+}, {
+    "id": 85,
+    "Codigo": "0905",
+    "Provincia": "CHURCAMPA"
+}, {
+    "id": 86,
+    "Codigo": "0906",
+    "Provincia": "HUAYTARA"
+}, {
+    "id": 87,
+    "Codigo": "0907",
+    "Provincia": "TAYACAJA"
+}, {
+    "id": 88,
+    "Codigo": "1001",
+    "Provincia": "HUANUCO"
+}, {
+    "id": 89,
+    "Codigo": "1002",
+    "Provincia": "AMBO"
+}, {
+    "id": 90,
+    "Codigo": "1003",
+    "Provincia": "DOS DE MAYO"
+}, {
+    "id": 91,
+    "Codigo": "1004",
+    "Provincia": "HUACAYBAMBA"
+}, {
+    "id": 92,
+    "Codigo": "1005",
+    "Provincia": "HUAMALIES"
+}, {
+    "id": 93,
+    "Codigo": "1006",
+    "Provincia": "LEONCIO PRADO"
+}, {
+    "id": 94,
+    "Codigo": "1007",
+    "Provincia": "MARAÑON"
+}, {
+    "id": 95,
+    "Codigo": "1008",
+    "Provincia": "PACHITEA"
+}, {
+    "id": 96,
+    "Codigo": "1009",
+    "Provincia": "PUERTO INCA"
+}, {
+    "id": 97,
+    "Codigo": "1010",
+    "Provincia": "LAURICOCHA"
+}, {
+    "id": 98,
+    "Codigo": "1011",
+    "Provincia": "YAROWILCA"
+}, {
+    "id": 99,
+    "Codigo": "1101",
+    "Provincia": "ICA"
+}, {
+    "id": 100,
+    "Codigo": "1102",
+    "Provincia": "CHINCHA"
+}, {
+    "id": 101,
+    "Codigo": "1103",
+    "Provincia": "NAZCA"
+}, {
+    "id": 102,
+    "Codigo": "1104",
+    "Provincia": "PALPA"
+}, {
+    "id": 103,
+    "Codigo": "1105",
+    "Provincia": "PISCO"
+}, {
+    "id": 104,
+    "Codigo": "1201",
+    "Provincia": "HUANCAYO"
+}, {
+    "id": 105,
+    "Codigo": "1202",
+    "Provincia": "CONCEPCION"
+}, {
+    "id": 106,
+    "Codigo": "1203",
+    "Provincia": "CHANCHAMAYO"
+}, {
+    "id": 107,
+    "Codigo": "1204",
+    "Provincia": "JAUJA"
+}, {
+    "id": 108,
+    "Codigo": "1205",
+    "Provincia": "JUNIN"
+}, {
+    "id": 109,
+    "Codigo": "1206",
+    "Provincia": "SATIPO"
+}, {
+    "id": 110,
+    "Codigo": "1207",
+    "Provincia": "TARMA"
+}, {
+    "id": 111,
+    "Codigo": "1208",
+    "Provincia": "YAULI"
+}, {
+    "id": 112,
+    "Codigo": "1209",
+    "Provincia": "CHUPACA"
+}, {
+    "id": 113,
+    "Codigo": "1301",
+    "Provincia": "TRUJILLO"
+}, {
+    "id": 114,
+    "Codigo": "1302",
+    "Provincia": "ASCOPE"
+}, {
+    "id": 115,
+    "Codigo": "1303",
+    "Provincia": "BOLIVAR"
+}, {
+    "id": 116,
+    "Codigo": "1304",
+    "Provincia": "CHEPEN"
+}, {
+    "id": 117,
+    "Codigo": "1305",
+    "Provincia": "JULCAN"
+}, {
+    "id": 118,
+    "Codigo": "1306",
+    "Provincia": "OTUZCO"
+}, {
+    "id": 119,
+    "Codigo": "1307",
+    "Provincia": "PACASMAYO"
+}, {
+    "id": 120,
+    "Codigo": "1308",
+    "Provincia": "PATAZ"
+}, {
+    "id": 121,
+    "Codigo": "1309",
+    "Provincia": "SANCHEZ CARRION"
+}, {
+    "id": 122,
+    "Codigo": "1310",
+    "Provincia": "SANTIAGO DE CHUCO"
+}, {
+    "id": 123,
+    "Codigo": "1311",
+    "Provincia": "GRAN CHIMU"
+}, {
+    "id": 124,
+    "Codigo": "1312",
+    "Provincia": "VIRU"
+}, {
+    "id": 125,
+    "Codigo": "1401",
+    "Provincia": "CHICLAYO"
+}, {
+    "id": 126,
+    "Codigo": "1402",
+    "Provincia": "FERREÑAFE"
+}, {
+    "id": 127,
+    "Codigo": "1403",
+    "Provincia": "LAMBAYEQUE"
+}, {
+    "id": 128,
+    "Codigo": "1501",
+    "Provincia": "LIMA"
+}, {
+    "id": 129,
+    "Codigo": "1502",
+    "Provincia": "BARRANCA"
+}, {
+    "id": 130,
+    "Codigo": "1503",
+    "Provincia": "CAJATAMBO"
+}, {
+    "id": 131,
+    "Codigo": "1504",
+    "Provincia": "CANTA"
+}, {
+    "id": 132,
+    "Codigo": "1505",
+    "Provincia": "CAÑETE"
+}, {
+    "id": 133,
+    "Codigo": "1506",
+    "Provincia": "HUARAL"
+}, {
+    "id": 134,
+    "Codigo": "1507",
+    "Provincia": "HUAROCHIRI"
+}, {
+    "id": 135,
+    "Codigo": "1508",
+    "Provincia": "HUAURA"
+}, {
+    "id": 136,
+    "Codigo": "1509",
+    "Provincia": "OYON"
+}, {
+    "id": 137,
+    "Codigo": "1510",
+    "Provincia": "YAUYOS"
+}, {
+    "id": 138,
+    "Codigo": "1601",
+    "Provincia": "MAYNAS"
+}, {
+    "id": 139,
+    "Codigo": "1602",
+    "Provincia": "ALTO AMAZONAS"
+}, {
+    "id": 140,
+    "Codigo": "1603",
+    "Provincia": "LORETO"
+}, {
+    "id": 141,
+    "Codigo": "1604",
+    "Provincia": "MARISCAL RAMON CASTILLA"
+}, {
+    "id": 142,
+    "Codigo": "1605",
+    "Provincia": "REQUENA"
+}, {
+    "id": 143,
+    "Codigo": "1606",
+    "Provincia": "UCAYALI"
+}, {
+    "id": 144,
+    "Codigo": "1701",
+    "Provincia": "TAMBOPATA"
+}, {
+    "id": 145,
+    "Codigo": "1702",
+    "Provincia": "MANU"
+}, {
+    "id": 146,
+    "Codigo": "1703",
+    "Provincia": "TAHUAMANU"
+}, {
+    "id": 147,
+    "Codigo": "1801",
+    "Provincia": "MARISCAL NIETO"
+}, {
+    "id": 148,
+    "Codigo": "1802",
+    "Provincia": "GENERAL SANCHEZ CERRO"
+}, {
+    "id": 149,
+    "Codigo": "1803",
+    "Provincia": "ILO"
+}, {
+    "id": 150,
+    "Codigo": "1901",
+    "Provincia": "PASCO"
+}, {
+    "id": 151,
+    "Codigo": "1902",
+    "Provincia": "DANIEL ALCIDES CARRION"
+}, {
+    "id": 152,
+    "Codigo": "1903",
+    "Provincia": "OXAPAMPA"
+}, {
+    "id": 153,
+    "Codigo": "2001",
+    "Provincia": "PIURA"
+}, {
+    "id": 154,
+    "Codigo": "2002",
+    "Provincia": "AYABACA"
+}, {
+    "id": 155,
+    "Codigo": "2003",
+    "Provincia": "HUANCABAMBA"
+}, {
+    "id": 156,
+    "Codigo": "2004",
+    "Provincia": "MORROPON"
+}, {
+    "id": 157,
+    "Codigo": "2005",
+    "Provincia": "PAITA"
+}, {
+    "id": 158,
+    "Codigo": "2006",
+    "Provincia": "SULLANA"
+}, {
+    "id": 159,
+    "Codigo": "2007",
+    "Provincia": "TALARA"
+}, {
+    "id": 160,
+    "Codigo": "2008",
+    "Provincia": "SECHURA"
+}, {
+    "id": 161,
+    "Codigo": "2101",
+    "Provincia": "PUNO"
+}, {
+    "id": 162,
+    "Codigo": "2102",
+    "Provincia": "AZANGARO"
+}, {
+    "id": 163,
+    "Codigo": "2103",
+    "Provincia": "CARABAYA"
+}, {
+    "id": 164,
+    "Codigo": "2104",
+    "Provincia": "CHUCUITO"
+}, {
+    "id": 165,
+    "Codigo": "2105",
+    "Provincia": "EL COLLAO"
+}, {
+    "id": 166,
+    "Codigo": "2106",
+    "Provincia": "HUANCANE"
+}, {
+    "id": 167,
+    "Codigo": "2107",
+    "Provincia": "LAMPA"
+}, {
+    "id": 168,
+    "Codigo": "2108",
+    "Provincia": "MELGAR"
+}, {
+    "id": 169,
+    "Codigo": "2109",
+    "Provincia": "MOHO"
+}, {
+    "id": 170,
+    "Codigo": "2110",
+    "Provincia": "SAN ANTONIO DE PUTINA"
+}, {
+    "id": 171,
+    "Codigo": "2111",
+    "Provincia": "SAN ROMAN"
+}, {
+    "id": 172,
+    "Codigo": "2112",
+    "Provincia": "SANDIA"
+}, {
+    "id": 173,
+    "Codigo": "2113",
+    "Provincia": "YUNGUYO"
+}, {
+    "id": 174,
+    "Codigo": "2201",
+    "Provincia": "MOYOBAMBA"
+}, {
+    "id": 175,
+    "Codigo": "2202",
+    "Provincia": "BELLAVISTA"
+}, {
+    "id": 176,
+    "Codigo": "2203",
+    "Provincia": "EL DORADO"
+}, {
+    "id": 177,
+    "Codigo": "2204",
+    "Provincia": "HUALLAGA"
+}, {
+    "id": 178,
+    "Codigo": "2205",
+    "Provincia": "LAMAS"
+}, {
+    "id": 179,
+    "Codigo": "2206",
+    "Provincia": "MARISCAL CACERES"
+}, {
+    "id": 180,
+    "Codigo": "2207",
+    "Provincia": "PICOTA"
+}, {
+    "id": 181,
+    "Codigo": "2208",
+    "Provincia": "RIOJA"
+}, {
+    "id": 182,
+    "Codigo": "2209",
+    "Provincia": "SAN MARTIN"
+}, {
+    "id": 183,
+    "Codigo": "2210",
+    "Provincia": "TOCACHE"
+}, {
+    "id": 184,
+    "Codigo": "2301",
+    "Provincia": "TACNA"
+}, {
+    "id": 185,
+    "Codigo": "2302",
+    "Provincia": "CANDARAVE"
+}, {
+    "id": 186,
+    "Codigo": "2303",
+    "Provincia": "JORGE BASADRE"
+}, {
+    "id": 187,
+    "Codigo": "2304",
+    "Provincia": "TARATA"
+}, {
+    "id": 188,
+    "Codigo": "2401",
+    "Provincia": "TUMBES"
+}, {
+    "id": 189,
+    "Codigo": "2402",
+    "Provincia": "CONTRALMIRANTE VILLAR"
+}, {
+    "id": 190,
+    "Codigo": "2403",
+    "Provincia": "ZARUMILLA"
+}, {
+    "id": 191,
+    "Codigo": "2501",
+    "Provincia": "CORONEL PORTILLO"
+}, {
+    "id": 192,
+    "Codigo": "2502",
+    "Provincia": "ATALAYA"
+}, {
+    "id": 193,
+    "Codigo": "2503",
+    "Provincia": "PADRE ABAD"
+}, {
+    "id": 194,
+    "Codigo": "2504",
+    "Provincia": "PURUS"
+}, {
+    "id": 1001,
+    "Codigo": "1607",
+    "Provincia": "DATEM DEL MARAÑON"
+}]

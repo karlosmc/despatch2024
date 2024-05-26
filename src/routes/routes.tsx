@@ -1,0 +1,135 @@
+import { createBrowserRouter } from "react-router-dom";
+
+import DespatchPage from "../pages/despatch";
+
+import RegisterForm from "../views/RegisterForm";
+import Layout from "../layouts/Layout";
+import Inicio from "../views/Inicio";
+import AuthLayout from "../layouts/AuthLayout";
+import LoginForm from "../views/LoginForm";
+import AdminLayout from "../layouts/AdminLayout";
+
+import Guias from "../views/Guias";
+import Dashboard from "../views/Dashboard";
+import Reportes from "../views/Reportes";
+import Productos from "../views/Productos";
+import TestStepForm from "../views/TestStepForm";
+import Test2Stepper from "../views/Test2Stepper";
+import MultiStep from "../views/MultiStep";
+// import LoginForm from "../pages/login";
+
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MultiStep />,
+    children:[
+      {
+        index:true,
+        element:<Inicio/>
+      },
+     
+  ]
+  },
+  {
+    path:'/auth',
+    element:<AuthLayout/>,
+    children:[
+      {
+        path:'/auth/login',
+        element:<LoginForm/>
+      },
+      {
+        path:'/auth/registro',
+        element:<RegisterForm />
+      }
+    ]
+  },
+ 
+  {
+    path: "/despatch",
+    element: <DespatchPage />,
+  },
+  {
+    path:'/admin',
+    element:<AdminLayout/>,
+    children:[
+      {
+        path:'/admin/guias',
+        element:<Guias/>
+      },
+      {
+        path:'/admin/reportes',
+        element:<Reportes/>
+      },
+      {
+        path:'/admin/productos',
+        element:<Productos/>
+      }
+    ]
+  }
+ 
+]);
+
+
+
+// export const router = createBrowserRouter([
+//   {
+//     path: "/",
+//     element: <AdminLayout />,
+//     children:[
+//       {
+//         index:true,
+//         element:<Inicio/>
+//       }
+//     ]
+//   },
+//   {
+//     path:'/auth',
+//     element:<AuthLayout/>,
+//     children:[
+//       {
+//         path:'/auth/login',
+//         element:<LoginForm/>
+//       },
+//       {
+//         path:'/auth/registro',
+//         element:<RegisterForm />
+//       }
+//     ]
+//   },
+//   {
+//     path:'/admin',
+//     element:<AdminLayout/>,
+//     children:[
+//         {
+//           index:true,
+//           element:<Dashboard/>
+//         },
+//         {
+//           path:'/admin/guias',
+//           element:<Guias/>
+//         }
+//     ]
+//   },
+
+//   {
+//     path: "/despatch",
+//     element: <DespatchPage />,
+//   },
+//   {
+//     path:'/admin',
+//     element:<AdminLayout/>,
+//     // children:[
+//     //     {
+//     //       index:true,
+//     //       element:<Ordenes/>
+//     //     },
+//     //     {
+//     //       path:'/admin/productos',
+//     //       element:<Productos/>
+//     //     }
+//     // ]
+//   }
+ 
+// ]);
+
