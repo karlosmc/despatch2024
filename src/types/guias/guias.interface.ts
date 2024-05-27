@@ -1,4 +1,19 @@
 
+
+export interface Guia {
+  version:      string;
+  tipoDoc:      string;
+  serie:        string;
+  correlativo:  string;
+  observacion:  string;
+  fechaEmision: string;
+  
+  codTraslado:   string;
+  desTraslado:   string;
+  modTraslado:   string;
+  fecTraslado:   string;
+}
+
 export interface DatosGenerales {
   version:      string;
   tipoDoc:      string;

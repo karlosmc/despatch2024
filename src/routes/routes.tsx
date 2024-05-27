@@ -16,12 +16,13 @@ import Productos from "../views/Productos";
 import TestStepForm from "../views/TestStepForm";
 import Test2Stepper from "../views/Test2Stepper";
 import MultiStep from "../views/MultiStep";
+import CustomStepper from "../pages/CustomStepper";
 // import LoginForm from "../pages/login";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <MultiStep />,
+    element: <CustomStepper />,
     children:[
       {
         index:true,

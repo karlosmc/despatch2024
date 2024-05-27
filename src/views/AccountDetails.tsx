@@ -6,6 +6,8 @@ import {
 
 const AccountDetails = (props) => {
   const { formik } = props;
+  console.log(formik)
+  console.log(formik.errors)
   return (
     <Grid
       container

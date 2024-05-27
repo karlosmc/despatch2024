@@ -21,7 +21,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ThemeConfig>
       
-      {/* <NotificationProvider> */}
+      <NotificationProvider>
         {/* <DialogProvider> */}
           {/* <ParamsProvider> */}
             {/* <TokenProvider> */}
@@ -34,7 +34,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             {/* </TokenProvider> */}
           {/* </ParamsProvider> */}
         {/* </DialogProvider> */}
-      {/* </NotificationProvider> */}
+      </NotificationProvider>
     </ThemeConfig>
   </React.StrictMode>
 );
