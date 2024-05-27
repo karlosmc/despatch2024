@@ -36,15 +36,15 @@ const _MODALIDAD_TRASLADO = [
 
 
 
-const DatosGenerales = ({ formik }: DatosGeneralesProps) => {
+const DatosGeneralesStep = ({ formik }: DatosGeneralesProps) => {
 
-  useEffect(()=>{
-    if(formik.values.codTraslado){
-      const desTraslado = _MOTIVO_TRASLADO.find(item => item.id=== formik.values.codTraslado).valor
-      formik.setFieldValue('desTraslado',desTraslado)
+  useEffect(() => {
+    if (formik.values.codTraslado) {
+      const desTraslado = _MOTIVO_TRASLADO.find(item => item.id === formik.values.codTraslado).valor
+      formik.setFieldValue('desTraslado', desTraslado)
     }
-  },[formik.values.codTraslado])
-  
+  }, [formik.values.codTraslado])
+
   return (
     <Grid
       container
@@ -156,7 +156,7 @@ const DatosGenerales = ({ formik }: DatosGeneralesProps) => {
                     SelectHandleChange(e)
                   } */
               onChange={formik.handleChange}
-              // onChange={handleChange}
+            // onChange={handleChange}
             >
               {_MOTIVO_TRASLADO.map((motivo) => (
                 <MenuItem key={motivo.id} value={motivo.id}>
@@ -182,7 +182,7 @@ const DatosGenerales = ({ formik }: DatosGeneralesProps) => {
                 formik.touched.modTraslado && Boolean(formik.errors.modTraslado)
               }
               onBlur={formik.handleBlur}
-              // onChange={handleChange}
+            // onChange={handleChange}
             >
               {_MODALIDAD_TRASLADO.map((modalidad) => (
                 <MenuItem key={modalidad.id} value={modalidad.id}>
@@ -192,29 +192,29 @@ const DatosGenerales = ({ formik }: DatosGeneralesProps) => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item lg={6} xs={12}>
-              <TextField
-                fullWidth
-                size="small"
-                // value={dataEnvio.fecTraslado}
-                value={formik.values.fecTraslado}
-                name="fecTraslado"
-                // onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                //   handleChange(e)
-                // }
-                onChange={formik.handleChange}
-                // onChange={handleChange}
-                label="Fecha de traslado"
-                type="datetime-local"
-                style={{ colorScheme: "dark" }}
-                error={formik.touched.fecTraslado && Boolean(formik.errors.fecTraslado)}
-                onBlur={formik.handleBlur}
-                // helperText={formik.touched.fecTraslado && formik.errors.fecTraslado}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </Grid>
+        {/* <Grid item lg={6} xs={12}>
+          <TextField
+            fullWidth
+            size="small"
+            // value={dataEnvio.fecTraslado}
+            value={formik.values.fecTraslado}
+            name="fecTraslado"
+            // onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+            //   handleChange(e)
+            // }
+            onChange={formik.handleChange}
+            // onChange={handleChange}
+            label="Fecha de traslado"
+            type="datetime-local"
+            style={{ colorScheme: "dark" }}
+            error={formik.touched.fecTraslado && Boolean(formik.errors.fecTraslado)}
+            onBlur={formik.handleBlur}
+            // helperText={formik.touched.fecTraslado && formik.errors.fecTraslado}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid> */}
       </Grid>
       <Grid item xs={12}>
         <TextField
@@ -238,11 +238,11 @@ const DatosGenerales = ({ formik }: DatosGeneralesProps) => {
             formik.touched.observacion && Boolean(formik.errors.observacion)
           }
           onBlur={formik.handleBlur}
-          // helperText={formik.touched.observacion && formik.errors.observacion}
+        // helperText={formik.touched.observacion && formik.errors.observacion}
         />
       </Grid>
     </Grid>
   );
 };
 
-export default DatosGenerales;
+export default DatosGeneralesStep;

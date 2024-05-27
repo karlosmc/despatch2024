@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { useFormik,  FormikProvider, isObject } from 'formik';
 
 import { Box, Stepper, Step, StepLabel, Button, Grid, Typography } from '@mui/material';
-import { DocumentosGeneralesSchema } from '../../utils/validateGuias';
-import DatosGenerales from '../DatosGenerales';
+import { DatosPersonasSchema, DocumentosGeneralesSchema } from '../../utils/validateGuias';
 import { Guia } from '../../types/guias/guias.interface';
 import { useNotification } from '../../context/notification.context';
 
-const steps = ['Documentos Generales'];
+import DatosGeneralesStep from '../DatosGenerales';
+import DatosPersonasStep from '../DatosPersonas';
+import { EnvioSchema } from '../../utils/validateForm';
+import DatosEnvioStep from '../DatosEnvio';
+
+const steps = ['Documentos Generales','Datos personas','Datos de envío'];
 
 const InitialValuesGuias:Guia = {
   version:      '2.1',
@@ -19,13 +23,34 @@ const InitialValuesGuias:Guia = {
   codTraslado:   '',
   desTraslado:   '',
   modTraslado:   '',
-  fecTraslado:   '',
+  // fecTraslado:   '',
+  destinatario:{
+    numDoc:'',
+    tipoDoc:'',
+    rznSocial:''
+  },
+  comprador:{
+    numDoc:'',
+    tipoDoc:'',
+    rznSocial:''
+  },
+  fecTraslado:'',
+  indicadores:[],
+  pesoItems:0,
+  sustentoPeso:'',
+  pesoTotal:0,
+  undPesoTotal:'',
+  numBultos:0,
+  indTransbordo:'',
 
 }
 
 
 const validationSchemas = [
-  DocumentosGeneralesSchema
+  DocumentosGeneralesSchema,
+  DatosPersonasSchema,
+  EnvioSchema
+
 ];
 
 const CustomStepper = () => {
@@ -58,7 +83,11 @@ const CustomStepper = () => {
   const formContent = (step: number) => {
     switch (step) {
       case 0:
-        return <DatosGenerales formik={formik} />;
+        return <DatosGeneralesStep formik={formik} />;
+      case 1:
+        return <DatosPersonasStep formik={formik}/>;
+      case 2:
+          return <DatosEnvioStep/>;
       
       default:
         return <Typography variant="h6">Not Found</Typography>;

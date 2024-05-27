@@ -11,7 +11,18 @@ export interface Guia {
   codTraslado:   string;
   desTraslado:   string;
   modTraslado:   string;
-  fecTraslado:   string;
+  // fecTraslado:   string;
+
+  destinatario: Persona;
+  comprador?: Persona;
+  fecTraslado: string;
+  indicadores:   string[];
+  pesoItems?:     number|null;
+  sustentoPeso?:  string|null;
+  pesoTotal:     number;
+  undPesoTotal:  string;
+  numBultos:     number;
+  indTransbordo?: string|null;
 }
 
 export interface DatosGenerales {
@@ -27,18 +38,26 @@ export interface DatosGenerales {
   fecTraslado:   string;
 }
 
-export interface Client {
+export interface Persona {
     
   tipoDoc:   string;
   numDoc:    string;
   rznSocial: string;
-  direccion?: string;
-  ubigeo?:string
-
 }
 
 export interface DatosPersonas {
-  destinatario: Client;//Listo
-  tercero?:      Client | null;//Listo
-  comprador:    Client | null;//Listo
+  destinatario: Persona;//Listo
+  // tercero?:      Persona | null;//Listo
+  comprador:    Persona|null;//Listo
+}
+
+export interface DatosEnvio {
+  fecTraslado: string;
+  indicadores:   string[];
+  pesoItems?:     number|null;
+  sustentoPeso?:  string|null;
+  pesoTotal:     number;
+  undPesoTotal:  string;
+  numBultos:     number;
+  indTransbordo?: string|null;
 }
