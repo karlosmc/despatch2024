@@ -17,12 +17,13 @@ import TestStepForm from "../views/TestStepForm";
 import Test2Stepper from "../views/Test2Stepper";
 import MultiStep from "../views/MultiStep";
 import CustomStepper from "../pages/CustomStepper";
+import GuiaRemisionMain from "../pages/GuiaRemision";
 // import LoginForm from "../pages/login";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <CustomStepper />,
+    element: <GuiaRemisionMain />,
     children:[
       {
         index:true,

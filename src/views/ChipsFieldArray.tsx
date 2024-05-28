@@ -1,5 +1,5 @@
 import React, { MouseEvent,  useEffect, useState } from 'react';
-import {  FieldProps } from 'formik';
+import {  FieldProps, Formik } from 'formik';
 import {  Box, Chip, FormControl, FormHelperText, Tooltip } from '@mui/material';
 
 
@@ -30,7 +30,7 @@ const ChipsFieldArray: React.FC<ChipsFieldPropsArray> = ({ field, form }) => {
   
 
   const { name,value } = field;
-  const { touched, errors, setFieldValue } = form;
+  const { touched, errors, setFieldValue,setErrors } = form;
 
   // console.log(field)
 
@@ -67,6 +67,7 @@ const ChipsFieldArray: React.FC<ChipsFieldPropsArray> = ({ field, form }) => {
       // console.log('useefect',value)
       setFieldValue('indicadores', filterIndicadores)
     }
+    
   , [indicadores])
 
   // console.log(errors)
@@ -75,7 +76,7 @@ const ChipsFieldArray: React.FC<ChipsFieldPropsArray> = ({ field, form }) => {
   // console.log(fieldError)
   const showError = touched[name] && Boolean(fieldError);
 
-  const errorMessage = typeof fieldError === 'string' ? fieldError : 'Invalid selection';
+  // const errorMessage = typeof fieldError === 'string' ? fieldError : 'Invalid selection';
 
 
 
@@ -93,9 +94,6 @@ const ChipsFieldArray: React.FC<ChipsFieldPropsArray> = ({ field, form }) => {
     );
     
   }
-
-  
-
 
     return (
       <FormControl error={showError} component="fieldset">
@@ -133,7 +131,7 @@ const ChipsFieldArray: React.FC<ChipsFieldPropsArray> = ({ field, form }) => {
         </Box>
 
        
-        {showError && <FormHelperText>{errorMessage}</FormHelperText>}
+        {/* {showError && <FormHelperText>{errorMessage}</FormHelperText>} */}
       </FormControl>
     );
   

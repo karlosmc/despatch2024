@@ -19,8 +19,8 @@ const DatosPersonasStep = ({ formik }: DatosPersonasProps) => {
       justifyContent="center"
       alignContent="center"
       alignItems="center"
-      mt={4}
       spacing={10}
+      
     >
       <Grid item container xs={6}>
         <PersonaForm title={'Destinatario'} formik={formik} fieldPrefix="destinatario" />

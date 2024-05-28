@@ -23,6 +23,7 @@ export interface Guia {
   undPesoTotal:  string;
   numBultos:     number;
   indTransbordo?: string|null;
+  addDocs?:      AddDoc[];//Listo
 }
 
 export interface DatosGenerales {
@@ -53,7 +54,7 @@ export interface DatosPersonas {
 
 export interface DatosEnvio {
   fecTraslado: string;
-  indicadores:   string[];
+  // indicadores:   string[];
   pesoItems?:     number|null;
   sustentoPeso?:  string|null;
   pesoTotal:     number;
@@ -61,3 +62,15 @@ export interface DatosEnvio {
   numBultos:     number;
   indTransbordo?: string|null;
 }
+
+export interface IDocumentosAdicionales{
+  addDocs:AddDoc[]
+}
+
+export interface AddDoc {
+  tipoDesc: string;
+  tipo:     string;
+  nro:      string;
+  emisor:   string;
+}
+

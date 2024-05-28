@@ -186,11 +186,7 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
   const formik = useFormik({
     initialValues: EnvioValues,
     validationSchema: EnvioSchema,
-    onSubmit: (values) => {
-      // console.log(values);
-      // getSuccess('Comprobante guardado con EXITO')
-    },
-    
+    onSubmit: (_)=>{}
   });
 
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {

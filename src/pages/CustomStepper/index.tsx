@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useFormik,  FormikProvider, isObject } from 'formik';
 
 import { Box, Stepper, Step, StepLabel, Button, Grid, Typography } from '@mui/material';
-import { DatosPersonasSchema, DocumentosGeneralesSchema } from '../../utils/validateGuias';
+import { AddDocsSchema, DatosEnvioSchema, DatosPersonasSchema, DocumentosGeneralesSchema } from '../../utils/validateGuias';
 import { Guia } from '../../types/guias/guias.interface';
 import { useNotification } from '../../context/notification.context';
 
@@ -10,8 +10,11 @@ import DatosGeneralesStep from '../DatosGenerales';
 import DatosPersonasStep from '../DatosPersonas';
 import { EnvioSchema } from '../../utils/validateForm';
 import DatosEnvioStep from '../DatosEnvio';
+import ComprobantesAdicionalesStep from '../ComprobantesAdicionales';
 
-const steps = ['Documentos Generales','Datos personas','Datos de envío'];
+
+
+const steps = ['Documentos Generales','Datos personas','Datos de envío','Comprobantes Adicionales'];
 
 const InitialValuesGuias:Guia = {
   version:      '2.1',
@@ -39,9 +42,10 @@ const InitialValuesGuias:Guia = {
   pesoItems:0,
   sustentoPeso:'',
   pesoTotal:0,
-  undPesoTotal:'',
+  undPesoTotal:'KGM',
   numBultos:0,
   indTransbordo:'',
+  addDocs:[]
 
 }
 
@@ -49,7 +53,8 @@ const InitialValuesGuias:Guia = {
 const validationSchemas = [
   DocumentosGeneralesSchema,
   DatosPersonasSchema,
-  EnvioSchema
+  DatosEnvioSchema,
+  AddDocsSchema
 
 ];
 
@@ -87,7 +92,9 @@ const CustomStepper = () => {
       case 1:
         return <DatosPersonasStep formik={formik}/>;
       case 2:
-          return <DatosEnvioStep/>;
+        return <DatosEnvioStep formik={formik}/>;
+      case 3:
+        return <ComprobantesAdicionalesStep formik={formik}/>;
       
       default:
         return <Typography variant="h6">Not Found</Typography>;
@@ -97,6 +104,7 @@ const CustomStepper = () => {
 
   useEffect(() => {
     if (!formik.isSubmitting) return;
+    
     if (Object.keys(formik.errors).length > 0) {
       const ErrorValues = Object.values(formik.errors)[0];
       // console.log(ErrorValues);

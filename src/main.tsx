@@ -12,6 +12,7 @@ import { router } from "./routes/routes.tsx";
 import { CssBaseline } from "@mui/material";
 import { ModalProvider } from "./context/modal.context.tsx";
 import { AuxiliarProvider } from "./context/AuxiliarProvider.tsx";
+import { DialogProvider } from "./context/dialog.context.tsx";
 
 // dotenv.config();
 
@@ -22,7 +23,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     <ThemeConfig>
       
       <NotificationProvider>
-        {/* <DialogProvider> */}
+        <DialogProvider>
           {/* <ParamsProvider> */}
             {/* <TokenProvider> */}
             <ModalProvider>
@@ -33,7 +34,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
               {/* <App /> */}
             {/* </TokenProvider> */}
           {/* </ParamsProvider> */}
-        {/* </DialogProvider> */}
+        </DialogProvider>
       </NotificationProvider>
     </ThemeConfig>
   </React.StrictMode>

@@ -65,8 +65,6 @@ export const DestinatarioSchema = yup.object({
     .string()
     .required("Destinatario: Debe escribir una razón social")
     .trim(),
-  direccion:yup.string().notRequired(),
-  ubigeo:yup.string().notRequired(),
 });
 
 export const CompradorSchema = yup.object({
@@ -106,15 +104,24 @@ export const DatosPersonasSchema = yup.object().shape({
   comprador:CompradorSchema.optional()
 })
 
+
+export const AddDocSchema = yup.object().shape({
+  tipo:yup.string().trim().required('Debe elegir un tipo de comprobante'),
+  // nro:yup.string().trim().required('Debe escribir un Nro de comprobante').matches(/^([FB][a-zA-Z0-9]{3}-\d{1}\d{0,7})$/, "Debe escribir igual que el ejemplo"),
+  nro:yup.string().trim().required('Debe escribir un Nro de comprobante'),
+  emisor:yup.string().trim().required('Debe escribir el RUC del emisor'),
+  tipoDesc:yup.string().trim().required('Debe escribir la descripción del tipo de documento')
+})
+
+export const AddDocsSchema = yup.object().shape({
+  addDocs:yup.array(AddDocSchema).min(1,'Debe agregar por lo menos 1 Documento adicional')
+})
+
 export const DatosEnvioSchema = yup.object().shape({
   pesoTotal:yup.number().required('Datos de Traslado: Debe escribir el peso total'),
   fecTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir una fecha de traslado')
               .test('fecTraslado','Datos de Traslado: La fecha de traslado debe ser mayor a la fecha de Emision del documento',function(fecTraslado){
-                const arraySchema = this.from;
-                const getFormatedArraySchema = arraySchema.map(item=> item.value)
-                const schema = getFormatedArraySchema.find(item=> item.fechaEmision);
-                const fechaEmision = schema?.fechaEmision
-
+                const fechaEmision = this.parent?.fechaEmision
                 if(fecTraslado && fechaEmision){
                   const parseFechaEmision = new Date(fechaEmision)
                   const parseFecTraslado = new Date(fecTraslado)
@@ -134,7 +141,6 @@ export const DatosEnvioSchema = yup.object().shape({
     then:(schema)=> schema.min(1,`Indicadores de Traslado: Debes agregar por lo menos 1 indicador para el Motivo de traslado`),
     otherwise:(schema)=> schema.max(0,`Indicadores de Traslado: No debe existir indicadores agregados para el Motivo de traslado`)
   }),
-  // min(1,'Indicadores de traslado: Debes agregar por lo menos 1 indicador'),
 
 })
 
