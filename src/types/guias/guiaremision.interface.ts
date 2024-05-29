@@ -21,7 +21,7 @@ export interface GuiaRemision {
     puertoAeropuerto?:EnvioPuertoAeropuerto,
     transportista?:Transportista,
     vehiculo:EnvioVehiculo,
-    choferes:EnvioChoferes,
+    choferes:EnvioChoferes[],
     partida:Direccion,
     llegada:Direccion,
     observacion:''

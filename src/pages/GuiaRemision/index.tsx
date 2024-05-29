@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { AddDoc, Client, DatosGenerales, Detail, Envio, EnvioChoferes, EnvioVehiculo, GuiaRemision } from '../../types/guias/guiaremision.interface';
+import { AddDoc, Client, DatosGenerales, Detail, Direccion, Envio, EnvioChoferes, EnvioVehiculo, GuiaRemision } from '../../types/guias/guiaremision.interface';
 import dayjs from 'dayjs';
 import { useNotification } from '../../context/notification.context';
 import { isObject, useFormik } from 'formik';
-import { CompradorSchema, GuiaRemisionSchema } from '../../utils/validateGuiaRemision';
-import { Button, Container, Grid, Paper, SxProps, Theme, useTheme } from '@mui/material';
+import { CompradorSchema, GuiaRemisionSchema, LlegadaSchema } from '../../utils/validateGuiaRemision';
+import { Box, Button, Container, Grid, IconButton, Paper, SxProps, Theme, Typography, useTheme } from '@mui/material';
+
+import PersonPinCircleIcon from "@mui/icons-material/PersonPinCircle";
+import PinDropIcon from "@mui/icons-material/PinDrop";
+import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DialogComponentCustom } from '../../components';
@@ -15,6 +20,10 @@ import DocumentosAdicionales from '../DocumentosAdicionales';
 import DocumentoAdicional from '../DocumentosAdicionales/form';
 import DocumentosDetalles from '../DocumentosDetalles';
 import DocumentoDetalle from '../DocumentosDetalles/form';
+import { red, yellow } from '@mui/material/colors';
+import DatosDireccion from '../Direccion';
+import Conductores from '../Conductores';
+
 
 
 
@@ -85,7 +94,7 @@ const initialValues: GuiaRemision = {
     cantidad: 10,
     unidad: 'NIU',
   }],
-  choferes: ChoferesValues,
+  choferes: [],
   vehiculo: VehiculoValues,
   observacion: '',
   partida: {
@@ -191,6 +200,40 @@ const GuiaRemisionMain = () => {
 
   }
 
+  const paperDirection: SxProps<Theme> = {
+    display: "flex",
+    justifyContent: "center",
+    flexWrap: "wrap",
+    borderRadius: 7,
+    py: 5,
+    mx: 10,
+
+    [theme.breakpoints.down("sm")]: {
+      mx: 0,
+    },
+  };
+
+  const BoxShadoWButton = {
+    boxShadow: "0 0 40px #949494",
+    "&:hover": {
+      animation: "animatedButton 1.5s ease-in-out",
+    },
+    "@keyframes animatedButton": {
+      "0%": {
+        transform: "scale(1)",
+      },
+      "50%": {
+        transform: "scale(1.2)",
+      },
+      "100%": {
+        transform: "scale(1)",
+      },
+    },
+  };
+
+
+  /* estilos */
+
   const onHandleDatosGeneralesChange = (datosGenerales: DatosGenerales) => {
     formik.setFieldValue("datosGenerales", datosGenerales);
   }
@@ -223,6 +266,18 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
+  const handlePartidaChange = (direccion: Direccion): void => {
+
+    formik.setFieldValue('partida', direccion);
+    setModalsForms({ ...modalsForm, open: false });
+  };
+
+  const handleLlegadaChange = (direccion: Direccion): void => {
+    console.log('entro')
+    formik.setFieldValue('llegada', direccion);
+    setModalsForms({ ...modalsForm, open: false });
+  };
+
   useEffect(() => {
     // if (formik.values.addDocs.length === 0) {
     formik.setFieldValue("addDocs", adicionalDocs);
@@ -234,6 +289,12 @@ const GuiaRemisionMain = () => {
     formik.setFieldValue("details", detalles);
     // }
   }, [detalles]);
+
+  const handleConfirmListaChoferes = (choferes: EnvioChoferes[]): void => {
+    console.log(choferes)
+    formik.setFieldValue('choferes',choferes);
+    setModalsForms({ ...modalsForm, open: false });
+  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -354,10 +415,108 @@ const GuiaRemisionMain = () => {
             </Grid>
 
             <Grid item xs={12}>
-              <DocumentosDetalles detalles={formik.values.details}/>
+              <DocumentosDetalles detalles={formik.values.details} />
             </Grid>
 
             {/* Detalles */}
+
+            {/* Punto LLegada / Partida */}
+
+            <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={3}>
+              <Grid item xs={12} sm={6}>
+                <Paper elevation={5} sx={paperDirection}>
+                  <Box component={Button}
+                    display={'flex'}
+                    flexDirection={'column'}
+                    variant='contained'
+                    bgcolor={yellow[800]}
+                    color='white'
+                    sx={{
+                      height: 80,
+                      width: 100,
+                      borderColor: theme.palette.info.main,
+                      '&:hover': {
+                        bgcolor: '#f8c314'
+                      }
+
+                    }}
+                    onClick={(_e) =>
+                      handleOpenModalForm(
+                        <DatosDireccion
+                          initialValue={formik.values.partida}
+                          onChange={handlePartidaChange}
+                        />,
+                        "Punto de partida"
+                      )
+                    }
+                  >
+                    <PersonPinCircleIcon fontSize='large' />
+                    <Typography>Partida</Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Paper elevation={5} sx={paperDirection}>
+
+                  <Box component={Button}
+                    display={'flex'}
+                    flexDirection={'column'}
+                    variant='contained'
+                    bgcolor={red[800]}
+                    color='white'
+                    sx={{
+                      height: 80,
+                      width: 100,
+                      borderColor: theme.palette.info.main,
+                      '&:hover': {
+                        bgcolor: '#f51717'
+                      }
+
+                    }}
+                    onClick={(_e) =>
+                      handleOpenModalForm(
+                        <DatosDireccion
+                          initialValue={formik.values.llegada}
+                          onChange={handleLlegadaChange}
+                          schema={LlegadaSchema}
+                        />,
+                        "Punto de llegada"
+                      )
+                    }
+                  >
+                    <PinDropIcon fontSize='large' />
+                    <Typography>Llegada</Typography>
+                  </Box>
+
+                </Paper>
+              </Grid>
+            </Grid>
+
+            {/* Punto LLegada / Partida */}
+            {/* Conductores */}
+            <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={3}>
+              <Grid item xs={12}>
+                <Typography color="secondary">Chofer</Typography>
+                <IconButton
+                  color="secondary"
+                  size='large'
+                  aria-label="add an alarm"
+                  sx={BoxShadoWButton}
+                  onClick={(_e) =>
+                    handleOpenModalForm(
+                      <Conductores
+                        choferes={formik.values.choferes}
+                        onConfirm={handleConfirmListaChoferes}
+                      />,
+                      "Choferes"
+                    )
+                  }
+                >
+                  <AssignmentIndIcon fontSize="large" />
+                </IconButton>
+              </Grid>
+            </Grid>
+            {/* Conductores */}
 
           </Grid>
 
