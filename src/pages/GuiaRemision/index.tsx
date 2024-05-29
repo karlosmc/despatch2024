@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { AddDoc, Client, DatosGenerales, Envio, EnvioChoferes, EnvioVehiculo, GuiaRemision } from '../../types/guias/guiaremision.interface';
+import { AddDoc, Client, DatosGenerales, Detail, Envio, EnvioChoferes, EnvioVehiculo, GuiaRemision } from '../../types/guias/guiaremision.interface';
 import dayjs from 'dayjs';
 import { useNotification } from '../../context/notification.context';
 import { isObject, useFormik } from 'formik';
@@ -13,6 +13,8 @@ import Cliente from '../PersonaCliente';
 import EnvioForm from '../DatosEnvioForm';
 import DocumentosAdicionales from '../DocumentosAdicionales';
 import DocumentoAdicional from '../DocumentosAdicionales/form';
+import DocumentosDetalles from '../DocumentosDetalles';
+import DocumentoDetalle from '../DocumentosDetalles/form';
 
 
 
@@ -121,6 +123,8 @@ const GuiaRemisionMain = () => {
 
   const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>([]);
 
+  const [detalles, setDetalles] = useState<Detail[]>([]);
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -208,16 +212,28 @@ const GuiaRemisionMain = () => {
   };
 
   const handleNewAddDoc = (newAddDoc: AddDoc): void => {
-    
+
     setAdicionalDocs((addDoc) => [...addDoc, newAddDoc]);
+    setModalsForms({ ...modalsForm, open: false });
+  };
+
+  const handleNewDetail = (newDetail: Detail): void => {
+    // console.log(newDetail)
+    setDetalles((detalles) => [...detalles, newDetail]);
     setModalsForms({ ...modalsForm, open: false });
   };
 
   useEffect(() => {
     // if (formik.values.addDocs.length === 0) {
-      formik.setFieldValue("addDocs", adicionalDocs);
+    formik.setFieldValue("addDocs", adicionalDocs);
     // }
   }, [adicionalDocs]);
+
+  useEffect(() => {
+    // if (formik.values.addDocs.length === 0) {
+    formik.setFieldValue("details", detalles);
+    // }
+  }, [detalles]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -308,7 +324,7 @@ const GuiaRemisionMain = () => {
                     "Documentos adicionales"
                   )
                 }
-                sx={{ color: "whitesmoke", fontWeight: "bold", mb: 2 }}
+                sx={{ color: "whitesmoke", fontWeight: "bold", mb: 1 }}
               >
                 Agregar documentos adicionales
               </Button>
@@ -317,6 +333,31 @@ const GuiaRemisionMain = () => {
             <Grid item xs={12}>
               <DocumentosAdicionales adicionales={formik.values.addDocs} />
             </Grid>
+            {/* Documentos Adicionales */}
+
+
+            {/* Detalles */}
+            <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={2}>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={(_e) =>
+                  handleOpenModalForm(
+                    <DocumentoDetalle onNewDetail={handleNewDetail} />,
+                    "Detalles"
+                  )
+                }
+                sx={{ color: "whitesmoke", fontWeight: "bold", mb: 1 }}
+              >
+                Agregar Detalles
+              </Button>
+            </Grid>
+
+            <Grid item xs={12}>
+              <DocumentosDetalles detalles={formik.values.details}/>
+            </Grid>
+
+            {/* Detalles */}
 
           </Grid>
 
@@ -343,5 +384,6 @@ const GuiaRemisionMain = () => {
 }
 
 export default GuiaRemisionMain
+
 
 

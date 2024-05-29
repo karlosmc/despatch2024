@@ -194,7 +194,7 @@ export const DetailSchema = yup.object().shape({
   codigo:yup.string().trim().required('Debe tener un código de producto'),
   descripcion:yup.string().trim().required('Debe escribir la descripción del producto'),
   unidad:yup.string().trim().required('Debe escribir una Unidad de medida'),
-  cantidad:yup.number().required('Debe escribir una Cantidad'),
+  cantidad:yup.number().positive('La cantidad debe ser mayor que { 0 }').required('Debe escribir una Cantidad'),
   codProdSunat:yup.string().trim().notRequired(),
   atributos:yup.array().notRequired(),
 })
@@ -219,9 +219,9 @@ export const GuiaRemisionSchema = yup.object().shape({
   comprador: CompradorSchema.optional().notRequired(),
   envio: EnvioSchema,
   addDocs:yup.array(AddDocSchema)
-  .min(1,'debe elegir 1 Doc Add'),
+  .min(1,'Debe agregar por lo menos { 1 } Documento adicional'),
   details:yup.array(DetailSchema)
-  .min(1,'debe elegir 1 Detalle'),
+  .min(1,'Debe agregar por lo menos {1} Detalle'),
   vehiculo:VehiculoSchema,
   choferes:yup.array(ChoferSchema)
   .min(1,'debe elegir 1 Chofer'),

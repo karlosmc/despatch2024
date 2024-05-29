@@ -27,7 +27,7 @@ const DatosGeneralesForm = ({onChange,datosGeneralesValues}:DatosGeneralesFormPr
   
   return (
     <>
-      <Grid item lg={4} xs={12}>
+      <Grid item lg={12} xs={12}>
         <FormControl fullWidth size="small">
           <InputLabel id="demo-simple-select-label">
             Tipo Documento
@@ -44,7 +44,7 @@ const DatosGeneralesForm = ({onChange,datosGeneralesValues}:DatosGeneralesFormPr
           </Select>
         </FormControl>
       </Grid>
-      <Grid item lg={2} xs={6}>
+      <Grid item lg={6} xs={6}>
         <FormControl fullWidth size="small" error={formik.touched.serie && Boolean(formik.errors.serie)}>
           <InputLabel id="demo-simple-select-label">
             Serie
@@ -69,9 +69,10 @@ const DatosGeneralesForm = ({onChange,datosGeneralesValues}:DatosGeneralesFormPr
           <FormHelperText>{formik.touched.serie && formik.errors.serie}</FormHelperText>
         </FormControl>
       </Grid>
-      <Grid item lg={2} xs={6}>
+      <Grid item lg={6} xs={6}>
         <TextField
           size="small"
+          fullWidth
           name="correlativo"
           value={formik.values.correlativo}
           type="text"
