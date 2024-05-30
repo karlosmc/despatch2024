@@ -36,8 +36,6 @@ export const DestinatarioSchema = object({
     .string()
     .required("Destinatario: Debe escribir una razón social")
     .trim(),
-  direccion:yup.string().notRequired(),
-  ubigeo:yup.string().notRequired(),
 });
 
 export const CompradorSchema = object({
@@ -212,6 +210,31 @@ export const DatosGeneralesSchema= yup.object().shape({
   fechaEmision: yup.string().required("Doc. Principal: Debe elegir una fecha de emisión del comprobante"),
 });
 
+export const TransportistaSchema = yup.object().shape({
+  tipoDoc: yup
+    .string()
+    .required("Transportista: Debe elegir el Tipo de Documento")
+    .trim(),
+  numDoc: yup
+    .string()
+    .required("Transportista: Debe escribir un Número de documento")
+    .when("tipoDoc", {
+      is: "6", // alternatively: (val) => val == true
+      then: (schema) =>
+        schema.length(
+          11,
+          ({ length }) =>
+            `Transportista: El campo Número de documento debe tener ${length} caracteres`
+        ),
+      otherwise: (schema) => schema,
+    }),
+  rznSocial: yup
+    .string()
+    .required("Transportista: Debe escribir una razón social")
+    .trim(),
+  nroMtc:yup.string().notRequired()
+})
+
 export const GuiaRemisionSchema = yup.object().shape({
  
   datosGenerales:DatosGeneralesSchema,
@@ -226,7 +249,20 @@ export const GuiaRemisionSchema = yup.object().shape({
   choferes:yup.array(ChoferSchema).min(1, "Debe agregar por lo menos 1 Chofer").max(3,"Solo se permite {1} Principal y {2} Secundarios"),
   partida:PartidaSchema,
   llegada:LlegadaSchema,
-  observacion: yup.string().optional()
+  observacion: yup.string().optional(),
+  transportista:yup.object()
+  .test('Transportisa Requerido','Debe proporcionar la Información del transportista',
+    function(value){
+      const { envio } = this.parent;
+      const {modTraslado}= envio;
+      if(modTraslado==='01'){
+        return TransportistaSchema.isValid(value)
+      }
+      return true
+    }
+  )
+
+  
 })
 
 

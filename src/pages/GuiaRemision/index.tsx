@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { AddDoc, Client, DatosGenerales, Detail, Direccion, Envio, EnvioChoferes, EnvioVehiculo, GuiaRemision } from '../../types/guias/guiaremision.interface';
+import { AddDoc, Client, DatosGenerales, Detail, Direccion, Envio, EnvioChoferes, EnvioTransportista, EnvioVehiculo, GuiaRemision } from '../../types/guias/guiaremision.interface';
 import dayjs from 'dayjs';
 import { useNotification } from '../../context/notification.context';
 import { isObject, useFormik } from 'formik';
@@ -9,6 +9,9 @@ import { Box, Button, Container, Grid, IconButton, Paper, SxProps, Theme, Typogr
 import PersonPinCircleIcon from "@mui/icons-material/PersonPinCircle";
 import PinDropIcon from "@mui/icons-material/PinDrop";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
+import CommuteIcon from "@mui/icons-material/Commute";
+
+
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -23,18 +26,22 @@ import DocumentoDetalle from '../DocumentosDetalles/form';
 import { red, yellow } from '@mui/material/colors';
 import DatosDireccion from '../Direccion';
 import Conductores from '../Conductores';
+import DatosTransportista from '../DatosTransportista';
+import { error } from 'console';
 
 
 
 
-const ChoferesValues: EnvioChoferes = {
-  tipo: "",
-  tipoDoc: "",
-  apellidos: "",
-  licencia: "",
-  nombres: "",
-  nroDoc: "",
-};
+
+
+// const ChoferesValues: EnvioChoferes = {
+//   tipo: "",
+//   tipoDoc: "",
+//   apellidos: "",
+//   licencia: "",
+//   nombres: "",
+//   nroDoc: "",
+// };
 
 const VehiculoValues: EnvioVehiculo = {
   placa: '',
@@ -64,6 +71,11 @@ const DatosGeneralesValues: DatosGenerales = {
   serie: '',
   tipoDoc: '09',
   version: '2.0'
+}
+
+type ErroresType ={
+  componente:string,
+  error:boolean
 }
 
 const initialValues: GuiaRemision = {
@@ -109,6 +121,7 @@ const initialValues: GuiaRemision = {
     ruc: '',
     ubigeo: ''
   },
+  transportista: { id: '', nroMtc: '', numDoc: '', rznSocial: '', tipoDoc: '6' }
 };
 
 
@@ -155,9 +168,6 @@ const GuiaRemisionMain = () => {
     }
   })
 
-
-
-
   useEffect(() => {
     if (!formik.isSubmitting) return;
     if (Object.keys(formik.errors).length > 0) {
@@ -176,9 +186,12 @@ const GuiaRemisionMain = () => {
           getError(ErrorValuesSub);
         }
       } else {
+        
+        
         getError(ErrorValues);
       }
     }
+    
   }, [formik]);
 
 
@@ -291,8 +304,14 @@ const GuiaRemisionMain = () => {
   }, [detalles]);
 
   const handleConfirmListaChoferes = (choferes: EnvioChoferes[]): void => {
-    console.log(choferes)
-    formik.setFieldValue('choferes',choferes);
+    // console.log(choferes)
+    formik.setFieldValue('choferes', choferes);
+    setModalsForms({ ...modalsForm, open: false });
+  };
+
+  const handleTransportistaChange = (transportista: EnvioTransportista): void => {
+
+    formik.setFieldValue('transportista', transportista);
     setModalsForms({ ...modalsForm, open: false });
   };
 
@@ -496,29 +515,69 @@ const GuiaRemisionMain = () => {
             {/* Conductores */}
             <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={3}>
               <Grid item xs={12}>
-                <Typography color="secondary">Chofer</Typography>
-                <IconButton
-                  color="secondary"
-                  size='large'
-                  aria-label="add an alarm"
-                  sx={BoxShadoWButton}
-                  onClick={(_e) =>
-                    handleOpenModalForm(
-                      <Conductores
-                        choferes={formik.values.choferes}
-                        onConfirm={handleConfirmListaChoferes}
-                      />,
-                      "Choferes"
-                    )
-                  }
-                >
-                  <AssignmentIndIcon fontSize="large" />
-                </IconButton>
+
+                <Box component={'div'} display={'grid'} gridTemplateColumns={{xs: "repeat(1fr)", sm: "repeat(3,1fr)" }} columnGap={1}>
+                  <Box component={'div'}>
+                    <Typography color="secondary">Chofer</Typography>
+                    <IconButton
+                      color="secondary"
+                      size='large'
+                      aria-label="add an alarm"
+                      sx={BoxShadoWButton}
+                      onClick={(_e) =>
+                        handleOpenModalForm(
+                          <Conductores
+                            choferes={formik.values.choferes}
+                            onConfirm={handleConfirmListaChoferes}
+                          />,
+                          "Choferes"
+                        )
+                      }
+                    >
+                      <AssignmentIndIcon fontSize="large" />
+                    </IconButton>
+                  </Box>
+                  <Box component={'div'}>
+                    <Typography color="primary">Transportista</Typography>
+                    <Box position={'relative'}>
+                      <IconButton
+                        
+                        color="primary"
+                        aria-label="add an alarm"
+                        sx={{...BoxShadoWButton}}
+                        size='large'
+                        // disabled
+                        onClick={(_e) =>
+                          handleOpenModalForm(
+                            <DatosTransportista
+                              initialValue={formik.values.transportista}
+                              onChange={handleTransportistaChange}
+                            />,
+                            "Transportista"
+                          )
+                        }
+                      >
+                        <CommuteIcon fontSize="large" />
+                        
+                      </IconButton>
+                      
+                    </Box>
+                  </Box>
+                </Box>
               </Grid>
             </Grid>
             {/* Conductores */}
 
           </Grid>
+          <Button
+                sx={{ mt: 2, color: "white", fontWeight: "bold" }}
+                fullWidth
+                type="submit"
+                variant="contained"
+                color="warning"
+              >
+                Submit
+              </Button>
 
         </form>
         <DialogComponentCustom
