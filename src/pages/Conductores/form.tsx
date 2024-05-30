@@ -6,7 +6,6 @@ import {
   InputLabel,
   MenuItem,
   Select,
-
   Stack,
   TextField,
 } from "@mui/material";
@@ -18,8 +17,6 @@ import { useDialog } from "../../context/dialog.context"; */
 import { useFormik } from "formik";
 import { EnvioChoferes } from "../../types/guias/guiaremision.interface";
 import { ChoferSchema } from "../../utils/validateGuiaRemision";
-
-
 
 const ChoferValues: EnvioChoferes = {
   tipo: "",
@@ -36,7 +33,9 @@ interface ChoferFormProps {
 }
 
 const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
-  const [dataChofer, setDataChofer] = useState<EnvioChoferes | null>(initialValue);
+  const [dataChofer, setDataChofer] = useState<EnvioChoferes | null>(
+    initialValue
+  );
 
   const formik = useFormik({
     initialValues: initialValue,
@@ -46,16 +45,16 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
     },
   });
 
-
-  const handleChange = ()=>{
-
+  const handleChange = () => {
     // console.log(formik.values)
+    formik.handleSubmit();
+    if (Object.keys(formik.errors).length > 0) {
+      return;
+    }
+    onChange(formik.values);
 
-    onChange(formik.values)
-    formik.resetForm()
-
-  }
-
+    // formik.resetForm();
+  };
 
   const handleSearch = (data: dataFound): void => {
     var apellidos: string = "";
@@ -74,32 +73,25 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
     }
     setDataChofer({ ...dataChofer, apellidos, nombres });
 
-    formik.setFieldValue('apellidos', apellidos)
-    formik.setFieldValue('nombres', nombres)
-
+    formik.setFieldValue("apellidos", apellidos);
+    formik.setFieldValue("nombres", nombres);
   };
-
-
 
   const handleClean = () => {
-
-    // const resetValues:EnvioChoferes = {
-    //   tipo: "",
-    //   tipoDoc: "",
-    //   apellidos: "",
-    //   licencia: "",
-    //   nombres: "",
-    //   nroDoc: "",
-    // }
-
-  formik.resetForm();
-
+    formik.resetForm();
   };
+
   return (
-    < >
-      <Box display={'grid'} gridTemplateColumns={{xs:'repeat(1fr)',sm:'repeat(3,1fr)'}} columnGap={1} >
+    <>
+      <Box
+        display={"grid"}
+        gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(3,1fr)" }}
+        columnGap={1}
+      >
         <FormControl fullWidth size="small" margin="normal">
-          <InputLabel id="demo-simple-select-label">Tipo de conductor</InputLabel>
+          <InputLabel id="demo-simple-select-label">
+            Tipo de conductor
+          </InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -115,7 +107,9 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
           </Select>
         </FormControl>
         <FormControl fullWidth size="small" margin="normal">
-          <InputLabel id="demo-simple-select-label">Tipo de documento</InputLabel>
+          <InputLabel id="demo-simple-select-label">
+            Tipo de documento
+          </InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
@@ -140,6 +134,7 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
           label="Nro. de documento"
           value={formik.values.nroDoc}
           error={formik.touched.nroDoc && Boolean(formik.errors.nroDoc)}
+          helperText={formik.touched.nroDoc && formik.errors.nroDoc}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
         />
@@ -155,6 +150,7 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
           value={formik.values.nombres}
           onChange={formik.handleChange}
           error={formik.touched.nombres && Boolean(formik.errors.nombres)}
+          helperText={formik.touched.nombres && formik.errors.nombres}
           onBlur={formik.handleBlur}
         />
         <TextField
@@ -166,6 +162,7 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
           value={formik.values.apellidos}
           onChange={formik.handleChange}
           error={formik.touched.apellidos && Boolean(formik.errors.apellidos)}
+          helperText={formik.touched.apellidos && formik.errors.apellidos}
           onBlur={formik.handleBlur}
         />
         <TextField
@@ -177,22 +174,30 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
           value={formik.values.licencia}
           onChange={formik.handleChange}
           error={formik.touched.licencia && Boolean(formik.errors.licencia)}
+          helperText={formik.touched.licencia && formik.errors.licencia}
           onBlur={formik.handleBlur}
         />
       </Box>
       <Stack direction="row" spacing={2}>
-        <Button variant="outlined" size="small" color="success"
+        <Button
+          variant="outlined"
+          size="small"
+          color="success"
           type="button"
           onClick={handleChange}
         >
           Agregar
         </Button>
-        <Button variant="outlined" size="small" color="error" onClick={handleClean}>
+        <Button
+          variant="outlined"
+          size="small"
+          color="error"
+          onClick={handleClean}
+        >
           Clean
         </Button>
       </Stack>
-     </>
-    
+    </>
   );
 };
 

@@ -223,8 +223,7 @@ export const GuiaRemisionSchema = yup.object().shape({
   details:yup.array(DetailSchema)
   .min(1,'Debe agregar por lo menos {1} Detalle'),
   vehiculo:VehiculoSchema,
-  choferes:yup.array(ChoferSchema)
-  .min(1,'debe elegir 1 Chofer'),
+  choferes:yup.array(ChoferSchema).min(1, "Debe agregar por lo menos 1 Chofer").max(3,"Solo se permite {1} Principal y {2} Secundarios"),
   partida:PartidaSchema,
   llegada:LlegadaSchema,
   observacion: yup.string().optional()
