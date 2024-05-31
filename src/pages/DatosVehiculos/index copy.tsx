@@ -104,40 +104,21 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
     initialValues: initialValue,
     validationSchema: VehiculoSchema,
     onSubmit: (values) => {
-      // onChange(values);
+      onChange(values);
     },
   });
-
-  
-
-  const handleChange = () => {
-    // console.log(formik.values)
-
-    formik.handleSubmit();
-    if(formik.values.placa===''){
-      return;
-    }
-    if (Object.keys(formik.errors).length > 0) {
-    
-      return;
-    }
-    onChange(formik.values);
-
-    // formik.resetForm();
-  };
 
  
   const handleClean = () => {
     
-    // onChange(VehiculoValues);
-    formik.resetForm();
+    onChange(VehiculoValues);
   };
 
   return (
     
       <Box 
-        // component={'form'} 
-        // onSubmit={formik.handleSubmit} 
+        component={'form'} 
+        onSubmit={formik.handleSubmit} 
         display={'grid'} 
         gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }} 
         columnGap={1}
@@ -188,7 +169,7 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
           onChange={formik.handleChange}
         />
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" color="success" onClick={handleChange}>
+          <Button variant="outlined" color="success" type="submit">
             Agregar
           </Button>
           <Button variant="outlined" color="error" onClick={handleClean}>

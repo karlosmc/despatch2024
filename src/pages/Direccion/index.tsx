@@ -14,6 +14,7 @@ interface DireccionFormProps {
   initialValue: Direccion;
   onChange: (direccion: Direccion) => void;
   schema?: Yup.AnyObjectSchema;
+  codTraslado:string;
 }
 
 const DireccionValues: Direccion = {

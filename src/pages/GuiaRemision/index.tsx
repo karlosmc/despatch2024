@@ -4,13 +4,14 @@ import dayjs from 'dayjs';
 import { useNotification } from '../../context/notification.context';
 import { isObject, useFormik } from 'formik';
 import { CompradorSchema, GuiaRemisionSchema, LlegadaSchema } from '../../utils/validateGuiaRemision';
-import { Box, Button, Container, Grid, IconButton, Paper, SxProps, Theme, Typography, useTheme } from '@mui/material';
+import { Box, Button, Container, Grid, IconButton, Paper, SxProps, Theme,  Typography, useTheme } from '@mui/material';
 
 import PersonPinCircleIcon from "@mui/icons-material/PersonPinCircle";
 import PinDropIcon from "@mui/icons-material/PinDrop";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import CommuteIcon from "@mui/icons-material/Commute";
-
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -27,7 +28,9 @@ import { red, yellow } from '@mui/material/colors';
 import DatosDireccion from '../Direccion';
 import Conductores from '../Conductores';
 import DatosTransportista from '../DatosTransportista';
-import { error } from 'console';
+
+import DatosVehiculo from '../DatosVehiculos';
+import VehiculosSecundarios from '../DatosVehiculos/secundarios';
 
 
 
@@ -48,7 +51,7 @@ const VehiculoValues: EnvioVehiculo = {
   codEmisor: "",
   nroAutorizacion: "",
   nroCirculacion: "",
-  secundarios: null,
+  secundarios: [],
 };
 
 const EnvioValues: Envio = {
@@ -73,9 +76,9 @@ const DatosGeneralesValues: DatosGenerales = {
   version: '2.0'
 }
 
-type ErroresType ={
-  componente:string,
-  error:boolean
+type ErroresType = {
+  componente: string,
+  error: boolean
 }
 
 const initialValues: GuiaRemision = {
@@ -186,12 +189,12 @@ const GuiaRemisionMain = () => {
           getError(ErrorValuesSub);
         }
       } else {
-        
-        
+
+
         getError(ErrorValues);
       }
     }
-    
+
   }, [formik]);
 
 
@@ -291,6 +294,29 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
+  const handleConfirmListVehiculo = (vehiculos: EnvioVehiculo[]): void => {
+    // console.log(vehiculos)
+
+    formik.setFieldValue('vehiculo.secundarios', vehiculos);
+    setModalsForms({ ...modalsForm, open: false });
+
+    // setDataEnvio((prevData) => ({
+    //   ...prevData,
+    //   vehiculo: {
+    //     ...prevData.vehiculo,
+    //     secundarios: vehiculos,
+    //   },
+    // }));
+
+    // setModalsForms({ ...modalsForm, open: false });
+    //setOpenModalListaVehiculo(false);
+  };
+
+  const handleVehiculoChange = (vehiculo: EnvioVehiculo): void => {
+    formik.setFieldValue('vehiculo', vehiculo);
+    setModalsForms({ ...modalsForm, open: false });
+  };
+
   useEffect(() => {
     // if (formik.values.addDocs.length === 0) {
     formik.setFieldValue("addDocs", adicionalDocs);
@@ -342,23 +368,23 @@ const GuiaRemisionMain = () => {
             >
               <Grid item xs={6}>
                 <Paper elevation={5} sx={paperClient}>
-                  <Button
-                    variant="outlined"
-                    color="secondary"
-                    onClick={(_e) =>
-                      handleOpenModalForm(
-                        <Cliente
-                          // initialValue={formData.destinatario}
-                          initialValue={formik.values.destinatario}
-                          onChange={handleDestinatarioChange}
-                        />,
-                        "Destinatario"
-                      )
-                    }
-                    sx={{ height: 80, width: 100 }}
-                  >
-                    Destinatario
-                  </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={(_e) =>
+                        handleOpenModalForm(
+                          <Cliente
+                            // initialValue={formData.destinatario}
+                            initialValue={formik.values.destinatario}
+                            onChange={handleDestinatarioChange}
+                          />,
+                          "Destinatario"
+                        )
+                      }
+                      sx={{ height: 80, width: 100 }}
+                    >
+                      Destinatario
+                    </Button>
                 </Paper>
               </Grid>
               <Grid item xs={6}>
@@ -464,6 +490,7 @@ const GuiaRemisionMain = () => {
                         <DatosDireccion
                           initialValue={formik.values.partida}
                           onChange={handlePartidaChange}
+                          codTraslado={formik.values.envio.codTraslado}
                         />,
                         "Punto de partida"
                       )
@@ -498,6 +525,7 @@ const GuiaRemisionMain = () => {
                           initialValue={formik.values.llegada}
                           onChange={handleLlegadaChange}
                           schema={LlegadaSchema}
+                          codTraslado={formik.values.envio.codTraslado}
                         />,
                         "Punto de llegada"
                       )
@@ -516,9 +544,15 @@ const GuiaRemisionMain = () => {
             <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={3}>
               <Grid item xs={12}>
 
-                <Box component={'div'} display={'grid'} gridTemplateColumns={{xs: "repeat(1fr)", sm: "repeat(3,1fr)" }} columnGap={1}>
+                <Box
+                  component={'div'}
+                  display={'grid'}
+                  gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(3,1fr)" }}
+                  columnGap={1}
+                  alignItems={'end'}
+                >
                   <Box component={'div'}>
-                    <Typography color="secondary">Chofer</Typography>
+                    <Typography fontWeight={900} letterSpacing={3} color="secondary">Chofer</Typography>
                     <IconButton
                       color="secondary"
                       size='large'
@@ -538,29 +572,69 @@ const GuiaRemisionMain = () => {
                     </IconButton>
                   </Box>
                   <Box component={'div'}>
-                    <Typography color="primary">Transportista</Typography>
-                    <Box position={'relative'}>
-                      <IconButton
-                        
-                        color="primary"
-                        aria-label="add an alarm"
-                        sx={{...BoxShadoWButton}}
-                        size='large'
-                        // disabled
-                        onClick={(_e) =>
-                          handleOpenModalForm(
-                            <DatosTransportista
-                              initialValue={formik.values.transportista}
-                              onChange={handleTransportistaChange}
-                            />,
-                            "Transportista"
-                          )
-                        }
-                      >
-                        <CommuteIcon fontSize="large" />
-                        
-                      </IconButton>
-                      
+                    <Typography fontWeight={900} letterSpacing={3} color="primary">Transportista</Typography>
+                    <IconButton
+
+                      color="primary"
+                      aria-label="add an alarm"
+                      sx={{ ...BoxShadoWButton }}
+                      size='large'
+                      // disabled
+                      onClick={(_e) =>
+                        handleOpenModalForm(
+                          <DatosTransportista
+                            initialValue={formik.values.transportista}
+                            onChange={handleTransportistaChange}
+                          />,
+                          "Transportista"
+                        )
+                      }
+                    >
+                      <CommuteIcon fontSize="large" />
+                    </IconButton>
+                  </Box>
+                  <Box component={'div'}>
+                    <Typography textAlign={'center'} fontWeight={900} letterSpacing={10} color="secondary">Vehiculos</Typography>
+                    <Box component={'div'} display={{ sm: 'flex', xs: 'block' }} alignItems={'end'} justifyContent={'space-around'}>
+                      <Box component={'div'}>
+                        <Typography fontSize={12} fontWeight={800} color="secondary">Principal</Typography>
+                        <IconButton
+                          color="secondary"
+                          aria-label="add an alarm"
+                          sx={BoxShadoWButton}
+                          onClick={(_e) =>
+                            handleOpenModalForm(
+                              <DatosVehiculo
+                                onChange={handleVehiculoChange}
+                                initialValue={formik.values.vehiculo}
+                              />,
+                              "Vehiculo"
+                            )
+                          }
+                        >
+                          <LocalShippingIcon fontSize="large" />
+                        </IconButton>
+                      </Box>
+                      <Box component={'div'} alignSelf={'start'}>
+                        <Typography fontSize={12} fontWeight={800} color="secondary">Secundarios</Typography>
+                        <IconButton
+                          color="secondary"
+                          aria-label="add an alarm"
+                          disabled={formik.values.vehiculo.placa === '' ? true : false}
+                          sx={BoxShadoWButton}
+                          onClick={(_e) =>
+                            handleOpenModalForm(
+                              <VehiculosSecundarios
+                                onConfirm={handleConfirmListVehiculo}
+                                vehiculos={formik.values.vehiculo.secundarios}
+                              />,
+                              "Vehiculo"
+                            )
+                          }
+                        >
+                          <AirportShuttleIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
@@ -570,14 +644,14 @@ const GuiaRemisionMain = () => {
 
           </Grid>
           <Button
-                sx={{ mt: 2, color: "white", fontWeight: "bold" }}
-                fullWidth
-                type="submit"
-                variant="contained"
-                color="warning"
-              >
-                Submit
-              </Button>
+            sx={{ mt: 2, color: "white", fontWeight: "bold" }}
+            fullWidth
+            type="submit"
+            variant="contained"
+            color="warning"
+          >
+            Submit
+          </Button>
 
         </form>
         <DialogComponentCustom

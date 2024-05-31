@@ -26,7 +26,7 @@ const ChoferValues: EnvioChoferes = {
 };
 
 const Conductores = ({ choferes, onConfirm }: Props) => {
-  const [chofer, setChofer] = useState<EnvioChoferes>(ChoferValues);
+  // const [chofer, setChofer] = useState<EnvioChoferes>(ChoferValues);
   const [listaChoferes, setListaChoferes] = useState<EnvioChoferes[]>(choferes);
 
   const { getError } = useNotification();
@@ -69,7 +69,7 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
     //   getError('Ya existe un conductor principal');
     //   return;
     // }
-    setChofer(newChofer);
+    // setChofer(newChofer);
     if(listaChoferes.length<3){
       setListaChoferes((chofer) => [...chofer, newChofer]);
     }else{
