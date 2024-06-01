@@ -41,7 +41,11 @@ const DatosDireccion = ({
   initialValue,
   onChange,
   schema,
+  codTraslado
 }: DireccionFormProps) => {
+  if (codTraslado!=='04'){
+    initialValue.codlocal='0000'
+  }
   const formik = useFormik({
     initialValues: initialValue,
     validationSchema: schema || PartidaSchema,

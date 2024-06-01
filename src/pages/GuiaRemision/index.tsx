@@ -1,10 +1,39 @@
-import React, { useEffect, useState } from 'react'
-import { AddDoc, Client, DatosGenerales, Detail, Direccion, Envio, EnvioChoferes, EnvioTransportista, EnvioVehiculo, GuiaRemision } from '../../types/guias/guiaremision.interface';
-import dayjs from 'dayjs';
-import { useNotification } from '../../context/notification.context';
-import { isObject, useFormik } from 'formik';
-import { CompradorSchema, GuiaRemisionSchema, LlegadaSchema } from '../../utils/validateGuiaRemision';
-import { Box, Button, Container, Grid, IconButton, Paper, SxProps, Theme,  Typography, useTheme } from '@mui/material';
+import React, { useEffect, useState } from "react";
+import {
+  AddDoc,
+  Client,
+  DatosGenerales,
+  Detail,
+  Direccion,
+  Envio,
+  EnvioChoferes,
+  EnvioTransportista,
+  EnvioVehiculo,
+  GuiaRemision,
+} from "../../types/guias/guiaremision.interface";
+import dayjs from "dayjs";
+import { useNotification } from "../../context/notification.context";
+import { isObject, useFormik } from "formik";
+import {
+  CompradorSchema,
+  GuiaRemisionSchema,
+  LlegadaSchema,
+} from "../../utils/validateGuiaRemision";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Button,
+  Container,
+  Grid,
+  IconButton,
+  Paper,
+  SxProps,
+  Theme,
+  Typography,
+  useTheme,
+} from "@mui/material";
 
 import PersonPinCircleIcon from "@mui/icons-material/PersonPinCircle";
 import PinDropIcon from "@mui/icons-material/PinDrop";
@@ -12,30 +41,25 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import CommuteIcon from "@mui/icons-material/Commute";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DialogComponentCustom } from "../../components";
+import DatosGeneralesForm from "../DatosGeneralesForm";
+import Cliente from "../PersonaCliente";
+import EnvioForm from "../DatosEnvioForm";
+import DocumentosAdicionales from "../DocumentosAdicionales";
+import DocumentoAdicional from "../DocumentosAdicionales/form";
+import DocumentosDetalles from "../DocumentosDetalles";
+import DocumentoDetalle from "../DocumentosDetalles/form";
+import { red, yellow } from "@mui/material/colors";
+import DatosDireccion from "../Direccion";
+import Conductores from "../Conductores";
+import DatosTransportista from "../DatosTransportista";
 
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DialogComponentCustom } from '../../components';
-import DatosGeneralesForm from '../DatosGeneralesForm';
-import Cliente from '../PersonaCliente';
-import EnvioForm from '../DatosEnvioForm';
-import DocumentosAdicionales from '../DocumentosAdicionales';
-import DocumentoAdicional from '../DocumentosAdicionales/form';
-import DocumentosDetalles from '../DocumentosDetalles';
-import DocumentoDetalle from '../DocumentosDetalles/form';
-import { red, yellow } from '@mui/material/colors';
-import DatosDireccion from '../Direccion';
-import Conductores from '../Conductores';
-import DatosTransportista from '../DatosTransportista';
-
-import DatosVehiculo from '../DatosVehiculos';
-import VehiculosSecundarios from '../DatosVehiculos/secundarios';
-
-
-
-
-
+import DatosVehiculo from "../DatosVehiculos";
+import VehiculosSecundarios from "../DatosVehiculos/secundarios";
 
 // const ChoferesValues: EnvioChoferes = {
 //   tipo: "",
@@ -47,7 +71,7 @@ import VehiculosSecundarios from '../DatosVehiculos/secundarios';
 // };
 
 const VehiculoValues: EnvioVehiculo = {
-  placa: '',
+  placa: "",
   codEmisor: "",
   nroAutorizacion: "",
   nroCirculacion: "",
@@ -69,29 +93,24 @@ const EnvioValues: Envio = {
 };
 
 const DatosGeneralesValues: DatosGenerales = {
-  correlativo: '',
+  correlativo: "",
   fechaEmision: dayjs().format("YYYY-MM-DDTHH:mm"),
-  serie: '',
-  tipoDoc: '09',
-  version: '2.0'
-}
-
-type ErroresType = {
-  componente: string,
-  error: boolean
-}
+  serie: "",
+  tipoDoc: "09",
+  version: "2.0",
+};
 
 const initialValues: GuiaRemision = {
   datosGenerales: DatosGeneralesValues,
   destinatario: {
-    numDoc: '',
-    rznSocial: '',
-    tipoDoc: '6'
+    numDoc: "",
+    rznSocial: "",
+    tipoDoc: "6",
   },
   comprador: {
-    numDoc: '',
-    rznSocial: '',
-    tipoDoc: '6'
+    numDoc: "",
+    rznSocial: "",
+    tipoDoc: "6",
   },
   envio: EnvioValues,
   addDocs: [
@@ -102,32 +121,38 @@ const initialValues: GuiaRemision = {
       tipoDesc: "FACTURA",
     },
   ],
-  details: [{
-    codigo: 'PRO0001',
-    codProdSunat: '15101505',
-    descripcion: 'PRODUCTO 1',
-    cantidad: 10,
-    unidad: 'NIU',
-  }],
+  details: [
+    {
+      codigo: "PRO0001",
+      codProdSunat: "15101505",
+      descripcion: "PRODUCTO 1",
+      cantidad: 10,
+      unidad: "NIU",
+    },
+  ],
   choferes: [],
   vehiculo: VehiculoValues,
-  observacion: '',
+  observacion: "",
   partida: {
-    codlocal: '',
-    direccion: '',
-    ruc: '',
-    ubigeo: ''
+    codlocal: "",
+    direccion: "",
+    ruc: "",
+    ubigeo: "",
   },
   llegada: {
-    codlocal: '',
-    direccion: '',
-    ruc: '',
-    ubigeo: ''
+    codlocal: "",
+    direccion: "",
+    ruc: "",
+    ubigeo: "",
   },
-  transportista: { id: '', nroMtc: '', numDoc: '', rznSocial: '', tipoDoc: '6' }
+  transportista: {
+    id: "",
+    nroMtc: "",
+    numDoc: "",
+    rznSocial: "",
+    tipoDoc: "6",
+  },
 };
-
-
 
 type ModalsProps = {
   open: boolean;
@@ -136,9 +161,7 @@ type ModalsProps = {
 };
 
 const GuiaRemisionMain = () => {
-
-  const { getError, getSuccess } = useNotification();
-
+  const { getError } = useNotification();
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -168,8 +191,8 @@ const GuiaRemisionMain = () => {
       const doc = values;
 
       console.log(doc);
-    }
-  })
+    },
+  });
 
   useEffect(() => {
     if (!formik.isSubmitting) return;
@@ -189,14 +212,10 @@ const GuiaRemisionMain = () => {
           getError(ErrorValuesSub);
         }
       } else {
-
-
         getError(ErrorValues);
       }
     }
-
   }, [formik]);
-
 
   /* ESTILOS */
 
@@ -213,8 +232,7 @@ const GuiaRemisionMain = () => {
     [theme.breakpoints.down("sm")]: {
       mx: 0,
     },
-
-  }
+  };
 
   const paperDirection: SxProps<Theme> = {
     display: "flex",
@@ -229,7 +247,7 @@ const GuiaRemisionMain = () => {
     },
   };
 
-  const BoxShadoWButton = {
+  const BoxShadoWButton: SxProps<Theme> = {
     boxShadow: "0 0 40px #949494",
     "&:hover": {
       animation: "animatedButton 1.5s ease-in-out",
@@ -247,21 +265,18 @@ const GuiaRemisionMain = () => {
     },
   };
 
-
   /* estilos */
 
   const onHandleDatosGeneralesChange = (datosGenerales: DatosGenerales) => {
     formik.setFieldValue("datosGenerales", datosGenerales);
-  }
+  };
 
   const handleDestinatarioChange = (cliente: Client): void => {
-
     formik.setFieldValue("destinatario", cliente);
     setModalsForms({ ...modalsForm, open: false });
   };
 
   const handleCompradorChange = (cliente: Client) => {
-
     formik.setFieldValue("comprador", cliente);
     setModalsForms({ ...modalsForm, open: false });
   };
@@ -271,7 +286,6 @@ const GuiaRemisionMain = () => {
   };
 
   const handleNewAddDoc = (newAddDoc: AddDoc): void => {
-
     setAdicionalDocs((addDoc) => [...addDoc, newAddDoc]);
     setModalsForms({ ...modalsForm, open: false });
   };
@@ -283,21 +297,20 @@ const GuiaRemisionMain = () => {
   };
 
   const handlePartidaChange = (direccion: Direccion): void => {
-
-    formik.setFieldValue('partida', direccion);
+    formik.setFieldValue("partida", direccion);
     setModalsForms({ ...modalsForm, open: false });
   };
 
   const handleLlegadaChange = (direccion: Direccion): void => {
-    console.log('entro')
-    formik.setFieldValue('llegada', direccion);
+    console.log("entro");
+    formik.setFieldValue("llegada", direccion);
     setModalsForms({ ...modalsForm, open: false });
   };
 
   const handleConfirmListVehiculo = (vehiculos: EnvioVehiculo[]): void => {
     // console.log(vehiculos)
 
-    formik.setFieldValue('vehiculo.secundarios', vehiculos);
+    formik.setFieldValue("vehiculo.secundarios", vehiculos);
     setModalsForms({ ...modalsForm, open: false });
 
     // setDataEnvio((prevData) => ({
@@ -313,7 +326,7 @@ const GuiaRemisionMain = () => {
   };
 
   const handleVehiculoChange = (vehiculo: EnvioVehiculo): void => {
-    formik.setFieldValue('vehiculo', vehiculo);
+    formik.setFieldValue("vehiculo", vehiculo);
     setModalsForms({ ...modalsForm, open: false });
   };
 
@@ -331,13 +344,21 @@ const GuiaRemisionMain = () => {
 
   const handleConfirmListaChoferes = (choferes: EnvioChoferes[]): void => {
     // console.log(choferes)
-    formik.setFieldValue('choferes', choferes);
+    formik.setFieldValue("choferes", choferes);
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const handleTransportistaChange = (transportista: EnvioTransportista): void => {
+  const [expanded, setExpanded] = React.useState<string | false>(false);
 
-    formik.setFieldValue('transportista', transportista);
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false);
+    };
+
+  const handleTransportistaChange = (
+    transportista: EnvioTransportista
+  ): void => {
+    formik.setFieldValue("transportista", transportista);
     setModalsForms({ ...modalsForm, open: false });
   };
 
@@ -352,39 +373,57 @@ const GuiaRemisionMain = () => {
             alignItems="center"
           >
             {/* Datos generales */}
-            <Grid spacing={2} container item xs={12}>
-              <DatosGeneralesForm onChange={onHandleDatosGeneralesChange} datosGeneralesValues={formik.values.datosGenerales} />
-            </Grid>
+            <Accordion
+              expanded={expanded === "panel1"}
+              onChange={handleChange("panel1")}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1bh-content"
+                id="panel1bh-header"
+              >
+                <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                  Datos Generales
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Paper
+                  sx={{ p: 4, background: "#62393382" }}
+                  square={false}
+                  elevation={5}
+                >
+                  <Grid spacing={2} container item xs={12}>
+                    <DatosGeneralesForm
+                      onChange={onHandleDatosGeneralesChange}
+                      datosGeneralesValues={formik.values.datosGenerales}
+                    />
+                  </Grid>
+                </Paper>
+              </AccordionDetails>
+            </Accordion>
             {/* Datos generales */}
 
             {/* Destinatario y comprador */}
-            <Grid
-              mb={1}
-              container
-              item
-              xs={12}
-              textAlign="center"
-              spacing={2}
-            >
+            <Grid mb={1} container item xs={12} textAlign="center" spacing={2}>
               <Grid item xs={6}>
                 <Paper elevation={5} sx={paperClient}>
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={(_e) =>
-                        handleOpenModalForm(
-                          <Cliente
-                            // initialValue={formData.destinatario}
-                            initialValue={formik.values.destinatario}
-                            onChange={handleDestinatarioChange}
-                          />,
-                          "Destinatario"
-                        )
-                      }
-                      sx={{ height: 80, width: 100 }}
-                    >
-                      Destinatario
-                    </Button>
+                  <Button
+                    variant="outlined"
+                    color="info"
+                    onClick={(_e) =>
+                      handleOpenModalForm(
+                        <Cliente
+                          // initialValue={formData.destinatario}
+                          initialValue={formik.values.destinatario}
+                          onChange={handleDestinatarioChange}
+                        />,
+                        "Destinatario"
+                      )
+                    }
+                    sx={{ height: 80, width: 100 }}
+                  >
+                    Destinatario
+                  </Button>
                 </Paper>
               </Grid>
               <Grid item xs={6}>
@@ -420,7 +459,13 @@ const GuiaRemisionMain = () => {
             </Grid>
             {/* Envio */}
             {/* Documentos Adicionales */}
-            <Grid item container xs={12} textAlign={'center'} justifyContent={'center'}>
+            <Grid
+              item
+              container
+              xs={12}
+              textAlign={"center"}
+              justifyContent={"center"}
+            >
               <Button
                 variant="contained"
                 color="secondary"
@@ -434,16 +479,21 @@ const GuiaRemisionMain = () => {
               >
                 Agregar documentos adicionales
               </Button>
-
             </Grid>
             <Grid item xs={12}>
               <DocumentosAdicionales adicionales={formik.values.addDocs} />
             </Grid>
             {/* Documentos Adicionales */}
 
-
             {/* Detalles */}
-            <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={2}>
+            <Grid
+              item
+              container
+              xs={12}
+              textAlign={"center"}
+              justifyContent={"center"}
+              mt={2}
+            >
               <Button
                 variant="contained"
                 color="secondary"
@@ -467,23 +517,30 @@ const GuiaRemisionMain = () => {
 
             {/* Punto LLegada / Partida */}
 
-            <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={3}>
+            <Grid
+              item
+              container
+              xs={12}
+              textAlign={"center"}
+              justifyContent={"center"}
+              mt={3}
+            >
               <Grid item xs={12} sm={6}>
                 <Paper elevation={5} sx={paperDirection}>
-                  <Box component={Button}
-                    display={'flex'}
-                    flexDirection={'column'}
-                    variant='contained'
+                  <Box
+                    component={Button}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    variant="contained"
                     bgcolor={yellow[800]}
-                    color='white'
+                    color="white"
                     sx={{
                       height: 80,
                       width: 100,
                       borderColor: theme.palette.info.main,
-                      '&:hover': {
-                        bgcolor: '#f8c314'
-                      }
-
+                      "&:hover": {
+                        bgcolor: "#f8c314",
+                      },
                     }}
                     onClick={(_e) =>
                       handleOpenModalForm(
@@ -496,28 +553,27 @@ const GuiaRemisionMain = () => {
                       )
                     }
                   >
-                    <PersonPinCircleIcon fontSize='large' />
+                    <PersonPinCircleIcon fontSize="large" />
                     <Typography>Partida</Typography>
                   </Box>
                 </Paper>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Paper elevation={5} sx={paperDirection}>
-
-                  <Box component={Button}
-                    display={'flex'}
-                    flexDirection={'column'}
-                    variant='contained'
+                  <Box
+                    component={Button}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    variant="contained"
                     bgcolor={red[800]}
-                    color='white'
+                    color="white"
                     sx={{
                       height: 80,
                       width: 100,
                       borderColor: theme.palette.info.main,
-                      '&:hover': {
-                        bgcolor: '#f51717'
-                      }
-
+                      "&:hover": {
+                        bgcolor: "#f51717",
+                      },
                     }}
                     onClick={(_e) =>
                       handleOpenModalForm(
@@ -531,31 +587,45 @@ const GuiaRemisionMain = () => {
                       )
                     }
                   >
-                    <PinDropIcon fontSize='large' />
+                    <PinDropIcon fontSize="large" />
                     <Typography>Llegada</Typography>
                   </Box>
-
                 </Paper>
               </Grid>
             </Grid>
 
             {/* Punto LLegada / Partida */}
             {/* Conductores */}
-            <Grid item container xs={12} textAlign={'center'} justifyContent={'center'} mt={3}>
+            <Grid
+              item
+              container
+              xs={12}
+              textAlign={"center"}
+              justifyContent={"center"}
+              mt={3}
+            >
               <Grid item xs={12}>
-
                 <Box
-                  component={'div'}
-                  display={'grid'}
-                  gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(3,1fr)" }}
+                  component={"div"}
+                  display={"grid"}
+                  gridTemplateColumns={{
+                    xs: "repeat(1fr)",
+                    sm: "repeat(3,1fr)",
+                  }}
                   columnGap={1}
-                  alignItems={'end'}
+                  alignItems={"end"}
                 >
-                  <Box component={'div'}>
-                    <Typography fontWeight={900} letterSpacing={3} color="secondary">Chofer</Typography>
+                  <Box component={"div"}>
+                    <Typography
+                      fontWeight={900}
+                      letterSpacing={3}
+                      color="secondary.dark"
+                    >
+                      Chofer
+                    </Typography>
                     <IconButton
-                      color="secondary"
-                      size='large'
+                      color="default"
+                      size="large"
                       aria-label="add an alarm"
                       sx={BoxShadoWButton}
                       onClick={(_e) =>
@@ -571,14 +641,19 @@ const GuiaRemisionMain = () => {
                       <AssignmentIndIcon fontSize="large" />
                     </IconButton>
                   </Box>
-                  <Box component={'div'}>
-                    <Typography fontWeight={900} letterSpacing={3} color="primary">Transportista</Typography>
+                  <Box component={"div"}>
+                    <Typography
+                      fontWeight={900}
+                      letterSpacing={3}
+                      color="primary"
+                    >
+                      Transportista
+                    </Typography>
                     <IconButton
-
                       color="primary"
                       aria-label="add an alarm"
                       sx={{ ...BoxShadoWButton }}
-                      size='large'
+                      size="large"
                       // disabled
                       onClick={(_e) =>
                         handleOpenModalForm(
@@ -593,13 +668,31 @@ const GuiaRemisionMain = () => {
                       <CommuteIcon fontSize="large" />
                     </IconButton>
                   </Box>
-                  <Box component={'div'}>
-                    <Typography textAlign={'center'} fontWeight={900} letterSpacing={10} color="secondary">Vehiculos</Typography>
-                    <Box component={'div'} display={{ sm: 'flex', xs: 'block' }} alignItems={'end'} justifyContent={'space-around'}>
-                      <Box component={'div'}>
-                        <Typography fontSize={12} fontWeight={800} color="secondary">Principal</Typography>
+                  <Box component={"div"}>
+                    <Typography
+                      textAlign={"center"}
+                      fontWeight={900}
+                      letterSpacing={10}
+                      color="secondary.dark"
+                    >
+                      Vehiculos
+                    </Typography>
+                    <Box
+                      component={"div"}
+                      display={{ sm: "flex", xs: "block" }}
+                      alignItems={"end"}
+                      justifyContent={"space-around"}
+                    >
+                      <Box component={"div"}>
+                        <Typography
+                          fontSize={12}
+                          fontWeight={800}
+                          color="secondary.dark"
+                        >
+                          Principal
+                        </Typography>
                         <IconButton
-                          color="secondary"
+                          color="default"
                           aria-label="add an alarm"
                           sx={BoxShadoWButton}
                           onClick={(_e) =>
@@ -615,12 +708,20 @@ const GuiaRemisionMain = () => {
                           <LocalShippingIcon fontSize="large" />
                         </IconButton>
                       </Box>
-                      <Box component={'div'} alignSelf={'start'}>
-                        <Typography fontSize={12} fontWeight={800} color="secondary">Secundarios</Typography>
+                      <Box component={"div"} alignSelf={"start"}>
+                        <Typography
+                          fontSize={12}
+                          fontWeight={800}
+                          color="secondary.dark"
+                        >
+                          Secundarios
+                        </Typography>
                         <IconButton
-                          color="secondary"
+                          color="default"
                           aria-label="add an alarm"
-                          disabled={formik.values.vehiculo.placa === '' ? true : false}
+                          disabled={
+                            formik.values.vehiculo.placa === "" ? true : false
+                          }
                           sx={BoxShadoWButton}
                           onClick={(_e) =>
                             handleOpenModalForm(
@@ -641,18 +742,22 @@ const GuiaRemisionMain = () => {
               </Grid>
             </Grid>
             {/* Conductores */}
-
           </Grid>
-          <Button
-            sx={{ mt: 2, color: "white", fontWeight: "bold" }}
-            fullWidth
-            type="submit"
-            variant="contained"
-            color="warning"
-          >
-            Submit
-          </Button>
-
+          <Box display={"flex"} justifyContent={"center"}>
+            <Button
+              sx={{
+                my: 4,
+                color: "white",
+                fontWeight: "bold",
+                width: "70%",
+              }}
+              type="submit"
+              variant="contained"
+              color="warning"
+            >
+              Submit
+            </Button>
+          </Box>
         </form>
         <DialogComponentCustom
           closeButton={
@@ -670,12 +775,7 @@ const GuiaRemisionMain = () => {
         />
       </Container>
     </LocalizationProvider>
-  )
+  );
+};
 
-
-}
-
-export default GuiaRemisionMain
-
-
-
+export default GuiaRemisionMain;

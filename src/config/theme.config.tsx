@@ -7,18 +7,27 @@ type ThemeProp = {
     children: JSX.Element
 }
 
+
 export enum themePalette  {
-    BG = "#12181b",
+    BG = "#272b30",
     CMAQ_BLUE = "#56ECF8",
     CMAQ_BLUE2 = "#78dde4",
     FONT_GLOBAL = "'Montserrat Alternates',sans-serif",
     //Alert styles
     ERROR_MAIN = "#F44336",
     BG_ERROR_MAIN = "rgba(244,67,54,0.1)",
-    SUCCESS_MAIN = "#66BB6A",
+    SUCCESS_MAIN = "#77b300",
     BG_SUCCESS_MAIN = "rgba(102,187,106,0.1)",
     CMAQ_GREY = "#BBBBBB",
-
+    dark_primary="#2a9fd6",
+    light_primary="#114056",
+    dark_secondary="#555555",
+    dark_info="#9933cc",
+    dark_warning="#ff8800",
+    dark_success="#77b300",
+    dark_error="#cc0000",
+    dark_light="#222",
+    dark_dark="#adafae"
 }
 
 let theme = createTheme({
@@ -29,13 +38,26 @@ let theme = createTheme({
             default:themePalette.BG
         },
         primary:{
-            main:themePalette.CMAQ_BLUE,
-            light:themePalette.CMAQ_BLUE2
+            main:themePalette.dark_primary,
+            light:themePalette.light_primary
         },
-        grey:{
-            
-        }
-        
+        secondary:{
+            main:themePalette.dark_secondary,
+            dark:themePalette.dark_dark
+        },
+        info:{
+            main:themePalette.dark_info
+        },
+        // error:{
+        //     main:themePalette.dark_error
+        // },
+        success:{
+            main:themePalette.dark_success
+        },
+        warning:{
+            main:themePalette.dark_warning
+        },
+     
     },
     typography:{
         fontFamily:themePalette.FONT_GLOBAL,
