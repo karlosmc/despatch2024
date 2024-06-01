@@ -42,7 +42,13 @@ import CommuteIcon from "@mui/icons-material/Commute";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import PeopleIcon from '@mui/icons-material/People';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import BadgeIcon from '@mui/icons-material/Badge';
 
+import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DialogComponentCustom } from "../../components";
@@ -169,6 +175,7 @@ const GuiaRemisionMain = () => {
     title: "",
   });
 
+
   const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>([]);
 
   const [detalles, setDetalles] = useState<Detail[]>([]);
@@ -241,7 +248,6 @@ const GuiaRemisionMain = () => {
     borderRadius: 7,
     py: 5,
     mx: 10,
-
     [theme.breakpoints.down("sm")]: {
       mx: 0,
     },
@@ -348,11 +354,12 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const [expanded, setExpanded] = React.useState<string | false>(false);
+  const [expanded, setExpanded] = React.useState<string | false>('panel1');
 
   const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+    (panel: string) => (_, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false);
+
     };
 
   const handleTransportistaChange = (
@@ -362,9 +369,12 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Container maxWidth="md" sx={{ mt: 10 }}>
+
+      <Container maxWidth="md" sx={{ mt: 5 }}>
+        <Typography textAlign={'center'} variant="h4" my={3}>GUIA DE REMISIÓN ELECTRÓNICA</Typography>
         <form onSubmit={formik.handleSubmit}>
           <Grid
             container
@@ -376,372 +386,498 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel1"}
               onChange={handleChange("panel1")}
+              sx={{ width: "100%" }}
             >
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
               >
-                <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }}>
                   Datos Generales
                 </Typography>
+                <FolderSharedIcon />
               </AccordionSummary>
               <AccordionDetails>
-                <Paper
-                  sx={{ p: 4, background: "#62393382" }}
-                  square={false}
-                  elevation={5}
-                >
-                  <Grid spacing={2} container item xs={12}>
-                    <DatosGeneralesForm
-                      onChange={onHandleDatosGeneralesChange}
-                      datosGeneralesValues={formik.values.datosGenerales}
-                    />
-                  </Grid>
-                </Paper>
+
+                <Grid spacing={2} container item xs={12}>
+                  <DatosGeneralesForm
+                    onChange={onHandleDatosGeneralesChange}
+                    datosGeneralesValues={formik.values.datosGenerales}
+                  />
+                </Grid>
+
               </AccordionDetails>
             </Accordion>
             {/* Datos generales */}
 
             {/* Destinatario y comprador */}
-            <Grid mb={1} container item xs={12} textAlign="center" spacing={2}>
-              <Grid item xs={6}>
-                <Paper elevation={5} sx={paperClient}>
-                  <Button
-                    variant="outlined"
-                    color="info"
-                    onClick={(_e) =>
-                      handleOpenModalForm(
-                        <Cliente
-                          // initialValue={formData.destinatario}
-                          initialValue={formik.values.destinatario}
-                          onChange={handleDestinatarioChange}
-                        />,
-                        "Destinatario"
-                      )
-                    }
-                    sx={{ height: 80, width: 100 }}
-                  >
-                    Destinatario
-                  </Button>
-                </Paper>
-              </Grid>
-              <Grid item xs={6}>
-                <Paper elevation={5} sx={paperClient}>
-                  <Button
-                    variant="outlined"
-                    color="warning"
-                    onClick={(_e) =>
-                      handleOpenModalForm(
-                        <Cliente
-                          // initialValue={formData.comprador}
-                          initialValue={formik.values.comprador}
-                          onChange={handleCompradorChange}
-                          schema={CompradorSchema}
-                        />,
-                        "Comprador"
-                      )
-                    }
-                    sx={{ height: 80, width: 100 }}
-                  >
-                    Comprador
-                  </Button>
-                </Paper>
-              </Grid>
-            </Grid>
+
+            <Accordion
+              expanded={expanded === "panel2"}
+              onChange={handleChange("panel2")}
+              sx={{ width: "100%" }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel2bh-content"
+                id="panel2bh-header"
+              >
+                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                  Datos de destinatario y comprador
+                </Typography>
+                <PeopleIcon />
+              </AccordionSummary>
+              <AccordionDetails>
+
+                <Grid mb={1} container item xs={12} textAlign="center" spacing={2}>
+                  <Grid item xs={6}>
+                    <Paper elevation={5} sx={paperClient}>
+                      <Button
+                        variant="outlined"
+                        color="info"
+                        onClick={(_e) =>
+                          handleOpenModalForm(
+                            <Cliente
+                              // initialValue={formData.destinatario}
+                              initialValue={formik.values.destinatario}
+                              onChange={handleDestinatarioChange}
+                            />,
+                            "Destinatario"
+                          )
+                        }
+                        sx={{ height: 80, width: 100 }}
+                      >
+                        Destinatario
+                      </Button>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Paper elevation={5} sx={paperClient}>
+                      <Button
+                        variant="outlined"
+                        color="warning"
+                        onClick={(_e) =>
+                          handleOpenModalForm(
+                            <Cliente
+                              // initialValue={formData.comprador}
+                              initialValue={formik.values.comprador}
+                              onChange={handleCompradorChange}
+                              schema={CompradorSchema}
+                            />,
+                            "Comprador"
+                          )
+                        }
+                        sx={{ height: 80, width: 100 }}
+                      >
+                        Comprador
+                      </Button>
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+
+
             {/* Destinatario y comprador */}
+
             {/* Envio */}
-            <Grid item container xs={12}>
-              <EnvioForm
-                onChange={handleEnvioChange}
-                EnvioValues={EnvioValues}
-              />
-            </Grid>
-            {/* Envio */}
-            {/* Documentos Adicionales */}
-            <Grid
-              item
-              container
-              xs={12}
-              textAlign={"center"}
-              justifyContent={"center"}
+            <Accordion
+              expanded={expanded === "panel3"}
+              onChange={handleChange("panel3")}
+              sx={{ width: "100%" }}
             >
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={(_e) =>
-                  handleOpenModalForm(
-                    <DocumentoAdicional onNewAddDoc={handleNewAddDoc} />,
-                    "Documentos adicionales"
-                  )
-                }
-                sx={{ color: "whitesmoke", fontWeight: "bold", mb: 1 }}
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel3bh-content"
+                id="panel3bh-header"
               >
-                Agregar documentos adicionales
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <DocumentosAdicionales adicionales={formik.values.addDocs} />
-            </Grid>
+                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                  Datos de Envío
+                </Typography>
+                <LocalShippingIcon />
+              </AccordionSummary>
+              <AccordionDetails>
+
+                <Grid item container xs={12}>
+                  <EnvioForm
+                    onChange={handleEnvioChange}
+                    EnvioValues={EnvioValues}
+                  />
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+            {/* Envio */}
+
             {/* Documentos Adicionales */}
 
-            {/* Detalles */}
-            <Grid
-              item
-              container
-              xs={12}
-              textAlign={"center"}
-              justifyContent={"center"}
-              mt={2}
+            <Accordion
+              expanded={expanded === "panel4"}
+              onChange={handleChange("panel4")}
+              sx={{ width: "100%" }}
             >
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={(_e) =>
-                  handleOpenModalForm(
-                    <DocumentoDetalle onNewDetail={handleNewDetail} />,
-                    "Detalles"
-                  )
-                }
-                sx={{ color: "whitesmoke", fontWeight: "bold", mb: 1 }}
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel4bh-content"
+                id="panel4bh-header"
               >
-                Agregar Detalles
-              </Button>
-            </Grid>
+                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                  Documentos adicionales
+                </Typography>
+                <NoteAddIcon />
+              </AccordionSummary>
+              <AccordionDetails>
 
-            <Grid item xs={12}>
-              <DocumentosDetalles detalles={formik.values.details} />
-            </Grid>
 
-            {/* Detalles */}
-
-            {/* Punto LLegada / Partida */}
-
-            <Grid
-              item
-              container
-              xs={12}
-              textAlign={"center"}
-              justifyContent={"center"}
-              mt={3}
-            >
-              <Grid item xs={12} sm={6}>
-                <Paper elevation={5} sx={paperDirection}>
-                  <Box
-                    component={Button}
-                    display={"flex"}
-                    flexDirection={"column"}
-                    variant="contained"
-                    bgcolor={yellow[800]}
-                    color="white"
-                    sx={{
-                      height: 80,
-                      width: 100,
-                      borderColor: theme.palette.info.main,
-                      "&:hover": {
-                        bgcolor: "#f8c314",
-                      },
-                    }}
-                    onClick={(_e) =>
-                      handleOpenModalForm(
-                        <DatosDireccion
-                          initialValue={formik.values.partida}
-                          onChange={handlePartidaChange}
-                          codTraslado={formik.values.envio.codTraslado}
-                        />,
-                        "Punto de partida"
-                      )
-                    }
-                  >
-                    <PersonPinCircleIcon fontSize="large" />
-                    <Typography>Partida</Typography>
-                  </Box>
-                </Paper>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <Paper elevation={5} sx={paperDirection}>
-                  <Box
-                    component={Button}
-                    display={"flex"}
-                    flexDirection={"column"}
-                    variant="contained"
-                    bgcolor={red[800]}
-                    color="white"
-                    sx={{
-                      height: 80,
-                      width: 100,
-                      borderColor: theme.palette.info.main,
-                      "&:hover": {
-                        bgcolor: "#f51717",
-                      },
-                    }}
-                    onClick={(_e) =>
-                      handleOpenModalForm(
-                        <DatosDireccion
-                          initialValue={formik.values.llegada}
-                          onChange={handleLlegadaChange}
-                          schema={LlegadaSchema}
-                          codTraslado={formik.values.envio.codTraslado}
-                        />,
-                        "Punto de llegada"
-                      )
-                    }
-                  >
-                    <PinDropIcon fontSize="large" />
-                    <Typography>Llegada</Typography>
-                  </Box>
-                </Paper>
-              </Grid>
-            </Grid>
-
-            {/* Punto LLegada / Partida */}
-            {/* Conductores */}
-            <Grid
-              item
-              container
-              xs={12}
-              textAlign={"center"}
-              justifyContent={"center"}
-              mt={3}
-            >
-              <Grid item xs={12}>
-                <Box
-                  component={"div"}
-                  display={"grid"}
-                  gridTemplateColumns={{
-                    xs: "repeat(1fr)",
-                    sm: "repeat(3,1fr)",
-                  }}
-                  columnGap={1}
-                  alignItems={"end"}
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  textAlign={"center"}
+                  justifyContent={"center"}
                 >
-                  <Box component={"div"}>
-                    <Typography
-                      fontWeight={900}
-                      letterSpacing={3}
-                      color="secondary.dark"
-                    >
-                      Chofer
-                    </Typography>
-                    <IconButton
-                      color="default"
-                      size="large"
-                      aria-label="add an alarm"
-                      sx={BoxShadoWButton}
-                      onClick={(_e) =>
-                        handleOpenModalForm(
-                          <Conductores
-                            choferes={formik.values.choferes}
-                            onConfirm={handleConfirmListaChoferes}
-                          />,
-                          "Choferes"
-                        )
-                      }
-                    >
-                      <AssignmentIndIcon fontSize="large" />
-                    </IconButton>
-                  </Box>
-                  <Box component={"div"}>
-                    <Typography
-                      fontWeight={900}
-                      letterSpacing={3}
-                      color="primary"
-                    >
-                      Transportista
-                    </Typography>
-                    <IconButton
-                      color="primary"
-                      aria-label="add an alarm"
-                      sx={{ ...BoxShadoWButton }}
-                      size="large"
-                      // disabled
-                      onClick={(_e) =>
-                        handleOpenModalForm(
-                          <DatosTransportista
-                            initialValue={formik.values.transportista}
-                            onChange={handleTransportistaChange}
-                          />,
-                          "Transportista"
-                        )
-                      }
-                    >
-                      <CommuteIcon fontSize="large" />
-                    </IconButton>
-                  </Box>
-                  <Box component={"div"}>
-                    <Typography
-                      textAlign={"center"}
-                      fontWeight={900}
-                      letterSpacing={10}
-                      color="secondary.dark"
-                    >
-                      Vehiculos
-                    </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={(_e) =>
+                      handleOpenModalForm(
+                        <DocumentoAdicional onNewAddDoc={handleNewAddDoc} />,
+                        "Documentos adicionales"
+                      )
+                    }
+                    sx={{ color: "whitesmoke", fontWeight: "bold", mb: 1 }}
+                  >
+                    Agregar documentos adicionales
+                  </Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <DocumentosAdicionales adicionales={formik.values.addDocs} />
+                </Grid>
+
+
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Documentos Adicionales */}
+
+            {/* Detalles */}
+
+            <Accordion
+              expanded={expanded === "panel5"}
+              onChange={handleChange("panel5")}
+              sx={{ width: "100%" }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel5bh-content"
+                id="panel5bh-header"
+              >
+                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                  Bienes transportados
+                </Typography>
+                <ShoppingBasketIcon />
+              </AccordionSummary>
+              <AccordionDetails>
+
+
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  textAlign={"center"}
+                  justifyContent={"center"}
+                  mt={2}
+                >
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={(_e) =>
+                      handleOpenModalForm(
+                        <DocumentoDetalle onNewDetail={handleNewDetail} />,
+                        "Detalles"
+                      )
+                    }
+                    sx={{ color: "whitesmoke", fontWeight: "bold", mb: 1 }}
+                  >
+                    Agregar Detalles
+                  </Button>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <DocumentosDetalles detalles={formik.values.details} />
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Detalles */}
+
+            {/* Punto LLegada / Partida */}
+
+            <Accordion
+              expanded={expanded === "panel6"}
+              onChange={handleChange("panel6")}
+              sx={{ width: "600%" }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel6bh-content"
+                id="panel6bh-header"
+              >
+                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                  Punto de Partida y LLegada
+                </Typography>
+                <LocationOnIcon/>
+
+              </AccordionSummary>
+              <AccordionDetails>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  textAlign={"center"}
+                  justifyContent={"center"}
+                  mt={3}
+                >
+                  <Grid item xs={12} sm={6}>
+                    <Paper elevation={5} sx={paperDirection}>
+                      <Box
+                        component={Button}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        variant="contained"
+                        bgcolor={yellow[800]}
+                        color="white"
+                        sx={{
+                          height: 80,
+                          width: 100,
+                          borderColor: theme.palette.info.main,
+                          "&:hover": {
+                            bgcolor: "#f8c314",
+                          },
+                        }}
+                        onClick={(_e) =>
+                          handleOpenModalForm(
+                            <DatosDireccion
+                              initialValue={formik.values.partida}
+                              onChange={handlePartidaChange}
+                              codTraslado={formik.values.envio.codTraslado}
+                            />,
+                            "Punto de partida"
+                          )
+                        }
+                      >
+                        <PersonPinCircleIcon fontSize="large" />
+                        <Typography>Partida</Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Paper elevation={5} sx={paperDirection}>
+                      <Box
+                        component={Button}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        variant="contained"
+                        bgcolor={red[800]}
+                        color="white"
+                        sx={{
+                          height: 80,
+                          width: 100,
+                          borderColor: theme.palette.info.main,
+                          "&:hover": {
+                            bgcolor: "#f51717",
+                          },
+                        }}
+                        onClick={(_e) =>
+                          handleOpenModalForm(
+                            <DatosDireccion
+                              initialValue={formik.values.llegada}
+                              onChange={handleLlegadaChange}
+                              schema={LlegadaSchema}
+                              codTraslado={formik.values.envio.codTraslado}
+                            />,
+                            "Punto de llegada"
+                          )
+                        }
+                      >
+                        <PinDropIcon fontSize="large" />
+                        <Typography>Llegada</Typography>
+                      </Box>
+                    </Paper>
+                  </Grid>
+                </Grid>
+
+              </AccordionDetails>
+            </Accordion>
+
+            {/* Punto LLegada / Partida */}
+
+            {/* Conductores  transportistas y vehiculos*/}
+            <Accordion
+              expanded={expanded === "panel7"}
+              onChange={handleChange("panel7")}
+              sx={{ width: "600%" }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel7bh-content"
+                id="panel7bh-header"
+              >
+                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                  Chofer / Transportista / Vehiculo
+                </Typography>
+                <BadgeIcon/>
+              </AccordionSummary>
+              <AccordionDetails>
+
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  textAlign={"center"}
+                  justifyContent={"center"}
+                  mt={3}
+                >
+                  <Grid item xs={12}>
                     <Box
                       component={"div"}
-                      display={{ sm: "flex", xs: "block" }}
+                      display={"grid"}
+                      gridTemplateColumns={{
+                        xs: "repeat(1fr)",
+                        sm: "repeat(3,1fr)",
+                      }}
+                      columnGap={1}
                       alignItems={"end"}
-                      justifyContent={"space-around"}
                     >
                       <Box component={"div"}>
                         <Typography
-                          fontSize={12}
-                          fontWeight={800}
+                          fontWeight={900}
+                          letterSpacing={3}
                           color="secondary.dark"
                         >
-                          Principal
+                          Chofer
                         </Typography>
                         <IconButton
                           color="default"
+                          size="large"
                           aria-label="add an alarm"
                           sx={BoxShadoWButton}
                           onClick={(_e) =>
                             handleOpenModalForm(
-                              <DatosVehiculo
-                                onChange={handleVehiculoChange}
-                                initialValue={formik.values.vehiculo}
+                              <Conductores
+                                choferes={formik.values.choferes}
+                                onConfirm={handleConfirmListaChoferes}
                               />,
-                              "Vehiculo"
+                              "Choferes"
                             )
                           }
                         >
-                          <LocalShippingIcon fontSize="large" />
+                          <AssignmentIndIcon fontSize="large" />
                         </IconButton>
                       </Box>
-                      <Box component={"div"} alignSelf={"start"}>
+                      <Box component={"div"}>
                         <Typography
-                          fontSize={12}
-                          fontWeight={800}
-                          color="secondary.dark"
+                          fontWeight={900}
+                          letterSpacing={3}
+                          color="primary"
                         >
-                          Secundarios
+                          Transportista
                         </Typography>
                         <IconButton
-                          color="default"
+                          color="primary"
                           aria-label="add an alarm"
-                          disabled={
-                            formik.values.vehiculo.placa === "" ? true : false
-                          }
-                          sx={BoxShadoWButton}
+                          sx={{ ...BoxShadoWButton }}
+                          size="large"
+                          // disabled
                           onClick={(_e) =>
                             handleOpenModalForm(
-                              <VehiculosSecundarios
-                                onConfirm={handleConfirmListVehiculo}
-                                vehiculos={formik.values.vehiculo.secundarios}
+                              <DatosTransportista
+                                initialValue={formik.values.transportista}
+                                onChange={handleTransportistaChange}
                               />,
-                              "Vehiculo"
+                              "Transportista"
                             )
                           }
                         >
-                          <AirportShuttleIcon fontSize="small" />
+                          <CommuteIcon fontSize="large" />
                         </IconButton>
+                      </Box>
+                      <Box component={"div"}>
+                        <Typography
+                          textAlign={"center"}
+                          fontWeight={900}
+                          letterSpacing={10}
+                          color="secondary.dark"
+                        >
+                          Vehiculos
+                        </Typography>
+                        <Box
+                          component={"div"}
+                          display={{ sm: "flex", xs: "block" }}
+                          alignItems={"end"}
+                          justifyContent={"space-around"}
+                        >
+                          <Box component={"div"}>
+                            <Typography
+                              fontSize={12}
+                              fontWeight={800}
+                              color="secondary.dark"
+                            >
+                              Principal
+                            </Typography>
+                            <IconButton
+                              color="default"
+                              aria-label="add an alarm"
+                              sx={BoxShadoWButton}
+                              onClick={(_e) =>
+                                handleOpenModalForm(
+                                  <DatosVehiculo
+                                    onChange={handleVehiculoChange}
+                                    initialValue={formik.values.vehiculo}
+                                  />,
+                                  "Vehiculo"
+                                )
+                              }
+                            >
+                              <LocalShippingIcon fontSize="large" />
+                            </IconButton>
+                          </Box>
+                          <Box component={"div"} alignSelf={"start"}>
+                            <Typography
+                              fontSize={12}
+                              fontWeight={800}
+                              color="secondary.dark"
+                            >
+                              Secundarios
+                            </Typography>
+                            <IconButton
+                              color="default"
+                              aria-label="add an alarm"
+                              disabled={
+                                formik.values.vehiculo.placa === "" ? true : false
+                              }
+                              sx={BoxShadoWButton}
+                              onClick={(_e) =>
+                                handleOpenModalForm(
+                                  <VehiculosSecundarios
+                                    onConfirm={handleConfirmListVehiculo}
+                                    vehiculos={formik.values.vehiculo.secundarios}
+                                  />,
+                                  "Vehiculo"
+                                )
+                              }
+                            >
+                              <AirportShuttleIcon fontSize="small" />
+                            </IconButton>
+                          </Box>
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
-                </Box>
-              </Grid>
-            </Grid>
-            {/* Conductores */}
+                  </Grid>
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+            {/* Conductores  transportistas y vehiculos*/}
           </Grid>
           <Box display={"flex"} justifyContent={"center"}>
             <Button
@@ -762,11 +898,11 @@ const GuiaRemisionMain = () => {
         <DialogComponentCustom
           closeButton={
             <Button
-              variant="outlined"
-              color="secondary"
+              variant="contained"
+              color="error"
               onClick={() => handleCloseModalForm()}
             >
-              Close
+              Cerrar
             </Button>
           }
           open={modalsForm.open}

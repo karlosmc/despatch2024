@@ -48,6 +48,7 @@ const ClientCompanyValues: ClientCompany = {
 const TipoDocumentos = [
   { valor: "03", descripcion: "BOLETA" },
   { valor: "01", descripcion: "FACTURA" },
+  { valor: "81", descripcion: "COD. AUTORIZACIÓN EMITIDA POR SCOP" },
 ];
 
 const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
@@ -223,7 +224,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
             ))}
           </Select>
         </FormControl>
-        <InputLabel htmlFor="nro">Numero Comprobante</InputLabel>
+        <InputLabel htmlFor="nro">{ formik.values.tipo==='81'? `Código de SCOP`:'Número de comprobante'}</InputLabel>
         <TextField
           margin="normal"
           type="text"
@@ -236,7 +237,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
           helperText={formik.touched.nro && formik.errors.nro}
           error={formik.touched.nro && Boolean(formik.errors.nro)}
           inputProps={{ style: { textTransform: "uppercase" } }}
-          placeholder={`EJEMPLO: ${
+          placeholder={ formik.values.tipo==='81'?'':`EJEMPLO: ${
             formik.values.tipo === "01" ? "F" : "B"
           }123-456789`}
         />

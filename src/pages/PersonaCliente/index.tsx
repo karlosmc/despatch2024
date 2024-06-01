@@ -13,8 +13,9 @@ import {
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { DestinatarioSchema } from "../../utils/validateForm";
+
 import { Client } from "../../types/guias/guiaremision.interface";
+import { DestinatarioSchema } from "../../utils/validateGuiaRemision";
 
 
 const ClientValues: Client = {

@@ -25,7 +25,7 @@ import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 
 
 
-import { DialogComponentCustom } from "../../components";
+
 
 //import TextSearch from "../../components/TextSearch";
 //import DireccionFormChat from "../direction/formDirectionChatGpt";
@@ -327,21 +327,6 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
         })}
       </Paper>
 
-
-      <DialogComponentCustom
-        closeButton={
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => handleCloseModalForm()}
-          >
-            Close
-          </Button>
-        }
-        open={modalsForm.open}
-        title={modalsForm.title}
-        element={modalsForm.form}
-      />
     </>
   );
 };

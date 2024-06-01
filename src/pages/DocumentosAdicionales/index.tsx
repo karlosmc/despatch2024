@@ -7,8 +7,12 @@ import {
   TableCell,
   TableBody,
   Typography,
+  SxProps,
+  Theme,
+  useTheme,
 } from "@mui/material";
 import { AddDoc } from "../../types/guias/guiaremision.interface";
+
 
 
 interface Props {
@@ -16,6 +20,24 @@ interface Props {
 }
 
 const DocumentosAdicionales = ({ adicionales }: Props) => {
+
+  const theme = useTheme()
+
+  const colorStyles = theme.palette['primary'] || theme.palette.success;
+
+  const customTable: SxProps<Theme> = {
+      border: `2px solid ${colorStyles.main}`,
+      backgroundColor: colorStyles.light,
+  };
+
+  const customTableHeader: SxProps<Theme> = {
+    backgroundColor: colorStyles.dark,
+  }
+
+  const customTableCell: SxProps<Theme> = {
+    border: `1px solid ${colorStyles.main}`,
+  }
+
 
 
 //  console.log(adicionales);
@@ -26,27 +48,30 @@ const DocumentosAdicionales = ({ adicionales }: Props) => {
         
           <TableRow
             key={index}
-            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            
           >
-            <TableCell align="center">{adic.emisor}</TableCell>
-            <TableCell align="center">{adic.nro}</TableCell>
-            <TableCell align="center">{adic.tipo}</TableCell>
-            <TableCell align="center">{adic.tipoDesc}</TableCell>
+            <TableCell sx={customTableCell} align="center">{adic.emisor}</TableCell>
+            <TableCell sx={customTableCell} align="center">{adic.nro}</TableCell>
+            <TableCell sx={customTableCell} align="center">{adic.tipo}</TableCell>
+            <TableCell sx={customTableCell} align="center">{adic.tipoDesc}</TableCell>
           </TableRow>
 
       );
     });
   };
+  
 
   return (
     
     <>
-      <Typography>
-        Documentos adicionales
+      <Typography textAlign={'center'} my={1} fontWeight={800} color={theme.palette.primary.dark}>
+        Lista de documentos
       </Typography>
       <TableContainer component={Paper}>
-        <Table size="small" aria-label="simple table">
-          <TableHead>
+        <Table size="small" aria-label="simple table"
+          sx={customTable}
+        >
+          <TableHead sx={customTableHeader}>
             <TableRow>
               <TableCell component='th' style={{width:'25%',fontWeight:'bold'}} align="center">Emisor</TableCell>
               <TableCell component='th' style={{width:'25%',fontWeight:'bold'}} align="center">Nro.</TableCell>

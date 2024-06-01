@@ -1,5 +1,6 @@
 import * as yup from "yup";
 import { object } from "yup";
+import rucValido from "../helpers/Validaciones";
 
 
 export const DestinatarioSchema = object({
@@ -26,7 +27,10 @@ export const DestinatarioSchema = object({
           11,
           ({ length }) =>
             `Destinatario: El campo Número de documento debe tener ${length} caracteres`
-        ),
+        ).test('rucValido','RUC INVALIDO',function(value){
+          const isValid = rucValido(parseInt(value))
+          return isValid;
+        }),
       otherwise: (schema) => schema,
     }),
   rznSocial: yup
@@ -50,7 +54,11 @@ export const CompradorSchema = object({
     })
     .when("tipoDoc", {
       is: "6", // alternatively: (val) => val == true
-      then: (schema) =>schema.length(11,({ length }) =>`Comprador: El campo Número de documento debe tener ${length} caracteres`),
+      then: (schema) =>schema.length(11,({ length }) =>`Comprador: El campo Número de documento debe tener ${length} caracteres`)
+      .test('rucValido','RUC INVALIDO',function(value){
+        const isValid = rucValido(parseInt(value))
+        return isValid;
+      }),
       otherwise: (schema) => schema,
     }).optional(),
   rznSocial: yup
@@ -251,7 +259,22 @@ export const EnvioSchema = yup.object().shape({
 export const AddDocSchema = yup.object().shape({
   tipo:yup.string().trim().required('Debe elegir un tipo de comprobante'),
   // nro:yup.string().trim().required('Debe escribir un Nro de comprobante').matches(/^([FB][a-zA-Z0-9]{3}-\d{1}\d{0,7})$/, "Debe escribir igual que el ejemplo"),
-  nro:yup.string().trim().required('Debe escribir un Nro de comprobante'),
+  nro:yup.string().trim().required('Debe escribir un Nro de comprobante')
+  .when('tipo',{
+    is:(tipo:string)=>{
+      if(tipo==='03' || tipo==='01'){
+        return true
+      }
+    },
+    then:(schema)=>schema.test('patroDocumento','respeta el patron',function(value){
+      const regexp =/^[FB][a-zA-Z0-9]{3}-\d+$/;
+  
+      const ejecutar = regexp.test(value);
+      return ejecutar;
+    }),
+    otherwise:(schema)=>schema.required()
+  })
+  ,
   emisor:yup.string().trim().required('Debe escribir el RUC del emisor'),
   tipoDesc:yup.string().trim().required('Debe escribir la descripción del tipo de documento')
 })
