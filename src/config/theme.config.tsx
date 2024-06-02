@@ -21,7 +21,8 @@ export enum themePalette  {
     CMAQ_GREY = "#BBBBBB",
     dark_primary="#2a9fd6",
     light_primary="#114056",
-    dark_secondary="#555555",
+    dark_secondary="#C9C941",
+    dark_secondary_light="#7e7e4b",
     dark_info="#9933cc",
     dark_warning="#ff8800",
     dark_success="#77b300",
@@ -43,7 +44,8 @@ let theme = createTheme({
         },
         secondary:{
             main:themePalette.dark_secondary,
-            dark:themePalette.dark_dark
+            light:themePalette.dark_secondary_light
+            // dark:themePalette.dark_dark
         },
         info:{
             main:themePalette.dark_info

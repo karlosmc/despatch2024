@@ -30,6 +30,7 @@ import {
   IconButton,
   Paper,
   SxProps,
+  TextField,
   Theme,
   Typography,
   useTheme,
@@ -66,6 +67,7 @@ import DatosTransportista from "../DatosTransportista";
 
 import DatosVehiculo from "../DatosVehiculos";
 import VehiculosSecundarios from "../DatosVehiculos/secundarios";
+
 
 // const ChoferesValues: EnvioChoferes = {
 //   tipo: "",
@@ -386,14 +388,14 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel1"}
               onChange={handleChange("panel1")}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%" ,color:(expanded === "panel1"?theme.palette.success.main:theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
               >
-                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Datos Generales
                 </Typography>
                 <FolderSharedIcon />
@@ -416,14 +418,14 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel2"}
               onChange={handleChange("panel2")}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%" ,color:(expanded === "panel2"?theme.palette.success.main:theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
                 aria-controls="panel2bh-content"
                 id="panel2bh-header"
               >
-                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Datos de destinatario y comprador
                 </Typography>
                 <PeopleIcon />
@@ -485,14 +487,14 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel3"}
               onChange={handleChange("panel3")}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%" ,color:(expanded === "panel3"?theme.palette.success.main:theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
                 aria-controls="panel3bh-content"
                 id="panel3bh-header"
               >
-                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Datos de Envío
                 </Typography>
                 <LocalShippingIcon />
@@ -514,14 +516,14 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel4"}
               onChange={handleChange("panel4")}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%" ,color:(expanded === "panel4"?theme.palette.success.main:theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
                 aria-controls="panel4bh-content"
                 id="panel4bh-header"
               >
-                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Documentos adicionales
                 </Typography>
                 <NoteAddIcon />
@@ -565,14 +567,14 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel5"}
               onChange={handleChange("panel5")}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%" ,color:(expanded === "panel5"?theme.palette.success.main:theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
                 aria-controls="panel5bh-content"
                 id="panel5bh-header"
               >
-                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Bienes transportados
                 </Typography>
                 <ShoppingBasketIcon />
@@ -616,14 +618,14 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel6"}
               onChange={handleChange("panel6")}
-              sx={{ width: "600%" }}
+              sx={{ width: "100%" ,color:(expanded === "panel6"?theme.palette.success.main:theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
                 aria-controls="panel6bh-content"
                 id="panel6bh-header"
               >
-                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Punto de Partida y LLegada
                 </Typography>
                 <LocationOnIcon/>
@@ -716,14 +718,14 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel7"}
               onChange={handleChange("panel7")}
-              sx={{ width: "600%" }}
+              sx={{ width: "100%" ,color:(expanded === "panel7"?theme.palette.success.main:theme.palette.success.dark)}}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
                 aria-controls="panel7bh-content"
                 id="panel7bh-header"
               >
-                <Typography sx={{ width: "50%", flexShrink: 0 }}>
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Chofer / Transportista / Vehiculo
                 </Typography>
                 <BadgeIcon/>
@@ -878,6 +880,13 @@ const GuiaRemisionMain = () => {
               </AccordionDetails>
             </Accordion>
             {/* Conductores  transportistas y vehiculos*/}
+            <TextField
+              label='Observaciones'
+              margin="normal"
+              fullWidth
+              value={formik.values.observacion}
+              
+            />
           </Grid>
           <Box display={"flex"} justifyContent={"center"}>
             <Button
