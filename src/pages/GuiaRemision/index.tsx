@@ -29,8 +29,7 @@ import {
   Grid,
   IconButton,
   Paper,
-  SxProps,
-  TextField,
+  SxProps, 
   Theme,
   Typography,
   useTheme,
@@ -67,6 +66,8 @@ import DatosTransportista from "../DatosTransportista";
 
 import DatosVehiculo from "../DatosVehiculos";
 import VehiculosSecundarios from "../DatosVehiculos/secundarios";
+import ObservacionesTextField from "../Observaciones";
+
 
 
 // const ChoferesValues: EnvioChoferes = {
@@ -101,9 +102,9 @@ const EnvioValues: Envio = {
 };
 
 const DatosGeneralesValues: DatosGenerales = {
-  correlativo: "",
+  correlativo: "9999",
   fechaEmision: dayjs().format("YYYY-MM-DDTHH:mm"),
-  serie: "",
+  serie: "T002",
   tipoDoc: "09",
   version: "2.0",
 };
@@ -118,7 +119,7 @@ const initialValues: GuiaRemision = {
   comprador: {
     numDoc: "",
     rznSocial: "",
-    tipoDoc: "6",
+    tipoDoc: "1",
   },
   envio: EnvioValues,
   addDocs: [
@@ -140,7 +141,7 @@ const initialValues: GuiaRemision = {
   ],
   choferes: [],
   vehiculo: VehiculoValues,
-  observacion: "",
+
   partida: {
     codlocal: "",
     direccion: "",
@@ -160,6 +161,7 @@ const initialValues: GuiaRemision = {
     rznSocial: "",
     tipoDoc: "6",
   },
+  observacion: ''
 };
 
 type ModalsProps = {
@@ -178,9 +180,9 @@ const GuiaRemisionMain = () => {
   });
 
 
-  const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>([]);
+  const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>(initialValues.addDocs);
 
-  const [detalles, setDetalles] = useState<Detail[]>([]);
+  const [detalles, setDetalles] = useState<Detail[]>(initialValues.details);
 
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
@@ -316,21 +318,8 @@ const GuiaRemisionMain = () => {
   };
 
   const handleConfirmListVehiculo = (vehiculos: EnvioVehiculo[]): void => {
-    // console.log(vehiculos)
-
     formik.setFieldValue("vehiculo.secundarios", vehiculos);
     setModalsForms({ ...modalsForm, open: false });
-
-    // setDataEnvio((prevData) => ({
-    //   ...prevData,
-    //   vehiculo: {
-    //     ...prevData.vehiculo,
-    //     secundarios: vehiculos,
-    //   },
-    // }));
-
-    // setModalsForms({ ...modalsForm, open: false });
-    //setOpenModalListaVehiculo(false);
   };
 
   const handleVehiculoChange = (vehiculo: EnvioVehiculo): void => {
@@ -338,8 +327,14 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
+  const handleObservacionesChange= (observaciones: string):void=>{
+    formik.setFieldValue('observacion',observaciones)
+    setModalsForms({...modalsForm, open:false})
+  }
+
   useEffect(() => {
     // if (formik.values.addDocs.length === 0) {
+    console.log('entro por observacions')
     formik.setFieldValue("addDocs", adicionalDocs);
     // }
   }, [adicionalDocs]);
@@ -388,10 +383,10 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel1"}
               onChange={handleChange("panel1")}
-              sx={{ width: "100%" ,color:(expanded === "panel1"?theme.palette.success.main:theme.palette.success.dark) }}
+              sx={{ width: "100%", color: (expanded === "panel1" ? theme.palette.success.main : theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
                 aria-controls="panel1bh-content"
                 id="panel1bh-header"
               >
@@ -418,10 +413,10 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel2"}
               onChange={handleChange("panel2")}
-              sx={{ width: "100%" ,color:(expanded === "panel2"?theme.palette.success.main:theme.palette.success.dark) }}
+              sx={{ width: "100%", color: (expanded === "panel2" ? theme.palette.success.main : theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
                 aria-controls="panel2bh-content"
                 id="panel2bh-header"
               >
@@ -487,10 +482,10 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel3"}
               onChange={handleChange("panel3")}
-              sx={{ width: "100%" ,color:(expanded === "panel3"?theme.palette.success.main:theme.palette.success.dark) }}
+              sx={{ width: "100%", color: (expanded === "panel3" ? theme.palette.success.main : theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
                 aria-controls="panel3bh-content"
                 id="panel3bh-header"
               >
@@ -516,10 +511,10 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel4"}
               onChange={handleChange("panel4")}
-              sx={{ width: "100%" ,color:(expanded === "panel4"?theme.palette.success.main:theme.palette.success.dark) }}
+              sx={{ width: "100%", color: (expanded === "panel4" ? theme.palette.success.main : theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
                 aria-controls="panel4bh-content"
                 id="panel4bh-header"
               >
@@ -567,10 +562,10 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel5"}
               onChange={handleChange("panel5")}
-              sx={{ width: "100%" ,color:(expanded === "panel5"?theme.palette.success.main:theme.palette.success.dark) }}
+              sx={{ width: "100%", color: (expanded === "panel5" ? theme.palette.success.main : theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
                 aria-controls="panel5bh-content"
                 id="panel5bh-header"
               >
@@ -618,17 +613,17 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel6"}
               onChange={handleChange("panel6")}
-              sx={{ width: "100%" ,color:(expanded === "panel6"?theme.palette.success.main:theme.palette.success.dark) }}
+              sx={{ width: "100%", color: (expanded === "panel6" ? theme.palette.success.main : theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
                 aria-controls="panel6bh-content"
                 id="panel6bh-header"
               >
                 <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Punto de Partida y LLegada
                 </Typography>
-                <LocationOnIcon/>
+                <LocationOnIcon />
 
               </AccordionSummary>
               <AccordionDetails>
@@ -718,17 +713,17 @@ const GuiaRemisionMain = () => {
             <Accordion
               expanded={expanded === "panel7"}
               onChange={handleChange("panel7")}
-              sx={{ width: "100%" ,color:(expanded === "panel7"?theme.palette.success.main:theme.palette.success.dark)}}
+              sx={{ width: "100%", color: (expanded === "panel7" ? theme.palette.success.main : theme.palette.success.dark) }}
             >
               <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large"/>}
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
                 aria-controls="panel7bh-content"
                 id="panel7bh-header"
               >
                 <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
                   Chofer / Transportista / Vehiculo
                 </Typography>
-                <BadgeIcon/>
+                <BadgeIcon />
               </AccordionSummary>
               <AccordionDetails>
 
@@ -880,13 +875,29 @@ const GuiaRemisionMain = () => {
               </AccordionDetails>
             </Accordion>
             {/* Conductores  transportistas y vehiculos*/}
-            <TextField
-              label='Observaciones'
-              margin="normal"
+
+            <Button
+              variant="outlined"
+              color="primary"
               fullWidth
-              value={formik.values.observacion}
-              
-            />
+              onClick={(_e) =>
+                handleOpenModalForm(
+                  <ObservacionesTextField
+                    // initialValue={formData.destinatario}
+                    observaciones={formik.values.observacion}
+                    onChange={handleObservacionesChange}
+                  />,
+                  "Observaciones"
+                )
+              }
+              sx={{mt:2}}
+              // sx={{ height: 80, width: 100 }}
+            >
+              Observaciones
+            </Button>
+
+
+
           </Grid>
           <Box display={"flex"} justifyContent={"center"}>
             <Button

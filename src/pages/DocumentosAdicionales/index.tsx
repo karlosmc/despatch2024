@@ -20,6 +20,7 @@ interface Props {
 }
 
 const DocumentosAdicionales = ({ adicionales }: Props) => {
+  // console.log(adicionales)
 
   const theme = useTheme()
 

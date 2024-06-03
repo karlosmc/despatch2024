@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 
-import { Stack, Button } from "@mui/material";
+import { Stack, Button, Box } from "@mui/material";
 import { isObject, useFormik } from "formik";
 
 import * as Yup from "yup";
@@ -38,15 +38,15 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
       // console.log(values)
       // console.log(values);
       // onChange(values);
-      
+
       onConfirm(values);
     },
   });
 
   const handleNewChofer = (newChofer: EnvioChoferes): void => {
     // console.log(chofer)
-    if(listaChoferes.length===0){
-      if(newChofer.tipo!=='Principal'){
+    if (listaChoferes.length === 0) {
+      if (newChofer.tipo !== 'Principal') {
         getError('El primer chofer debe ser Principal');
         // ChoferValues.apellidos=newChofer.apellidos;
         // ChoferValues.nroDoc=newChofer.nroDoc;
@@ -56,23 +56,23 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
         // ChoferValues.nombres=newChofer.nombres;
         return;
       }
-    }else{
-      if(newChofer.tipo==='Principal'){
+    } else {
+      if (newChofer.tipo === 'Principal') {
         getError('Ya existe un conductor principal');
         return;
       }
 
     }
 
-    
+
     // if(listaChoferes.filter(chofer => chofer.tipo==='Principal').length>0){
     //   getError('Ya existe un conductor principal');
     //   return;
     // }
     // setChofer(newChofer);
-    if(listaChoferes.length<3){
+    if (listaChoferes.length < 3) {
       setListaChoferes((chofer) => [...chofer, newChofer]);
-    }else{
+    } else {
       getError('La cantidad de conductores permitida es de 3');
     }
   };
@@ -134,6 +134,14 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
     <>
       <form action="" onSubmit={formik.handleSubmit} >
         <ConductorForm initialValue={ChoferValues} onChange={handleNewChofer} />
+        <Box>
+          <ul style={{ textAlign: "center" }}>
+            {/* <ChoferForm initialValue={ChoferValues} onChange={handleNewChofer} /> */}
+            Lista de Choferes
+            {renderList()}
+
+          </ul>
+        </Box>
         <Stack direction="row" spacing={2}>
           <Button variant="outlined" color="success"
             // onClick={handleSubmit}
@@ -141,18 +149,13 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
           >
             Completar
           </Button>
+
           <Button variant="outlined" color="error" onClick={handleClean}>
             Limpiar todo
           </Button>
         </Stack>
       </form>
 
-      <ul style={{ textAlign: "center" }}>
-        {/* <ChoferForm initialValue={ChoferValues} onChange={handleNewChofer} /> */}
-        Lista de Choferes
-        {renderList()}
-
-      </ul>
     </>
   );
 };

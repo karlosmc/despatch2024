@@ -24,7 +24,7 @@ export interface GuiaRemision {
     choferes:EnvioChoferes[],
     partida:Direccion,
     llegada:Direccion,
-    observacion:''
+    observacion:string,
     
 }
 

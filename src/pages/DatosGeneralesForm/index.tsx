@@ -77,6 +77,7 @@ const DatosGeneralesForm = ({onChange,datosGeneralesValues}:DatosGeneralesFormPr
           value={formik.values.correlativo}
           type="text"
           label="Número Documento"
+          InputProps={{readOnly:true}}
           error={
             formik.touched.correlativo &&
             Boolean(formik.errors.correlativo)

@@ -27,7 +27,7 @@ export const DestinatarioSchema = object({
           11,
           ({ length }) =>
             `Destinatario: El campo Número de documento debe tener ${length} caracteres`
-        ).test('rucValido','RUC INVALIDO',function(value){
+        ).test('rucValido','Destinatario: RUC INVALIDO',function(value){
           const isValid = rucValido(parseInt(value))
           return isValid;
         }),
@@ -40,6 +40,10 @@ export const DestinatarioSchema = object({
 });
 
 export const CompradorSchema = object({
+  tipoDoc: yup
+  .string()
+  .required("Comprador: Debe elegir el Tipo de Documento")
+  .trim(),
   numDoc: yup
     .string()
     .notRequired()
@@ -55,7 +59,7 @@ export const CompradorSchema = object({
     .when("tipoDoc", {
       is: "6", // alternatively: (val) => val == true
       then: (schema) =>schema.length(11,({ length }) =>`Comprador: El campo Número de documento debe tener ${length} caracteres`)
-      .test('rucValido','RUC INVALIDO',function(value){
+      .test('rucValido','Comprador: RUC INVALIDO',function(value){
         const isValid = rucValido(parseInt(value))
         return isValid;
       }),
@@ -224,7 +228,8 @@ export const ChoferSchema = yup.object().shape({
 })
 
 export const EnvioSchema = yup.object().shape({
-  codTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir un motivo de traslado').optional(),
+  
+  codTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir un motivo de traslado'),
   desTraslado:yup.string(),
   pesoTotal:yup.number().required('Datos de Traslado: Debe escribir el peso total'),
   fecTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir una fecha de traslado')
@@ -254,6 +259,7 @@ export const EnvioSchema = yup.object().shape({
     then:(schema)=> schema.min(1,`Indicadores de Traslado: Debes agregar por lo menos 1 indicador para el Motivo de traslado`),
     otherwise:(schema)=> schema.max(0,`Indicadores de Traslado: No debe existir indicadores agregados para el Motivo de traslado`)
   }),
+  
 })
 
 export const AddDocSchema = yup.object().shape({
@@ -266,10 +272,11 @@ export const AddDocSchema = yup.object().shape({
         return true
       }
     },
-    then:(schema)=>schema.test('patroDocumento','respeta el patron',function(value){
-      const regexp =/^[FB][a-zA-Z0-9]{3}-\d+$/;
+    then:(schema)=>schema.test('patroDocumento','Respeta el patron del documento',function(value){
+      const regexp =/^[FB-fb][a-zA-Z0-9]{3}-\d+$/;
   
       const ejecutar = regexp.test(value);
+      
       return ejecutar;
     }),
     otherwise:(schema)=>schema.required()
@@ -296,8 +303,10 @@ export const DatosGeneralesSchema= yup.object().shape({
     "Doc. Principal: Debe elegir  o escribir una Serie para el documento"
   ),
   correlativo: yup
-    .number()
-    .required("Doc. Principal: Debe escribir un correlativo"),
+    .number().typeError('Solo debe contener números')
+    .positive('Debe contener números positivos')
+    .required("Doc. Principal: Debe escribir un correlativo")
+    .default(999),  
   fechaEmision: yup.string().required("Doc. Principal: Debe elegir una fecha de emisión del comprobante"),
 });
 
@@ -340,7 +349,7 @@ export const GuiaRemisionSchema = yup.object().shape({
   choferes:yup.array(ChoferSchema).min(1, "Debe agregar por lo menos 1 Chofer").max(3,"Solo se permite {1} Principal y {2} Secundarios"),
   partida:PartidaSchema,
   llegada:LlegadaSchema,
-  observacion: yup.string().optional(),
+  
   transportista:yup.object()
   .test('Transportisa Requerido','Debe proporcionar la Información del transportista',
     function(value){
@@ -351,7 +360,8 @@ export const GuiaRemisionSchema = yup.object().shape({
       }
       return true
     }
-  )
+  ),
+  observacion:yup.string().notRequired()
 })
 
 

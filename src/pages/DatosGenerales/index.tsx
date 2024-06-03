@@ -34,8 +34,6 @@ const _MODALIDAD_TRASLADO = [
 ];
 
 
-
-
 const DatosGeneralesStep = ({ formik }: DatosGeneralesProps) => {
 
   useEffect(() => {

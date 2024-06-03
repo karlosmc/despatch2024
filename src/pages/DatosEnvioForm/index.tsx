@@ -1,6 +1,6 @@
 import {
 
-  Button,
+
   Chip,
   FormControl,
   Grid,
@@ -11,9 +11,9 @@ import {
 
   TextField,
   Tooltip,
-  
+
 } from "@mui/material";
-import React, { MouseEvent, useEffect,  useState } from "react";
+import { MouseEvent, useEffect, useState } from "react";
 
 
 import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
@@ -109,18 +109,9 @@ interface EnvioFormProps {
   EnvioValues: Envio;
 }
 
-type ModalsProps = {
-  open: boolean;
-  form: React.ReactNode | null;
-  title: string;
-};
 const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
 
-  const [modalsForm, setModalsForms] = useState<ModalsProps>({
-    open: false,
-    form: null,
-    title: "",
-  });
+
 
   // const {getError,getSuccess } = useNotification();
 
@@ -129,14 +120,6 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
     validationSchema: EnvioSchema,
     onSubmit: (_) => { }
   });
-
-
-  const handleCloseModalForm = () => {
-    // Cierra el modal en la posición especificada
-    setModalsForms((prev) => ({ ...prev, open: false }));
-  };
-
-
 
   const [indicadores, setIndicadores] = useState<indicadoresType[]>(
     _INDICADORES_ESPECIALES
@@ -203,10 +186,10 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             <Select
               value={formik.values.modTraslado}
               name="modTraslado"
-              label="Modalidad de traslado"           
+              label="Modalidad de traslado"
               onChange={formik.handleChange}
               error={formik.touched.modTraslado && Boolean(formik.errors.modTraslado)}
-              onBlur={formik.handleBlur}            
+              onBlur={formik.handleBlur}
             >
               {_MODALIDAD_TRASLADO.map((modalidad) => (
                 <MenuItem key={modalidad.id} value={modalidad.id}>
@@ -216,12 +199,13 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             </Select>
           </FormControl>
         </Grid>
+     
       </Grid>
       <Grid my={1} container item xs={12} spacing={2}>
         <Grid item lg={5} xs={12}>
           <TextField
             fullWidth
-            size="small"            
+            size="small"
             value={formik.values.fecTraslado}
             name="fecTraslado"
             onChange={formik.handleChange}
@@ -240,11 +224,11 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
           <TextField
             fullWidth
             size="small"
-            
+
             value={formik.values.pesoTotal}
             name="pesoTotal"
             onChange={formik.handleChange}
-            
+
             label="Peso Total"
             type="number"
             error={formik.touched.pesoTotal && Boolean(formik.errors.pesoTotal)}
@@ -256,8 +240,8 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             fullWidth
             size="small"
             value={formik.values.numBultos}
-            name="numBultos"            
-            onChange={formik.handleChange}           
+            name="numBultos"
+            onChange={formik.handleChange}
             label="Número de bultos"
             type="number"
             error={formik.touched.numBultos && Boolean(formik.errors.numBultos)}
@@ -284,6 +268,7 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
           </FormControl>
         </Grid>
       </Grid>
+
 
       <Paper
         elevation={15}
