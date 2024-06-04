@@ -64,3 +64,10 @@ export interface ClientCompany extends Client {
   client: string;
   alias: string;
 }
+
+export interface ClientCompanyFav extends Client {
+  id?: string;
+  client?: string;
+  alias: string;
+  fav:Boolean;
+}

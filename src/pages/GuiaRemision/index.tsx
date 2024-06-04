@@ -30,7 +30,7 @@ import {
   IconButton,
   Paper,
   SxProps,
- 
+
   Theme,
   Typography,
   useTheme,
@@ -69,6 +69,10 @@ import DatosVehiculo from "../DatosVehiculos";
 import VehiculosSecundarios from "../DatosVehiculos/secundarios";
 import ObservacionesTextField from "../Observaciones";
 
+import useAuthToken from "../../hooks/useAuthToken";
+
+
+
 
 
 // const ChoferesValues: EnvioChoferes = {
@@ -81,7 +85,7 @@ import ObservacionesTextField from "../Observaciones";
 // };
 
 const VehiculoValues: EnvioVehiculo = {
-  placa: "",
+  placa: "V0Z331",
   codEmisor: "",
   nroAutorizacion: "",
   nroCirculacion: "",
@@ -95,15 +99,21 @@ const EnvioValues: Envio = {
   indicadores: [],
   indTransbordo: "",
   modTraslado: "02",
-  numBultos: 0,
-  pesoTotal: 2000,
+  numBultos: 1,
+  pesoTotal: 1000,
   undPesoTotal: "KGM",
   // pesoItems:0,
   // sustentoPeso:''
 };
 
+const DestinatarioDefaultValues :Client = {
+    numDoc: "20119207640",
+    rznSocial: "Estación de Energías el Centenario S.A.C",
+    tipoDoc: "6",
+}
+
 const DatosGeneralesValues: DatosGenerales = {
-  correlativo: "9999",
+  correlativo: "9",
   fechaEmision: dayjs().format("YYYY-MM-DDTHH:mm"),
   serie: "T002",
   tipoDoc: "09",
@@ -140,20 +150,27 @@ const initialValues: GuiaRemision = {
       unidad: "NIU",
     },
   ],
-  choferes: [],
+  choferes: [{
+    tipo: 'Principal',
+    apellidos: 'Maquera Marca',
+    nombres: 'Carlos Eduardo',
+    nroDoc: '43553308',
+    licencia: 'K43553308',
+    tipoDoc: '1'
+  }],
   vehiculo: VehiculoValues,
 
   partida: {
-    codlocal: "",
-    direccion: "",
-    ruc: "",
-    ubigeo: "",
+    codlocal: "0000",
+    direccion: "Av. industrial nro 260 Tacna",
+    ruc: "20318171701",
+    ubigeo: "150101",
   },
   llegada: {
-    codlocal: "",
-    direccion: "",
-    ruc: "",
-    ubigeo: "",
+    codlocal: "0000",
+    direccion: "Av. CIRCUNVALACION 23232",
+    ruc: "20119207640",
+    ubigeo: "230101",
   },
   transportista: {
     id: "",
@@ -172,7 +189,7 @@ type ModalsProps = {
 };
 
 const GuiaRemisionMain = () => {
-  const { getError } = useNotification();
+  const { getError, getSuccess } = useNotification();
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -185,6 +202,8 @@ const GuiaRemisionMain = () => {
 
   const [detalles, setDetalles] = useState<Detail[]>(initialValues.details);
 
+
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -194,15 +213,134 @@ const GuiaRemisionMain = () => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
+  // const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
+
+
+  const { getToken, getSunatParams } = useAuthToken()
+
+  const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
+
+  const sendApi = async (param: any, api: string) => {
+    const url = `${API_GUIAS}${api}`;
+
+    const options = {
+      method: "post",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(param),
+    };
+    const resp = await fetch(url, options);
+    return resp.json();
+  };
+
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: GuiaRemisionSchema,
     enableReinitialize: false,
-    onSubmit: (values) => {
-      // console.log(values);
-      const doc = values;
+    onSubmit: async (values) => {
 
-      console.log(doc);
+      const fechaEmision = values.datosGenerales.fechaEmision;
+      const fecTraslado = values.envio.fecTraslado;
+
+      if (fecTraslado && fechaEmision) {
+
+        const parseFechaEmision = new Date(fechaEmision)
+        const parseFecTraslado = new Date(fecTraslado)
+        if (parseFecTraslado <= parseFechaEmision) {
+          getError('Datos de Envío: La fecha de traslado debe ser mayor a la fecha de Emisión de la Guía')
+          return;
+        }
+      }
+      const token = await getToken()
+      if (token) {
+        const doc = {
+          ...values.datosGenerales,
+          destinatario: values.destinatario,
+          comprador: null,
+          envio: {
+            ...values.envio,
+            partida: values.partida,
+            llegada: values.llegada,
+            vehiculo: values.vehiculo,
+            aeropuerto: null,
+            puerto: null,
+            choferes: values.choferes
+          },
+          addDocs: values.addDocs,
+          details: values.details
+        }
+
+        // console.log(doc)
+
+        const data = await getSunatParams();
+
+        if (data) {
+          const x = Promise.resolve();
+          x
+            .then((_x) => sendApi({ doc }, "/GeneraXmlDespatch"))
+            .then((res) => {
+              const { response } = res;
+              if (data.certificado === '') {
+                getError('NO HAY UN TOKEN GENERADO');
+                return;
+              }
+              // console.log(response);
+              if (response.Exito) {
+                const sign = {
+                  'CertificadoDigital': data.certificado,
+                  'PasswordCertificado': data.clavecertificado,
+                  'TramaXmlSinFirma': res.response.TramaXmlSinFirma
+                }
+                return sign
+              }
+            })
+            .then(sign => sendApi(sign, '/FirmarXml'))
+            .then(resSign => {
+
+              const { response } = resSign;
+              if (response.Exito) {
+                const request = {
+                  'Ruc': '',
+                  'EndPointUrl': data.urlsend,
+                  'TramaXmlFirmado': response.TramaXmlFirmado,
+                  'TipoDocumento': values.datosGenerales.tipoDoc,
+                  'IdDocumento': values.datosGenerales.serie + '-' + values.datosGenerales.correlativo,
+                  'token': token
+                }
+                // console.log('request',request);
+                return request
+              }
+            })
+            .then(send => sendApi(send, '/SendDespatch'))
+            .then(resSend => {
+              if (resSend.exito) {
+                const consult = {
+                  "access_token": token,
+                  "EndPointUrl": `${data.urlconsult}${resSend.numTicket}`
+                }
+                // console.log(consult);
+                return consult;
+              }
+            })
+            .then(consult => sendApi(consult, '/ConsultaGuia'))
+            .then(resConsult => {
+
+              if (resConsult.error) {
+                getError(resConsult.error.desError);
+                return;
+              }
+              getSuccess(JSON.stringify(resConsult.CdrResponse));
+              console.log(resConsult)
+            });
+        }
+
+      } else {
+        console.log('error al obtener el token')
+      }
+
+
+
     },
   });
 
@@ -328,14 +466,13 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const handleObservacionesChange= (observaciones: string):void=>{
-    formik.setFieldValue('observacion',observaciones)
-    setModalsForms({...modalsForm, open:false})
+  const handleObservacionesChange = (observaciones: string): void => {
+    formik.setFieldValue('observacion', observaciones)
+    setModalsForms({ ...modalsForm, open: false })
   }
 
   useEffect(() => {
     // if (formik.values.addDocs.length === 0) {
-    console.log('entro por observacions')
     formik.setFieldValue("addDocs", adicionalDocs);
     // }
   }, [adicionalDocs]);
@@ -438,8 +575,9 @@ const GuiaRemisionMain = () => {
                           handleOpenModalForm(
                             <Cliente
                               // initialValue={formData.destinatario}
-                              initialValue={formik.values.destinatario}
+                              initialValue={ formik.values.envio.codTraslado==='02'?DestinatarioDefaultValues:formik.values.destinatario}
                               onChange={handleDestinatarioChange}
+                              tipo={formik.values.envio.codTraslado==='02'?'default':''}
                             />,
                             "Destinatario"
                           )
@@ -462,6 +600,7 @@ const GuiaRemisionMain = () => {
                               initialValue={formik.values.comprador}
                               onChange={handleCompradorChange}
                               schema={CompradorSchema}
+                              tipo="c"
                             />,
                             "Comprador"
                           )
@@ -891,8 +1030,8 @@ const GuiaRemisionMain = () => {
                   "Observaciones"
                 )
               }
-              sx={{mt:2}}
-              // sx={{ height: 80, width: 100 }}
+              sx={{ mt: 2 }}
+            // sx={{ height: 80, width: 100 }}
             >
               Observaciones
             </Button>

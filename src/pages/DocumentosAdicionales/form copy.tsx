@@ -1,15 +1,16 @@
 import React, { MouseEvent, useEffect, useState } from "react";
 import { AddDoc } from "../../types/doc.interface";
 import {
+  Autocomplete,
   Button,
   Chip,
   FormControl,
-  
+
   InputLabel,
   MenuItem,
   Paper,
   Select,
-  
+
   Stack,
   TextField,
   Typography,
@@ -43,49 +44,49 @@ const ClientCompanyValues: ClientCompanyFav = {
   numDoc: "",
   rznSocial: "",
   tipoDoc: "",
-  fav:false
+  fav: false
 };
 
-const ClientesCentenario: ClientCompanyFav[]=[
+const ClientesCentenario: ClientCompanyFav[] = [
   {
-    alias:"FAFIO",
-    fav:true,
-    numDoc:'20519666601',
-    rznSocial:'AGROPECUARIA E INDUSTRIAS FAFIO',
-    tipoDoc:'6',
-    direccion:'',
-    ubigeo:'',
-    id:"1"
+    alias: "FAFIO",
+    fav: true,
+    numDoc: '20519666601',
+    rznSocial: 'AGROPECUARIA E INDUSTRIAS FAFIO',
+    tipoDoc: '6',
+    direccion: '',
+    ubigeo: '',
+    id: "1"
   },
   {
-    alias:"JCH",
-    fav:true,
-    numDoc:'20318171701',
-    rznSocial:'J.CH. COMERCIAL S.A.',
-    tipoDoc:'6',
-    direccion:'',
-    ubigeo:'',
-    id:"2"
+    alias: "JCH",
+    fav: true,
+    numDoc: '20318171701',
+    rznSocial: 'J.CH. COMERCIAL S.A.',
+    tipoDoc: '6',
+    direccion: '',
+    ubigeo: '',
+    id: "2"
   },
   {
-    alias:"SAVIT / KANKAS",
-    fav:true,
-    numDoc:'20533097121',
-    rznSocial:'SERVICIOS ALIMENTARIOS VITUÑA S.A.',
-    tipoDoc:'6',
-    direccion:'',
-    ubigeo:'',
-    id:"3"
+    alias: "SAVIT / KANKAS",
+    fav: true,
+    numDoc: '20533097121',
+    rznSocial: 'SERVICIOS ALIMENTARIOS VITUÑA S.A.',
+    tipoDoc: '6',
+    direccion: '',
+    ubigeo: '',
+    id: "3"
   },
   {
-    alias:"HECTOR POLLERIA",
-    fav:false,
-    numDoc:'1043553308',
-    rznSocial:'POLLERÍA HECTOR E.I.R.L.',
-    tipoDoc:'6',
-    direccion:'',
-    ubigeo:'',
-    id:"4"
+    alias: "HECTOR POLLERIA",
+    fav: false,
+    numDoc: '1043553308',
+    rznSocial: 'POLLERÍA HECTOR E.I.R.L.',
+    tipoDoc: '6',
+    direccion: '',
+    ubigeo: '',
+    id: "4"
 
   }
 ]
@@ -101,16 +102,16 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
   const [chipRazonSocial, setChipRazonSocial] = useState("");
 
   const [chipClientDefault, setChipClientDefault] = useState<ClientCompanyFav>(
-    ClientCompanyValues|| null
+    ClientCompanyValues || null
   );
 
   // const dataUser: UserLogin = JSON.parse(localStorage.getItem("userlogin"));
 
   //  const DefaultClients: ClientCompany[] = [];
 
-    const AllClientes: ClientCompanyFav[] = ClientesCentenario ;
+  const AllClientes: ClientCompanyFav[] = ClientesCentenario;
 
-    const DefaultClients: ClientCompanyFav[] = ClientesCentenario.filter(item=> item.fav===true) ;
+  const DefaultClients: ClientCompanyFav[] = ClientesCentenario.filter(item => item.fav === true);
 
 
 
@@ -134,6 +135,16 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
     },
   });
 
+
+  const onHandleChange = (e: any, newValue: ClientCompanyFav) => {
+
+
+    if(newValue){
+      setChipRazonSocial(newValue.rznSocial);
+      setChipClientDefault(newValue);
+    }
+
+  }
   const handleClickClientsDefault = (evt: MouseEvent<HTMLDivElement>) => {
     evt.preventDefault();
     const spanChip = evt.currentTarget.id;
@@ -141,7 +152,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
 
     const DefaultClient = DefaultClients.find((item) => item.id === spanChip);
 
-    if(DefaultClient){
+    if (DefaultClient) {
       setChipRazonSocial(DefaultClient.rznSocial);
       setChipClientDefault(DefaultClient);
     }
@@ -157,7 +168,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
   useEffect(() => {
     if (chipClientDefault.alias !== "") {
       formik.setFieldValue("emisor", chipClientDefault.numDoc);
-      
+
     }
   }, [chipClientDefault]);
 
@@ -239,7 +250,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
             onBlur={formik.handleBlur}
             helperText={formik.touched.emisor && formik.errors.emisor}
             error={formik.touched.emisor && Boolean(formik.errors.emisor)}
-           
+
           />
           <ButtonSearch
             type={formik.values.tipo === "01" ? "6" : "1"}
@@ -248,16 +259,23 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
           />
         </Stack>
 
-        <TextField
+        {/* <TextField
           margin="normal"
           size="small"
           fullWidth
           name="chipRazonSocial"
           label="Razón Social"
           value={chipRazonSocial}
-          InputProps={{
-            readOnly: true,
-          }}
+        /> */}
+
+        <Autocomplete
+          options={ClientesCentenario}
+          getOptionLabel={(option) => option.rznSocial}
+          renderInput={(params) => <TextField {...params} label="Clientes" margin="normal" size="small" />}
+          onChange={onHandleChange}
+          isOptionEqualToValue={(option, value) =>
+            option.id === value.id
+          }
         />
 
         <FormControl fullWidth size="small" margin="normal" sx={{ mb: 2 }}>
@@ -277,7 +295,10 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
             ))}
           </Select>
         </FormControl>
-        <InputLabel htmlFor="nro">{ formik.values.tipo==='81'? `Código de SCOP`:'Número de comprobante'}</InputLabel>
+        <FormControl>
+
+        </FormControl>
+        <InputLabel htmlFor="nro">{formik.values.tipo === '81' ? `Código de SCOP` : 'Número de comprobante'}</InputLabel>
         <TextField
           margin="normal"
           type="text"
@@ -290,9 +311,8 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
           helperText={formik.touched.nro && formik.errors.nro}
           error={formik.touched.nro && Boolean(formik.errors.nro)}
           inputProps={{ style: { textTransform: "uppercase" } }}
-          placeholder={ formik.values.tipo==='81'?'':`EJEMPLO: ${
-            formik.values.tipo === "01" ? "F" : "B"
-          }123-456789`}
+          placeholder={formik.values.tipo === '81' ? '' : `EJEMPLO: ${formik.values.tipo === "01" ? "F" : "B"
+            }123-456789`}
         />
 
         <Button

@@ -85,13 +85,13 @@ const DocumentoElectronico: React.FC = () => {
   // const { data, isLoading } = useParamsSunat();
   // console.log(data);
   const { token } = useTokenSunat();
-  const {sunatParams:data} = token
+  const { sunatParams: data } = token
 
-  const dataUser:UserLogin = JSON.parse(localStorage.getItem('userlogin'));
+  const dataUser: UserLogin = JSON.parse(localStorage.getItem('userlogin'));
   // console.log(dataUser.clientes);
 
   const serie = dataUser.sercor.serie
-  const correlativo = parseInt(dataUser.sercor.correlativo)+1
+  const correlativo = parseInt(dataUser.sercor.correlativo) + 1
 
   const PrincipalDriver = dataUser.driver;
 
@@ -104,13 +104,13 @@ const DocumentoElectronico: React.FC = () => {
     ruc: "",
     ubigeo: "",
   };
-  
+
   const ClientValues: Client = {
     numDoc: "",
     rznSocial: "",
     tipoDoc: "",
   };
-  
+
   const PuertoValues: Puerto = {
     codigo: "",
     nombre: "",
@@ -124,7 +124,7 @@ const DocumentoElectronico: React.FC = () => {
     nombres: "",
     nroDoc: "",
   };
-  
+
   const VehiculoValues: Vehiculo = {
     placa: dataUser.vehiculo,
     codEmisor: "",
@@ -132,13 +132,13 @@ const DocumentoElectronico: React.FC = () => {
     nroCirculacion: "",
     secundarios: null,
   };
-  
+
   const EnvioValues: Envio = {
     codTraslado: "02",
     contenedores: [],
     desTraslado: "COMPRA",
     fecTraslado: dayjs().format("YYYY-MM-DDTHH:mm"),
-  
+
     indicadores: [],
     indTransbordo: "",
     llegada: DireccionValues,
@@ -162,9 +162,9 @@ const DocumentoElectronico: React.FC = () => {
     vehiculo: VehiculoValues,
     aeropuerto: null,
     puerto: null,
-    choferes: [ PrincipalDriver?PrincipalDriver:ChoferValues ],
+    choferes: [PrincipalDriver ? PrincipalDriver : ChoferValues],
   };
-  
+
   const AddressValues: Address = {
     codigoPais: "PE",
     codLocal: "",
@@ -200,8 +200,8 @@ const DocumentoElectronico: React.FC = () => {
       numDoc: "",
       rznSocial: "",
       tipoDoc: "6",
-      direccion:'',
-      ubigeo:''
+      direccion: '',
+      ubigeo: ''
     },
     comprador: null,
     // tercero: ClientValues,
@@ -215,11 +215,11 @@ const DocumentoElectronico: React.FC = () => {
       },
     ],
     details: [{
-      codigo:'PRO0001',
-      codProdSunat:'15101505',
-      descripcion:'PRODUCTO 1',
-      cantidad:10,
-      unidad:'NIU',
+      codigo: 'PRO0001',
+      codProdSunat: '15101505',
+      descripcion: 'PRODUCTO 1',
+      cantidad: 10,
+      unidad: 'NIU',
     }],
   };
 
@@ -257,71 +257,66 @@ const DocumentoElectronico: React.FC = () => {
 
       console.log(doc);
 
-    return;
+
 
       const x = Promise.resolve();
-
       x
-      .then((_x) => sendApi({ doc }, "GeneraXmlDespatch"))
-      .then((res) =>
-        {
-          const {response} = res;
-          if(data.certificado===''){
+        .then((_x) => sendApi({ doc }, "GeneraXmlDespatch"))
+        .then((res) => {
+          const { response } = res;
+          if (data.certificado === '') {
             getError('NO HAY UN TOKEN GENERADO');
             return;
           }
           // console.log(response);
-          if(response.Exito){
-            const sign ={
-              'CertificadoDigital':data.certificado,
-              'PasswordCertificado':data.clavecertificado,
-              'TramaXmlSinFirma':res.response.TramaXmlSinFirma
+          if (response.Exito) {
+            const sign = {
+              'CertificadoDigital': data.certificado,
+              'PasswordCertificado': data.clavecertificado,
+              'TramaXmlSinFirma': res.response.TramaXmlSinFirma
             }
             return sign
           }
-        }
-      )
-      .then(sign =>sendApi(sign,'FirmarXml'))
-      .then(resSign=>{
-        
-        const {response} = resSign;
+        })
+        .then(sign => sendApi(sign, 'FirmarXml'))
+        .then(resSign => {
 
-        if(token.access_token===''){
-          getError('NO HAY UN TOKEN GENERADO');
-          return;
-        }
-        if(response.Exito){
-          const request ={
-            'Ruc':'',
-            'EndPointUrl':data.urlsend,
-            'TramaXmlFirmado':response.TramaXmlFirmado,
-            'TipoDocumento':formik.values.tipoDoc,
-            'IdDocumento':formik.values.serie+'-'+formik.values.correlativo,
-            'token':token.access_token
-          }
-          // console.log('request',request);
-          return request
-        }
-      })
-      .then(send => sendApi(send,'SendDespatch'))
-      .then(resSend=>{
-        if(resSend.exito){
-          const consult = {
-            "access_token":token.access_token,
-            "EndPointUrl":`${data.urlconsult}${resSend.numTicket}`
-          }
-          // console.log(consult);
-          return consult;
-        }
-      })
-      .then(consult => sendApi(consult,'ConsultaGuia'))
-      .then(resConsult => {
+          const { response } = resSign;
 
-        getSuccess(JSON.stringify(resConsult.CdrResponse));
-        console.log(resConsult)
-      }
-      )
-      ;
+          if (token.access_token === '') {
+            getError('NO HAY UN TOKEN GENERADO');
+            return;
+          }
+          if (response.Exito) {
+            const request = {
+              'Ruc': '',
+              'EndPointUrl': data.urlsend,
+              'TramaXmlFirmado': response.TramaXmlFirmado,
+              'TipoDocumento': formik.values.tipoDoc,
+              'IdDocumento': formik.values.serie + '-' + formik.values.correlativo,
+              'token': token.access_token
+            }
+            // console.log('request',request);
+            return request
+          }
+        })
+        .then(send => sendApi(send, 'SendDespatch'))
+        .then(resSend => {
+          if (resSend.exito) {
+            const consult = {
+              "access_token": token.access_token,
+              "EndPointUrl": `${data.urlconsult}${resSend.numTicket}`
+            }
+            // console.log(consult);
+            return consult;
+          }
+        })
+        .then(consult => sendApi(consult, 'ConsultaGuia'))
+        .then(resConsult => {
+
+          getSuccess(JSON.stringify(resConsult.CdrResponse));
+          console.log(resConsult)
+        });
 
       // getSuccess("Comprobante guardado con EXITO");
 
@@ -383,7 +378,7 @@ const DocumentoElectronico: React.FC = () => {
 
   const handleNewAddDoc = (newAddDoc: AddDoc): void => {
     // console.log(newAddDoc);
-    
+
     setAdicionalDocs((addDoc) => [...addDoc, newAddDoc]);
     // setFormData((prevData) => ({
     //   ...prevData,
@@ -398,13 +393,13 @@ const DocumentoElectronico: React.FC = () => {
 
   useEffect(() => {
     // if (formik.values.addDocs.length === 0) {
-      formik.setFieldValue("addDocs", adicionalDocs);
+    formik.setFieldValue("addDocs", adicionalDocs);
     // }
   }, [adicionalDocs]);
 
   useEffect(() => {
     // if (formik.values.details.length === 0) {
-      formik.setFieldValue("details", detalles);
+    formik.setFieldValue("details", detalles);
     // }
   }, [detalles]);
 
@@ -567,295 +562,295 @@ const DocumentoElectronico: React.FC = () => {
           </Box>
         </Container>
       ) : ( */}
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Container maxWidth="md" sx={{ mt: 10 }}>
-            <form onSubmit={formik.handleSubmit}>
-              <Grid
-                container
-                justifyContent="space-between"
-                alignContent="center"
-                alignItems="center"
-              >
-                <Grid spacing={2} container item xs={12}>
-                  <Grid item lg={4} xs={12}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="demo-simple-select-label">
-                        Tipo Documento
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        label="Tipo Documento"
-                        value={"G"}
-                      >
-                        <MenuItem value="G">
-                          GUIA DE REMISION ELECTRONICA
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item lg={2} xs={6}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id="demo-simple-select-label">
-                        Serie
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={formik.values.serie}
-                        // value={formData?.serie}
-                        label="Serie"
-                        // onChange={(e: SelectChangeEvent): void =>
-                        //   SelectHandleChange(e)
-                        // }
-                        onChange={formik.handleChange}
-                        error={
-                          formik.touched.serie && Boolean(formik.errors.serie)
-                        }
-                        onBlur={formik.handleBlur}
-                        // helperText={formik.touched.serie && formik.errors.serie}
-                        name="serie"
-                      >
-                        <MenuItem value={serie}>{serie}</MenuItem>
-                        {/* <MenuItem value={"T002"}>T002</MenuItem>
-                        <MenuItem value={"T003"}>T003</MenuItem> */}
-                      </Select>
-                      {/* <FormHelperText component={Typography} color="red">{formik.touched.serie && formik.errors.serie}</FormHelperText> */}
-                    </FormControl>
-                  </Grid>
-                  <Grid item lg={2} xs={6}>
-                    <TextField
-                      size="small"
-                      name="correlativo"
-                      //value={formData?.correlativo}
-                      value={formik.values.correlativo}
-                      /* onChange={(
-                        e: React.ChangeEvent<HTMLInputElement>
-                      ): void => handleChange(e)} */
-                      type="text"
-                      label="Número Documento"
-                      error={
-                        formik.touched.correlativo &&
-                        Boolean(formik.errors.correlativo)
-                      }
-                      onBlur={formik.handleBlur}
-                      helperText={
-                        formik.touched.correlativo && formik.errors.correlativo
-                      }
-                      onChange={formik.handleChange}
-                    />
-                  </Grid>
-                  <Grid item lg={4} xs={12}>
-                    <TextField
-                      fullWidth
-                      size="small"
-                      id="datetime-local"
-                      label="Fecha de Emision"
-                      name="fechaEmision"
-                      type="datetime-local"
-                      // value={formData?.fechaEmision}
-                      value={formik.values.fechaEmision}
-                      /* onChange={(
-                        e: React.ChangeEvent<HTMLInputElement>
-                      ): void => handleChange(e)} */
-                      style={{ colorScheme: "dark" }}
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      error={
-                        formik.touched.fechaEmision &&
-                        Boolean(formik.errors.fechaEmision)
-                      }
-                      onBlur={formik.handleBlur}
-                      helperText={
-                        formik.touched.fechaEmision &&
-                        formik.errors.fechaEmision
-                      }
-                      onChange={formik.handleChange}
-                    />
-                  </Grid>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Container maxWidth="md" sx={{ mt: 10 }}>
+          <form onSubmit={formik.handleSubmit}>
+            <Grid
+              container
+              justifyContent="space-between"
+              alignContent="center"
+              alignItems="center"
+            >
+              <Grid spacing={2} container item xs={12}>
+                <Grid item lg={4} xs={12}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="demo-simple-select-label">
+                      Tipo Documento
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="Tipo Documento"
+                      value={"G"}
+                    >
+                      <MenuItem value="G">
+                        GUIA DE REMISION ELECTRONICA
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item lg={2} xs={6}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="demo-simple-select-label">
+                      Serie
+                    </InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={formik.values.serie}
+                      // value={formData?.serie}
+                      label="Serie"
+                      // onChange={(e: SelectChangeEvent): void =>
+                      //   SelectHandleChange(e)
+                      // }
+                      onChange={formik.handleChange}
+                      error={
+                        formik.touched.serie && Boolean(formik.errors.serie)
+                      }
+                      onBlur={formik.handleBlur}
+                      // helperText={formik.touched.serie && formik.errors.serie}
+                      name="serie"
+                    >
+                      <MenuItem value={serie}>{serie}</MenuItem>
+                      {/* <MenuItem value={"T002"}>T002</MenuItem>
+                        <MenuItem value={"T003"}>T003</MenuItem> */}
+                    </Select>
+                    {/* <FormHelperText component={Typography} color="red">{formik.touched.serie && formik.errors.serie}</FormHelperText> */}
+                  </FormControl>
+                </Grid>
+                <Grid item lg={2} xs={6}>
                   <TextField
-                    margin="normal"
                     size="small"
-                    fullWidth
-                    name="observacion"
-                    multiline
-                    maxRows={2}
-                    minRows={2}
-                    label="Observaciones"
-                    // value={formData?.observacion}
-                    // onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
-                    //   handleChange(e)
-                    // }
-                    sx={{ mt: 1.5, mb: 1.5 }}
-                    value={formik.values.observacion}
-                    // required
-                    onChange={formik.handleChange}
+                    name="correlativo"
+                    //value={formData?.correlativo}
+                    value={formik.values.correlativo}
+                    /* onChange={(
+                      e: React.ChangeEvent<HTMLInputElement>
+                    ): void => handleChange(e)} */
+                    type="text"
+                    label="Número Documento"
                     error={
-                      formik.touched.observacion &&
-                      Boolean(formik.errors.observacion)
+                      formik.touched.correlativo &&
+                      Boolean(formik.errors.correlativo)
                     }
                     onBlur={formik.handleBlur}
                     helperText={
-                      formik.touched.observacion && formik.errors.observacion
+                      formik.touched.correlativo && formik.errors.correlativo
                     }
+                    onChange={formik.handleChange}
                   />
                 </Grid>
-                <Accordion sx={{ width: "100%" }}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel01a-content"
-                    id="panel01a-header"
+                <Grid item lg={4} xs={12}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    id="datetime-local"
+                    label="Fecha de Emision"
+                    name="fechaEmision"
+                    type="datetime-local"
+                    // value={formData?.fechaEmision}
+                    value={formik.values.fechaEmision}
+                    /* onChange={(
+                      e: React.ChangeEvent<HTMLInputElement>
+                    ): void => handleChange(e)} */
+                    style={{ colorScheme: "dark" }}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    error={
+                      formik.touched.fechaEmision &&
+                      Boolean(formik.errors.fechaEmision)
+                    }
+                    onBlur={formik.handleBlur}
+                    helperText={
+                      formik.touched.fechaEmision &&
+                      formik.errors.fechaEmision
+                    }
+                    onChange={formik.handleChange}
+                  />
+                </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  margin="normal"
+                  size="small"
+                  fullWidth
+                  name="observacion"
+                  multiline
+                  maxRows={2}
+                  minRows={2}
+                  label="Observaciones"
+                  // value={formData?.observacion}
+                  // onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
+                  //   handleChange(e)
+                  // }
+                  sx={{ mt: 1.5, mb: 1.5 }}
+                  value={formik.values.observacion}
+                  // required
+                  onChange={formik.handleChange}
+                  error={
+                    formik.touched.observacion &&
+                    Boolean(formik.errors.observacion)
+                  }
+                  onBlur={formik.handleBlur}
+                  helperText={
+                    formik.touched.observacion && formik.errors.observacion
+                  }
+                />
+              </Grid>
+              <Accordion sx={{ width: "100%" }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel01a-content"
+                  id="panel01a-header"
+                >
+                  <Typography>Destinatario / Comprador</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Grid
+                    mb={1}
+                    container
+                    item
+                    xs={12}
+                    textAlign="center"
+                    spacing={2}
                   >
-                    <Typography>Destinatario / Comprador</Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid
-                      mb={1}
-                      container
-                      item
-                      xs={12}
-                      textAlign="center"
-                      spacing={2}
-                    >
-                      <Grid item xs={6}>
-                        <Paper elevation={5} sx={paperClient}>
-                          <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={(_e) =>
-                              handleOpenModalForm(
-                                <Cliente
-                                  // initialValue={formData.destinatario}
-                                  initialValue={formik.values.destinatario}
-                                  onChange={handleDestinatarioChange}
-                                />,
-                                "Destinatario"
-                              )
-                            }
-                            sx={{ height: 80, width: 100 }}
-                          >
-                            Destinatario
-                          </Button>
-                        </Paper>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Paper elevation={5} sx={paperClient}>
-                          <Button
-                            variant="outlined"
-                            color="warning"
-                            onClick={(_e) =>
-                              handleOpenModalForm(
-                                <Cliente
-                                  // initialValue={formData.comprador}
-                                  initialValue={formik.values.comprador}
-                                  onChange={handleCompradorChange}
-                                  schema={CompradorSchema}
-                                />,
-                                "Comprador"
-                              )
-                            }
-                            sx={{ height: 80, width: 100 }}
-                          >
-                            Comprador
-                          </Button>
-                        </Paper>
-                      </Grid>
+                    <Grid item xs={6}>
+                      <Paper elevation={5} sx={paperClient}>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={(_e) =>
+                            handleOpenModalForm(
+                              <Cliente
+                                // initialValue={formData.destinatario}
+                                initialValue={formik.values.destinatario}
+                                onChange={handleDestinatarioChange}
+                              />,
+                              "Destinatario"
+                            )
+                          }
+                          sx={{ height: 80, width: 100 }}
+                        >
+                          Destinatario
+                        </Button>
+                      </Paper>
                     </Grid>
-                  </AccordionDetails>
-                </Accordion>
+                    <Grid item xs={6}>
+                      <Paper elevation={5} sx={paperClient}>
+                        <Button
+                          variant="outlined"
+                          color="warning"
+                          onClick={(_e) =>
+                            handleOpenModalForm(
+                              <Cliente
+                                // initialValue={formData.comprador}
+                                initialValue={formik.values.comprador}
+                                onChange={handleCompradorChange}
+                                schema={CompradorSchema}
+                              />,
+                              "Comprador"
+                            )
+                          }
+                          sx={{ height: 80, width: 100 }}
+                        >
+                          Comprador
+                        </Button>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+            <Grid container>
+              <Grid item container xs={12}>
+                <EnvioForm
+                  onChange={handleEnvioChange}
+                  EnvioValues={EnvioValues}
+                />
               </Grid>
-              <Grid container>
-                <Grid item container xs={12}>
-                  <EnvioForm
-                    onChange={handleEnvioChange}
-                    EnvioValues={EnvioValues}
-                  />
-                </Grid>
-              </Grid>
-              <Stack>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={(_e) =>
-                    handleOpenModalForm(
-                      <FormAddDocs onNewAddDoc={handleNewAddDoc} />,
-                      "Documentos adicionales"
-                    )
-                  }
-                  sx={{ color: "whitesmoke", fontWeight: "bold", mb: 2 }}
-                >
-                  Agregar documentos adicionales
-                </Button>
-              </Stack>
-              <Grid
-                container
-                justifyContent="space-between"
-                alignContent="center"
-                alignItems="center"
-                textAlign="center"
-                mb={2}
-              >
-                <Grid item xs={12}>
-                  <AddDocs adicionales={formik.values.addDocs} />
-                </Grid>
-              </Grid>
-              <Stack>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={(_e) =>
-                    handleOpenModalForm(
-                      <FormDetail onNewDetail={handleNewDetail} />,
-                      "Agregar Detalles"
-                    )
-                  }
-                  sx={{ fontWeight: "bold", mb: 2 }}
-                >
-                  Agregar detalles
-                </Button>
-              </Stack>
-              <Grid
-                container
-                justifyContent="space-between"
-                alignContent="center"
-                alignItems="center"
-                textAlign="center"
-                mb={2}
-              >
-                <Grid item xs={12}>
-                  <Details detalles={formik.values.details} />
-                </Grid>
-              </Grid>
-
+            </Grid>
+            <Stack>
               <Button
-                sx={{ mt: 2, color: "white", fontWeight: "bold" }}
-                fullWidth
-                type="submit"
                 variant="contained"
-                color="warning"
+                color="secondary"
+                onClick={(_e) =>
+                  handleOpenModalForm(
+                    <FormAddDocs onNewAddDoc={handleNewAddDoc} />,
+                    "Documentos adicionales"
+                  )
+                }
+                sx={{ color: "whitesmoke", fontWeight: "bold", mb: 2 }}
               >
-                Submit
+                Agregar documentos adicionales
               </Button>
-            </form>
-            <DialogComponentCustom
-              closeButton={
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={() => handleCloseModalForm()}
-                >
-                  Close
-                </Button>
-              }
-              open={modalsForm.open}
-              title={modalsForm.title}
-              element={modalsForm.form}
-            />
-          </Container>
-        </LocalizationProvider>
+            </Stack>
+            <Grid
+              container
+              justifyContent="space-between"
+              alignContent="center"
+              alignItems="center"
+              textAlign="center"
+              mb={2}
+            >
+              <Grid item xs={12}>
+                <AddDocs adicionales={formik.values.addDocs} />
+              </Grid>
+            </Grid>
+            <Stack>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={(_e) =>
+                  handleOpenModalForm(
+                    <FormDetail onNewDetail={handleNewDetail} />,
+                    "Agregar Detalles"
+                  )
+                }
+                sx={{ fontWeight: "bold", mb: 2 }}
+              >
+                Agregar detalles
+              </Button>
+            </Stack>
+            <Grid
+              container
+              justifyContent="space-between"
+              alignContent="center"
+              alignItems="center"
+              textAlign="center"
+              mb={2}
+            >
+              <Grid item xs={12}>
+                <Details detalles={formik.values.details} />
+              </Grid>
+            </Grid>
+
+            <Button
+              sx={{ mt: 2, color: "white", fontWeight: "bold" }}
+              fullWidth
+              type="submit"
+              variant="contained"
+              color="warning"
+            >
+              Submit
+            </Button>
+          </form>
+          <DialogComponentCustom
+            closeButton={
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleCloseModalForm()}
+              >
+                Close
+              </Button>
+            }
+            open={modalsForm.open}
+            title={modalsForm.title}
+            element={modalsForm.form}
+          />
+        </Container>
+      </LocalizationProvider>
       {/* )} */}
     </>
   );

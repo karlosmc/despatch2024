@@ -28,9 +28,10 @@ interface ClienteFormProps {
   onChange: (cliente: Client) => void;
   initialValue: Client;
   schema?: Yup.AnyObjectSchema;
+  tipo?:string;
 }
 
-const Cliente = ({ initialValue, onChange, schema }: ClienteFormProps) => {
+const Cliente = ({ initialValue, onChange, schema,tipo=''}: ClienteFormProps) => {
 
   const formik = useFormik({
     initialValues: initialValue,
@@ -61,6 +62,7 @@ const Cliente = ({ initialValue, onChange, schema }: ClienteFormProps) => {
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           name="tipoDoc"
+          readOnly={tipo==='default'?true:false}
         >
           <MenuItem selected value={"1"}>
             DNI
@@ -81,6 +83,7 @@ const Cliente = ({ initialValue, onChange, schema }: ClienteFormProps) => {
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
         helperText={formik.touched.numDoc && formik.errors.numDoc}
+        InputProps={{ readOnly:tipo==='default'?true:false  }}
       />
       <TextField
         margin="normal"
@@ -94,6 +97,7 @@ const Cliente = ({ initialValue, onChange, schema }: ClienteFormProps) => {
         helperText={formik.touched.rznSocial && formik.errors.rznSocial}
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
+        InputProps={{ readOnly:tipo==='default'?true:false }}
       />
 
       <Stack direction="row" spacing={2}>

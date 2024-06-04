@@ -235,10 +235,10 @@ export const EnvioSchema = yup.object().shape({
   fecTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir una fecha de traslado')
               .test('fecTraslado','Datos de Traslado: La fecha de traslado debe ser mayor a la fecha de Emision del documento',function(fecTraslado){
                 const arraySchema = this.from;
+                
                 const getFormatedArraySchema = arraySchema.map(item=> item.value)
                 const schema = getFormatedArraySchema.find(item=> item.fechaEmision);
                 const fechaEmision = schema?.fechaEmision
-
                 if(fecTraslado && fechaEmision){
                   const parseFechaEmision = new Date(fechaEmision)
                   const parseFecTraslado = new Date(fecTraslado)

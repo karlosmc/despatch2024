@@ -21,7 +21,7 @@ export const Notification: React.FC<NotificationProps> = ({
       open={open}
       onClose={handleClose}
     >
-      <Alert variant="filled" onClose={handleClose} severity={severity}>
+      <Alert variant="filled" onClose={handleClose} severity={severity} sx={{color:'white'}}>
         <Typography>
             {msg}
         </Typography>
