@@ -133,7 +133,7 @@ export interface EnvioChoferes {
 export interface Direccion {
     ubigeo:    string;
     direccion: string;
-    codlocal:  string;
+    codLocal:  string;
     ruc:       string;
 }
 

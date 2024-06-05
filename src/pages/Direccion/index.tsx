@@ -18,7 +18,7 @@ interface DireccionFormProps {
 }
 
 const DireccionValues: Direccion = {
-  codlocal: "",
+  codLocal: "",
   direccion: "",
   ruc: "",
   ubigeo: "",
@@ -31,7 +31,7 @@ const DireccionUserValues: DirectionsUser = {
   id: "",
   isconcurrent: "",
   tipo: "",
-  codlocal: "",
+  codLocal: "",
   direccion: "",
   ruc: "",
   ubigeo: "",
@@ -44,7 +44,7 @@ const DatosDireccion = ({
   codTraslado
 }: DireccionFormProps) => {
   if (codTraslado!=='04'){
-    initialValue.codlocal='0000'
+    initialValue.codLocal='0000'
   }
   const formik = useFormik({
     initialValues: initialValue,
@@ -189,7 +189,7 @@ const DatosDireccion = ({
   useEffect(() => {
     if (directionChip.alias !== '') {
 
-      formik.setFieldValue('codlocal', directionChip.codlocal)
+      formik.setFieldValue('codlocal', directionChip.codLocal)
       formik.setFieldValue('direccion', directionChip.direccion)
       formik.setFieldValue('ruc', directionChip.ruc)
       formik.setFieldValue('ubigeo', directionChip.ubigeo)
@@ -288,15 +288,15 @@ const DatosDireccion = ({
           margin="normal"
           size="small"
           fullWidth
-          name="codlocal"
+          name="codLocal"
           type="text"
           label="Código de Local"
           sx={{ my:1.5 }}
-          value={formik.values.codlocal}
+          value={formik.values.codLocal}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          helperText={formik.touched.codlocal && formik.errors.codlocal}
-          error={formik.touched.codlocal && Boolean(formik.errors.codlocal)}
+          helperText={formik.touched.codLocal && formik.errors.codLocal}
+          error={formik.touched.codLocal && Boolean(formik.errors.codLocal)}
         />
         <TextField
           margin="normal"

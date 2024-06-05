@@ -131,7 +131,7 @@ export interface Choferes {
 export interface Direccion {
     ubigeo:    string;
     direccion: string;
-    codlocal:  string;
+    codLocal:  string;
     ruc:       string;
 }
 

@@ -28,6 +28,7 @@ import {
   Container,
   Grid,
   IconButton,
+  Modal,
   Paper,
   SxProps,
 
@@ -72,6 +73,7 @@ import ObservacionesTextField from "../Observaciones";
 
 import useAuthToken from "../../hooks/useAuthToken";
 import { Guia } from "../../types/guias/guias.interface";
+import PdfViewer from "../PdfViewer";
 
 
 
@@ -108,10 +110,10 @@ const EnvioValues: Envio = {
   // sustentoPeso:''
 };
 
-const DestinatarioDefaultValues :Client = {
-    numDoc: "20119207640",
-    rznSocial: "Estación de Energías el Centenario S.A.C",
-    tipoDoc: "6",
+const DestinatarioDefaultValues: Client = {
+  numDoc: "20119207640",
+  rznSocial: "Estación de Energías el Centenario S.A.C",
+  tipoDoc: "6",
 }
 
 const DatosGeneralesValues: DatosGenerales = {
@@ -163,13 +165,13 @@ const initialValues: GuiaRemision = {
   vehiculo: VehiculoValues,
 
   partida: {
-    codlocal: "0000",
+    codLocal: "0000",
     direccion: "Av. industrial nro 260 Tacna",
     ruc: "20318171701",
     ubigeo: "150101",
   },
   llegada: {
-    codlocal: "0000",
+    codLocal: "0000",
     direccion: "Av. CIRCUNVALACION 23232",
     ruc: "20119207640",
     ubigeo: "230101",
@@ -199,15 +201,21 @@ const GuiaRemisionMain = () => {
     title: "",
   });
 
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const [base64Pdf, setBase64Pdf] = useState<string>('')
+
   const [accion, setAccion] = useState<string>('form')
-  
+
 
   const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>(initialValues.addDocs);
 
   const [detalles, setDetalles] = useState<Detail[]>(initialValues.details);
 
 
-  const onHandlePreview=()=>{
+  const onHandlePreview = () => {
     setAccion('pdf');
     formik.submitForm();
 
@@ -228,9 +236,9 @@ const GuiaRemisionMain = () => {
   const { getToken, getSunatParams } = useAuthToken()
 
   const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
-  console.log(API_GUIAS)
+  // console.log(API_GUIAS)
 
-  const previewPDF=(values:GuiaRemision)=>{
+  const previewPDF = (values: GuiaRemision) => {
     const doc = {
       ...values.datosGenerales,
       destinatario: values.destinatario,
@@ -247,12 +255,12 @@ const GuiaRemisionMain = () => {
       addDocs: values.addDocs,
       details: values.details
     }
-    
+
     const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
-    responsePdf.then(pdf => console.log(pdf));
-
-
-
+    responsePdf.then(pdf => {
+      setBase64Pdf(pdf.response.TramaPdf)
+      handleOpen()
+    });
   }
 
   const sendApi = async (param: any, api: string) => {
@@ -287,10 +295,12 @@ const GuiaRemisionMain = () => {
           return;
         }
       }
-      if(accion==='pdf'){
+      if (accion === 'pdf') {
         previewPDF(values)
+        setAccion('')
+        return;
       }
-      return;
+
       const token = await getToken()
       if (token) {
         const doc = {
@@ -383,6 +393,8 @@ const GuiaRemisionMain = () => {
     },
   });
 
+
+
   useEffect(() => {
     if (!formik.isSubmitting) return;
     if (Object.keys(formik.errors).length > 0) {
@@ -453,6 +465,18 @@ const GuiaRemisionMain = () => {
     },
   };
 
+  const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 1200,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+  };
+
   /* estilos */
 
   const onHandleDatosGeneralesChange = (datosGenerales: DatosGenerales) => {
@@ -521,6 +545,18 @@ const GuiaRemisionMain = () => {
     formik.setFieldValue("details", detalles);
     // }
   }, [detalles]);
+
+  useEffect(()=>{
+    if(formik.values.envio.codTraslado === '02' || formik.values.envio.codTraslado === '04'){
+      formik.setFieldValue('destinatario',DestinatarioDefaultValues)
+    }else{
+      formik.setFieldValue('destinatario',{
+        numDoc: "",
+        rznSocial: "",
+        tipoDoc: "6",
+      })
+    }
+  },[formik.values.envio.codTraslado])
 
   const handleConfirmListaChoferes = (choferes: EnvioChoferes[]): void => {
     // console.log(choferes)
@@ -614,9 +650,10 @@ const GuiaRemisionMain = () => {
                           handleOpenModalForm(
                             <Cliente
                               // initialValue={formData.destinatario}
-                              initialValue={ formik.values.envio.codTraslado==='02'?DestinatarioDefaultValues:formik.values.destinatario}
+                              initialValue={formik.values.destinatario}
+                              // initialValue={formik.values.envio.codTraslado === '02' ? DestinatarioDefaultValues : formik.values.destinatario}
                               onChange={handleDestinatarioChange}
-                              tipo={formik.values.envio.codTraslado==='02'?'default':''}
+                              tipo={formik.values.envio.codTraslado === '02' ? 'default' : ''}
                             />,
                             "Destinatario"
                           )
@@ -1079,7 +1116,7 @@ const GuiaRemisionMain = () => {
 
           </Grid>
           <Box display={"flex"} justifyContent={"center"} flexDirection={'row'} columnGap={2}>
-            <Button  onClick={onHandlePreview} variant="contained" sx={{my:4,color: "white",fontWeight: "bold"}} fullWidth>
+            <Button onClick={onHandlePreview} variant="contained" sx={{ my: 4, color: "white", fontWeight: "bold" }} fullWidth>
               Ver Pdf
             </Button>
             <Button
@@ -1110,7 +1147,22 @@ const GuiaRemisionMain = () => {
           open={modalsForm.open}
           title={modalsForm.title}
           element={modalsForm.form}
+
         />
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+          
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Visor de Pdf
+            </Typography>
+            <Box sx={{width:'100%',height:'70vh'}} component={'embed'} src={`data:application/pdf;base64,${base64Pdf}`} />
+          </Box>
+        </Modal>
       </Container>
     </LocalizationProvider>
   );

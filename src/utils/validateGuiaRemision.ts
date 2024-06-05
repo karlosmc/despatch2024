@@ -130,7 +130,7 @@ function ValidateCodTraslado(value:string,esquema:any){
 export const PartidaSchema =yup.object().shape({
   ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
   direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
-  codlocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
+  codLocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
   ruc:yup.string().required('Punto de partida: Debe escribir un RUC')
 })
 
@@ -138,7 +138,7 @@ export const PartidaSchemaError =yup.object().shape({
   ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
   direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
   // codlocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
-  codlocal: yup.string()
+  codLocal: yup.string()
   .test('onlyNumbers','Punto de partida: Solo debe escribir números',function(value){
         const esquema = this.from;
         const getFormatedArraySchema = esquema.map(item=> item.value)
@@ -188,7 +188,7 @@ export const PartidaSchemaError =yup.object().shape({
 export const LlegadaSchema = yup.object().shape({
   ubigeo:yup.string().trim().required('Punto de llegada: Debe Elegir un ubigeo'),
   direccion:yup.string().trim().required('Punto de llegada: Debe escribir una dirección'),
-  codlocal:yup.string().required('Punto de llegada: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de llegada: Solo debe escribir números").min(4,'Punto de llegada: Debe tener exactamente 4 digitos').max(4,'Punto de llegada: Debe tener exactamente 4 digitos'),
+  codLocal:yup.string().required('Punto de llegada: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de llegada: Solo debe escribir números").min(4,'Punto de llegada: Debe tener exactamente 4 digitos').max(4,'Punto de llegada: Debe tener exactamente 4 digitos'),
   ruc:yup.string().required('Punto de llegada: Debe escribir un RUC')
 })
 
@@ -250,15 +250,15 @@ export const EnvioSchema = yup.object().shape({
   modTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir la modalidad del traslado'),
   undPesoTotal:yup.string().trim().required('Datos de Traslado: Debe elegir una unidad de medida'),
   indicadores: yup.array()
-  .when(['codTraslado'], {
-    is:(codTraslado:string)=>{
-      if(codTraslado!=='02'){
-        return true
-      }
-    },
-    then:(schema)=> schema.min(1,`Indicadores de Traslado: Debes agregar por lo menos 1 indicador para el Motivo de traslado`),
-    otherwise:(schema)=> schema.max(0,`Indicadores de Traslado: No debe existir indicadores agregados para el Motivo de traslado`)
-  }),
+  // .when(['codTraslado'], {
+  //   is:(codTraslado:string)=>{
+  //     if(codTraslado!=='02'){
+  //       return true
+  //     }
+  //   },
+  //   then:(schema)=> schema.min(1,`Indicadores de Traslado: Debes agregar por lo menos 1 indicador para el Motivo de traslado`),
+  //   otherwise:(schema)=> schema.max(0,`Indicadores de Traslado: No debe existir indicadores agregados para el Motivo de traslado`)
+  // }),
   
 })
 
@@ -346,7 +346,9 @@ export const GuiaRemisionSchema = yup.object().shape({
   details:yup.array(DetailSchema)
   .min(1,'Debe agregar por lo menos {1} Detalle'),
   vehiculo:VehiculoSchema,
-  choferes:yup.array(ChoferSchema).min(1, "Debe agregar por lo menos 1 Chofer").max(3,"Solo se permite {1} Principal y {2} Secundarios"),
+  choferes:yup.array(ChoferSchema),
+//  choferes:yup.array(ChoferSchema).min(1, "Debe agregar por lo menos 1 Chofer").max(3,"Solo se permite {1} Principal y {2} Secundarios"),
+
   partida:PartidaSchema,
   llegada:LlegadaSchema,
   
