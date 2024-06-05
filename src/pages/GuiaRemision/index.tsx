@@ -48,6 +48,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import BadgeIcon from '@mui/icons-material/Badge';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -70,6 +71,7 @@ import VehiculosSecundarios from "../DatosVehiculos/secundarios";
 import ObservacionesTextField from "../Observaciones";
 
 import useAuthToken from "../../hooks/useAuthToken";
+import { Guia } from "../../types/guias/guias.interface";
 
 
 
@@ -197,12 +199,19 @@ const GuiaRemisionMain = () => {
     title: "",
   });
 
+  const [accion, setAccion] = useState<string>('form')
+  
 
   const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>(initialValues.addDocs);
 
   const [detalles, setDetalles] = useState<Detail[]>(initialValues.details);
 
 
+  const onHandlePreview=()=>{
+    setAccion('pdf');
+    formik.submitForm();
+
+  }
 
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
@@ -219,6 +228,32 @@ const GuiaRemisionMain = () => {
   const { getToken, getSunatParams } = useAuthToken()
 
   const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
+  console.log(API_GUIAS)
+
+  const previewPDF=(values:GuiaRemision)=>{
+    const doc = {
+      ...values.datosGenerales,
+      destinatario: values.destinatario,
+      comprador: null,
+      envio: {
+        ...values.envio,
+        partida: values.partida,
+        llegada: values.llegada,
+        vehiculo: values.vehiculo,
+        aeropuerto: null,
+        puerto: null,
+        choferes: values.choferes
+      },
+      addDocs: values.addDocs,
+      details: values.details
+    }
+    
+    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
+    responsePdf.then(pdf => console.log(pdf));
+
+
+
+  }
 
   const sendApi = async (param: any, api: string) => {
     const url = `${API_GUIAS}${api}`;
@@ -252,6 +287,10 @@ const GuiaRemisionMain = () => {
           return;
         }
       }
+      if(accion==='pdf'){
+        previewPDF(values)
+      }
+      return;
       const token = await getToken()
       if (token) {
         const doc = {
@@ -1039,14 +1078,17 @@ const GuiaRemisionMain = () => {
 
 
           </Grid>
-          <Box display={"flex"} justifyContent={"center"}>
+          <Box display={"flex"} justifyContent={"center"} flexDirection={'row'} columnGap={2}>
+            <Button  onClick={onHandlePreview} variant="contained" sx={{my:4,color: "white",fontWeight: "bold"}} fullWidth>
+              Ver Pdf
+            </Button>
             <Button
               sx={{
                 my: 4,
                 color: "white",
                 fontWeight: "bold",
-                width: "70%",
               }}
+              fullWidth
               type="submit"
               variant="contained"
               color="warning"
