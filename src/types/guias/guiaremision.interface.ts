@@ -11,7 +11,7 @@ export interface GuiaRemision {
     /* Datos de personas*/
     destinatario: Client;//DatosPersonas
     tercero?:      Client | null;//DatosPersonas
-    comprador:    Client | null;//DatosPersonas
+    comprador?:    Client | null;//DatosPersonas
 
     /* Datos de envio*/
     envio:        Envio;//Listo

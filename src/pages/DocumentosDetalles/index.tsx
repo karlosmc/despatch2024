@@ -1,13 +1,16 @@
 
-import { TableRow, TableCell, Paper, Table, TableBody, TableContainer, TableHead, Typography, useTheme, SxProps, Theme } from '@mui/material'
+import { TableRow, TableCell, Paper, Table, TableBody, TableContainer, TableHead, Typography, useTheme, SxProps, Theme, IconButton } from '@mui/material'
 import { Detail } from '../../types/guias/guiaremision.interface'
+
+import ClearIcon from '@mui/icons-material/Clear';
 
 
 interface Props {
     detalles: Array<Detail>
+    onDelete:(item:Detail)=>void
 }
 
-const DocumentosDetalles = ({detalles}:Props) => {
+const DocumentosDetalles = ({detalles,onDelete}:Props) => {
   // console.log(detalles);
 
   const theme = useTheme()
@@ -39,6 +42,7 @@ const DocumentosDetalles = ({detalles}:Props) => {
                 <TableCell sx={customTableCell} align="center">{detail.cantidad}</TableCell>
                 <TableCell sx={customTableCell} align="center">{detail.descripcion}</TableCell>
                 <TableCell sx={customTableCell} align="center">{detail.unidad}</TableCell>
+                <TableCell sx={customTableCell} align="center"><IconButton onClick={()=>onDelete(detail)} sx={{background:theme.palette.warning.main,'&:hover':{background:theme.palette.warning.light}}}><ClearIcon sx={{color:'white'}} fontSize="small" /></IconButton></TableCell>
               </TableRow>
             )
         })
@@ -53,11 +57,12 @@ const DocumentosDetalles = ({detalles}:Props) => {
         <Table sx={customTable} size="small" aria-label="simple table">
           <TableHead sx={customTableHeader}>
             <TableRow>
-              <TableCell component='th' style={{width:'25%',fontWeight:'bold'}} align="center">Codigo</TableCell>
-              <TableCell component='th' style={{width:'25%',fontWeight:'bold'}} align="center">Cod.Sunat</TableCell>
-              <TableCell component='th' style={{width:'20%',fontWeight:'bold'}} align="center">Cant.</TableCell>
-              <TableCell component='th' style={{width:'30%',fontWeight:'bold'}} align="center">Descripcion</TableCell>
-              <TableCell component='th' style={{width:'30%',fontWeight:'bold'}} align="center">Und.</TableCell>
+              <TableCell component='th' style={{width:'10%',fontWeight:'bold'}} align="center">Codigo</TableCell>
+              <TableCell component='th' style={{width:'10%',fontWeight:'bold'}} align="center">Cod.Sunat</TableCell>
+              <TableCell component='th' style={{width:'5%',fontWeight:'bold'}} align="center">Cant.</TableCell>
+              <TableCell component='th' style={{width:'50%',fontWeight:'bold'}} align="center">Descripcion</TableCell>
+              <TableCell component='th' style={{width:'10%',fontWeight:'bold'}} align="center">Und.</TableCell>
+              <TableCell component='th' style={{width:'5%',fontWeight:'bold'}} align="center">@</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>{renderList()}</TableBody>

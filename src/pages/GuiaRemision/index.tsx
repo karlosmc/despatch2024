@@ -18,6 +18,7 @@ import {
   CompradorSchema,
   GuiaRemisionSchema,
   LlegadaSchema,
+  TerceroSchema
 } from "../../utils/validateGuiaRemision";
 import {
   Accordion,
@@ -131,19 +132,14 @@ const initialValues: GuiaRemision = {
     rznSocial: "",
     tipoDoc: "6",
   },
-  comprador: {
+  tercero:{
     numDoc: "",
     rznSocial: "",
-    tipoDoc: "1",
+    tipoDoc: "6",
   },
   envio: EnvioValues,
   addDocs: [
-    {
-      emisor: "20318171701",
-      nro: "F001-21",
-      tipo: "01",
-      tipoDesc: "FACTURA",
-    },
+    
   ],
   details: [
     {
@@ -154,20 +150,13 @@ const initialValues: GuiaRemision = {
       unidad: "NIU",
     },
   ],
-  choferes: [{
-    tipo: 'Principal',
-    apellidos: 'Maquera Marca',
-    nombres: 'Carlos Eduardo',
-    nroDoc: '43553308',
-    licencia: 'K43553308',
-    tipoDoc: '1'
-  }],
+  choferes: [],
   vehiculo: VehiculoValues,
 
   partida: {
     codLocal: "0000",
     direccion: "Av. industrial nro 260 Tacna",
-    ruc: "20318171701",
+    ruc: "20119207640",
     ubigeo: "150101",
   },
   llegada: {
@@ -193,7 +182,7 @@ type ModalsProps = {
 };
 
 const GuiaRemisionMain = () => {
-  const { getError, getSuccess } = useNotification();
+  const { getError, getSuccess,getWarning } = useNotification();
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -201,7 +190,7 @@ const GuiaRemisionMain = () => {
     title: "",
   });
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -242,12 +231,13 @@ const GuiaRemisionMain = () => {
     const doc = {
       ...values.datosGenerales,
       destinatario: values.destinatario,
+      tercero:values.tercero.numDoc!==''?values.tercero:null,
       comprador: null,
       envio: {
         ...values.envio,
         partida: values.partida,
         llegada: values.llegada,
-        vehiculo: values.vehiculo,
+        vehiculo: values.vehiculo.placa!==''?values.vehiculo:null,
         aeropuerto: null,
         puerto: null,
         choferes: values.choferes
@@ -283,6 +273,7 @@ const GuiaRemisionMain = () => {
     enableReinitialize: false,
     onSubmit: async (values) => {
 
+      
       const fechaEmision = values.datosGenerales.fechaEmision;
       const fecTraslado = values.envio.fecTraslado;
 
@@ -297,7 +288,7 @@ const GuiaRemisionMain = () => {
       }
       if (accion === 'pdf') {
         previewPDF(values)
-        setAccion('')
+        setAccion('form')
         return;
       }
 
@@ -306,12 +297,13 @@ const GuiaRemisionMain = () => {
         const doc = {
           ...values.datosGenerales,
           destinatario: values.destinatario,
+          tercero:values.tercero.numDoc!==''?values.tercero:null,
           comprador: null,
           envio: {
             ...values.envio,
             partida: values.partida,
             llegada: values.llegada,
-            vehiculo: values.vehiculo,
+            vehiculo: values.vehiculo.placa!==''?values.vehiculo:null,
             aeropuerto: null,
             puerto: null,
             choferes: values.choferes
@@ -488,8 +480,8 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const handleCompradorChange = (cliente: Client) => {
-    formik.setFieldValue("comprador", cliente);
+  const handleProveedorChange = (cliente: Client) => {
+    formik.setFieldValue("tercero", cliente);
     setModalsForms({ ...modalsForm, open: false });
   };
 
@@ -502,10 +494,22 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
+  const handleDeleteAdddoc = (item:AddDoc): void =>{
+    const filterAdicionalDocs = adicionalDocs.filter( it => it.emisor!==item.emisor && it.nro!== item.nro);
+    setAdicionalDocs(filterAdicionalDocs);
+  }
+
   const handleNewDetail = (newDetail: Detail): void => {
     // console.log(newDetail)
     setDetalles((detalles) => [...detalles, newDetail]);
     setModalsForms({ ...modalsForm, open: false });
+  };
+
+  const handleDeleteDetail = (item: Detail): void => {
+    // console.log(newDetail)
+    const filterDetails = detalles.filter( it => it.codigo!==item.codigo);
+    setDetalles(filterDetails);
+    
   };
 
   const handlePartidaChange = (direccion: Direccion): void => {
@@ -549,6 +553,9 @@ const GuiaRemisionMain = () => {
   useEffect(()=>{
     if(formik.values.envio.codTraslado === '02' || formik.values.envio.codTraslado === '04'){
       formik.setFieldValue('destinatario',DestinatarioDefaultValues)
+      if(formik.values.envio.codTraslado === '02'){
+        getWarning('Proveedor: Registro Opcional. Si desea registre el proveedor dónde realizó la compra')
+      }
     }else{
       formik.setFieldValue('destinatario',{
         numDoc: "",
@@ -621,6 +628,36 @@ const GuiaRemisionMain = () => {
             </Accordion>
             {/* Datos generales */}
 
+
+            {/* Envio */}
+            <Accordion
+              expanded={expanded === "panel3"}
+              onChange={handleChange("panel3")}
+              sx={{ width: "100%", color: (expanded === "panel3" ? theme.palette.success.main : theme.palette.success.dark) }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
+                aria-controls="panel3bh-content"
+                id="panel3bh-header"
+              >
+                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
+                  Datos de Envío
+                </Typography>
+                <LocalShippingIcon />
+              </AccordionSummary>
+              <AccordionDetails>
+
+                <Grid item container xs={12}>
+                  <EnvioForm
+                    onChange={handleEnvioChange}
+                    EnvioValues={EnvioValues}
+                  />
+                </Grid>
+              </AccordionDetails>
+            </Accordion>
+            {/* Envio */}
+            
+            
             {/* Destinatario y comprador */}
 
             <Accordion
@@ -634,7 +671,7 @@ const GuiaRemisionMain = () => {
                 id="panel2bh-header"
               >
                 <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
-                  Datos de destinatario y comprador
+                  Datos de destinatario y Proveedor
                 </Typography>
                 <PeopleIcon />
               </AccordionSummary>
@@ -673,17 +710,17 @@ const GuiaRemisionMain = () => {
                           handleOpenModalForm(
                             <Cliente
                               // initialValue={formData.comprador}
-                              initialValue={formik.values.comprador}
-                              onChange={handleCompradorChange}
-                              schema={CompradorSchema}
+                              initialValue={formik.values.tercero}
+                              onChange={handleProveedorChange}
+                              schema={TerceroSchema}
                               tipo="c"
                             />,
-                            "Comprador"
+                            "Proveedor"
                           )
                         }
                         sx={{ height: 80, width: 100 }}
                       >
-                        Comprador
+                        Proveedor
                       </Button>
                     </Paper>
                   </Grid>
@@ -693,34 +730,6 @@ const GuiaRemisionMain = () => {
 
 
             {/* Destinatario y comprador */}
-
-            {/* Envio */}
-            <Accordion
-              expanded={expanded === "panel3"}
-              onChange={handleChange("panel3")}
-              sx={{ width: "100%", color: (expanded === "panel3" ? theme.palette.success.main : theme.palette.success.dark) }}
-            >
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon color="secondary" fontSize="large" />}
-                aria-controls="panel3bh-content"
-                id="panel3bh-header"
-              >
-                <Typography sx={{ width: "50%", flexShrink: 0 }} fontWeight={700}>
-                  Datos de Envío
-                </Typography>
-                <LocalShippingIcon />
-              </AccordionSummary>
-              <AccordionDetails>
-
-                <Grid item container xs={12}>
-                  <EnvioForm
-                    onChange={handleEnvioChange}
-                    EnvioValues={EnvioValues}
-                  />
-                </Grid>
-              </AccordionDetails>
-            </Accordion>
-            {/* Envio */}
 
             {/* Documentos Adicionales */}
 
@@ -740,8 +749,6 @@ const GuiaRemisionMain = () => {
                 <NoteAddIcon />
               </AccordionSummary>
               <AccordionDetails>
-
-
                 <Grid
                   item
                   container
@@ -764,7 +771,7 @@ const GuiaRemisionMain = () => {
                   </Button>
                 </Grid>
                 <Grid item xs={12}>
-                  <DocumentosAdicionales adicionales={formik.values.addDocs} />
+                  <DocumentosAdicionales onDelete={handleDeleteAdddoc} adicionales={formik.values.addDocs} />
                 </Grid>
 
 
@@ -817,7 +824,7 @@ const GuiaRemisionMain = () => {
                 </Grid>
 
                 <Grid item xs={12}>
-                  <DocumentosDetalles detalles={formik.values.details} />
+                  <DocumentosDetalles onDelete={handleDeleteDetail} detalles={formik.values.details} />
                 </Grid>
               </AccordionDetails>
             </Accordion>

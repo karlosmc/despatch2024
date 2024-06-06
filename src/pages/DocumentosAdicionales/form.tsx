@@ -94,7 +94,7 @@ const ClientesCentenario: ClientCompanyFav[]=[
 const TipoDocumentos = [
   { valor: "03", descripcion: "BOLETA" },
   { valor: "01", descripcion: "FACTURA" },
-  { valor: "81", descripcion: "COD. AUTORIZACIÓN EMITIDA POR SCOP" },
+  { valor: "81", descripcion: "CODIGO DE AUTORIZACION EMITIDA POR EL SCOP" },
 ];
 
 const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {

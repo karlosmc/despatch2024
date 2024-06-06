@@ -71,8 +71,41 @@ export const CompradorSchema = object({
       is:(numDoc) => numDoc && numDoc.length >0,
       then: (schema) => schema.required('Comprador: Si Número de documento existe, debe escribir una Razón Social'),
     })
-    
-    
+});
+
+export const TerceroSchema = object({
+  tipoDoc: yup
+  .string()
+  // .required("Proveedor: Debe elegir el Tipo de Documento")
+  // .trim()
+  ,
+  numDoc: yup
+    .string()
+    .notRequired()
+    .when("tipoDoc", {
+      is: "1", // alternatively: (val) => val == true
+      then: (schema) =>
+        schema.length(
+          8,
+          ({ length }) =>
+            `Proveedor: El campo Número de documento debe tener ${length} caracteres`
+        ),
+    })
+    .when("tipoDoc", {
+      is: "6", // alternatively: (val) => val == true
+      then: (schema) =>schema.length(11,({ length }) =>`Proveedor: El campo Número de documento debe tener ${length} caracteres`)
+      .test('rucValido','Proveedor: RUC INVALIDO',function(value){
+        const isValid = rucValido(parseInt(value))
+        return isValid;
+      }),
+      otherwise: (schema) => schema,
+    }).optional(),
+  rznSocial: yup
+    .string()
+    .when("numDoc",{
+      is:(numDoc) => numDoc && numDoc.length >0,
+      then: (schema) => schema.required('Proveedor: Si Número de documento existe, debe escribir una Razón Social'),
+    })
 });
 
 export const DestinatarioTest = object({
@@ -219,12 +252,12 @@ export const VehiculoSchema = yup.object().shape({
 })
 
 export const ChoferSchema = yup.object().shape({
-  tipo:yup.string().trim().required('Debe elegir un tipo de conductor'),
-  tipoDoc:yup.string().trim().required('Debe elegir un tipo de documento'),
-  nroDoc:yup.string().trim().required('Debe escribir un Nro de documento'),
-  nombres:yup.string().trim().required('Debe escribir los nombres del conductor'),
+  tipo:yup.string().trim().required('Chofer: Debe elegir un tipo de conductor'),
+  tipoDoc:yup.string().trim().required('Chofer: Debe elegir un tipo de documento'),
+  nroDoc:yup.string().trim().required('Chofer: Debe escribir un Nro de documento'),
+  nombres:yup.string().trim().required('Chofer: Debe escribir los nombres del conductor'),
   apellidos:yup.string().trim().notRequired(),
-  licencia:yup.string().trim().required('Debe escribir el número de licencia')
+  licencia:yup.string().trim().required('Chofer: Debe escribir el número de licencia')
 })
 
 export const EnvioSchema = yup.object().shape({
@@ -339,10 +372,11 @@ export const GuiaRemisionSchema = yup.object().shape({
  
   datosGenerales:DatosGeneralesSchema,
   destinatario: DestinatarioSchema,
-  comprador: CompradorSchema.optional().notRequired(),
+  // comprador: CompradorSchema.optional().notRequired(),
+  proveedor: TerceroSchema.optional().notRequired(),
   envio: EnvioSchema,
-  addDocs:yup.array(AddDocSchema)
-  .min(1,'Debe agregar por lo menos { 1 } Documento adicional'),
+  addDocs:yup.array(AddDocSchema),
+  // .min(1,'Debe agregar por lo menos { 1 } Documento adicional'),
   details:yup.array(DetailSchema)
   .min(1,'Debe agregar por lo menos {1} Detalle'),
   vehiculo:VehiculoSchema,
