@@ -63,24 +63,24 @@ export const useAuth = ({middleware , url}:authInterface) =>{
 
   }
 
-  // useEffect(() => {
+  useEffect(() => {
 
 
-  //   if(middleware === 'guest' && url && user){
-  //     navigate(url);
-  //   }
-  //   if(middleware === 'auth' && user) navigate('/admin');
-  //   // if(middleware === 'auth' && user && !user.admin){
-  //   //   navigate('/');
-  //   // }else{
-  //   //   console.log('no entro')
-  //   // }
+    if(middleware === 'guest' && url && user){
+      navigate(url);
+    }
+    if(middleware === 'auth' && user) navigate('/admin');
+    // if(middleware === 'auth' && user && !user.admin){
+    //   navigate('/');
+    // }else{
+    //   console.log('no entro')
+    // }
 
-  //   if(middleware === 'auth' && error){
-  //     navigate('/auth/login');
-  //   }
+    if(middleware === 'auth' && error){
+      navigate('/auth/login');
+    }
     
-  // }, [user,error])
+  }, [user,error])
 
 
 

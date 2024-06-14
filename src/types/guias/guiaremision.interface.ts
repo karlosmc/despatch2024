@@ -61,6 +61,7 @@ export interface Client {
 }
 
 export interface Detail {
+    id?:string;
     codigo:       string;
     descripcion:  string;
     unidad:       string;

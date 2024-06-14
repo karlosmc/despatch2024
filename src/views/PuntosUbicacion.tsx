@@ -7,9 +7,13 @@ import { Producto } from '../types/producto.interface';
 
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import GradeIcon from '@mui/icons-material/Grade';
+import StoreIcon from '@mui/icons-material/Store';
+import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
+import { puntoUbicacion } from '../types/puntoubicacion.interface';
+import ModalPuntoUbicacion from '../components/Puntos';
 
 
 type ModalsProps = {
@@ -18,7 +22,7 @@ type ModalsProps = {
   title: string;
 };
 
-const Productos = () => {
+const PuntoUbicacion = () => {
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -56,41 +60,44 @@ const Productos = () => {
   // const [edit, setEdit] = useState<boolean>(false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/productos', {
+  const fetcher = () => clienteAxios('/api/puntos', {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
 
-  const { data, error, isLoading } = useSWR('/api/productos', fetcher);
+  const { data, error, isLoading } = useSWR('/api/puntos', fetcher);
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:Producto) => {
+  data?.data?.data.forEach((fil:puntoUbicacion) => {
     rows.push(
       <TableRow
         key={fil.id}
       >
         <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.codigo}</TableCell>
-        <TableCell align="left">{fil.descripcion}</TableCell>
-        <TableCell align="left">{fil.unidad}</TableCell>
+        <TableCell align="left">{fil.ruc}</TableCell>
+        <TableCell align="left">{fil.codLocal}</TableCell>
+        <TableCell align="left">{fil.direccion}</TableCell>
+        <TableCell align="left">{fil.fullubigeo}</TableCell>
+        
         <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
-        <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditProduct(fil.id)} ><EditIcon /></Fab></TableCell>
+        <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
+        <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditPunto(fil.id)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
   })
 
 
 
-  const handleEditProduct = (id: number) => {
+  const handleEditPunto = (id: number) => {
     // setEdit(false);
-    const selectedProducto = data.data.data.find(item => item.id === id);
+    const selectedPunto = data.data.data.find(item => item.id === id);
     handleOpenModalForm(
-      <ModalProducto initialValue={selectedProducto} edit={true} onConfirm={handleConfirm} />,
-      'Editar Producto'
+      <ModalPuntoUbicacion initialValue={selectedPunto} edit={true} onConfirm={handleConfirm} />,
+      'Editar Punto de Ubicacion'
     )
   }
 
@@ -106,12 +113,12 @@ const Productos = () => {
           color='primary'
           onClick={() => {
             handleOpenModalForm(
-              <ModalProducto initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
-              'Producto'
+              <ModalPuntoUbicacion initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
+              'Nuevo Punto de Ubicacion'
             )
           }}
           variant='outlined'>
-          Agregar Producto
+          Agregar Punto de Ubicación
         </Button>
       </Box>
 
@@ -120,11 +127,12 @@ const Productos = () => {
           <TableHead>
             <TableRow>
               <TableCell width={'5%'}>Id</TableCell>
-              <TableCell width={'15%'} align="left">Codigo</TableCell>
-              <TableCell width={'60%'} align="left">Descripción</TableCell>
-              <TableCell width={'10%'} align="left">Unidad</TableCell>
-              <TableCell width={'10%'} align="left">Fav</TableCell>
-              <TableCell width={'10%'} align="left">Accion</TableCell>
+              <TableCell width={'10%'} align="left">Ruc</TableCell>
+              <TableCell width={'5%'} align="left">Cod. Local</TableCell>
+              <TableCell width={'40%'} align="left">Dirección</TableCell>
+              <TableCell width={'20%'} align="left">Ubigeo</TableCell>
+              <TableCell width={'10%'} align="left">Fav?</TableCell>
+              <TableCell width={'10%'} align="left">Propio?</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -170,4 +178,4 @@ const Productos = () => {
   )
 }
 
-export default Productos
+export default PuntoUbicacion

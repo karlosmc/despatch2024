@@ -79,6 +79,9 @@ const SideNav = ({ sidebarCollapsed }: AppHeaderInterface) => {
         <MyMenu active={location.pathname==='/admin/reportes'} component={<Link to="/admin/reportes"/>} icon={<SourceOutlined />}>
           <Typography variant='body2'>Reportes</Typography>
         </MyMenu>
+        <MyMenu active={location.pathname==='/admin/puntos'} component={<Link to="/admin/puntos"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Puntos de ubicación</Typography>
+        </MyMenu>
 
 
       </Menu>

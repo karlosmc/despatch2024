@@ -61,6 +61,7 @@ type indicadoresType = {
   selected: boolean;
   icon: JSX.Element;
 };
+
 const _INDICADORES_ESPECIALES = [
   {
     id: "SUNAT_Envio_IndicadorTrasladoVehiculoM1L",

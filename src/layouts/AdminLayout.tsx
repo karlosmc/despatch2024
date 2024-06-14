@@ -17,20 +17,15 @@ const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState<boolean>(false)
   return (
     <>
-      {
-        isLoading ? <Inicio />
 
-          :
-          <>
-            <AppHeader sidebarCollapsed={collapsed} setSidebarCollapsed={setCollapsed} />
-            <Box sx={container}>
-              <SideNav sidebarCollapsed={collapsed} />
-              <Box component='main' sx={{ top: 100, ...mainSection }}>
-                <Outlet />
-              </Box>
-            </Box>
-          </>
-      }
+      <AppHeader sidebarCollapsed={collapsed} setSidebarCollapsed={setCollapsed} />
+      <Box sx={container}>
+        <SideNav sidebarCollapsed={collapsed} />
+        <Box component='main' sx={{ top: 100, ...mainSection }}>
+          <Outlet />
+        </Box>
+      </Box>
+
 
     </>
 
@@ -51,3 +46,26 @@ const mainSection: SxProps<Theme> = {
   overflow: 'auto'
 
 }
+
+
+// const [collapsed, setCollapsed] = useState<boolean>(false)
+// return (
+//   <>
+//     {
+//       isLoading ? <Inicio />
+
+//         :
+//         <>
+//           <AppHeader sidebarCollapsed={collapsed} setSidebarCollapsed={setCollapsed} />
+//           <Box sx={container}>
+//             <SideNav sidebarCollapsed={collapsed} />
+//             <Box component='main' sx={{ top: 100, ...mainSection }}>
+//               <Outlet />
+//             </Box>
+//           </Box>
+//         </>
+//     }
+
+//   </>
+
+// )

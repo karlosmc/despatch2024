@@ -1,12 +1,16 @@
-import { MouseEvent } from "react";
+import { MouseEvent, useState } from "react";
 import { Detail } from "../../types/doc.interface";
 import { Box, Button, Chip, Paper, TextField, Typography } from "@mui/material";
 
 import { useFormik } from "formik";
 
 
-import { Producto } from "../../types/login.interface";
+
 import { DetailSchema } from "../../utils/validateGuiaRemision";
+import { DialogComponentCustom } from "../../components";
+import ModalProducto from "../../components/Producto";
+import SearchProducto from "../../components/Producto/SearchProducto";
+import { Producto } from "../../types/producto.interface";
 
 /* const DestinatarioValues: Client = {
   id: "",
@@ -28,8 +32,39 @@ const DetailValues: Detail = {
   unidad: "",
 };
 
+type ModalsProps = {
+  open: boolean;
+  form: React.ReactNode | null;
+  title: string;
+};
 
 const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
+
+  const [modalsForm, setModalsForms] = useState<ModalsProps>({
+    open: false,
+    form: null,
+    title: "",
+  });
+
+  const handleOpenModalForm = (form: React.ReactNode, title: string) => {
+    setModalsForms({ open: true, form, title });
+  };
+
+  const handleCloseModalForm = () => {
+    // Cierra el modal en la posición especificada
+    setModalsForms((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleConfirm=(producto:Producto):void=>{
+
+    formik.setFieldValue('codigo', producto.codigo)
+    formik.setFieldValue('codProdSunat', producto.codProdSunat?producto.codProdSunat:'')
+    formik.setFieldValue('descripcion', producto.descripcion)
+    formik.setFieldValue('unidad', producto.unidad)
+
+    handleCloseModalForm()
+  }
+
   const formik = useFormik({
     initialValues: DetailValues,
     validationSchema: DetailSchema,
@@ -50,22 +85,31 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
 
 
 
-  const handleClickProductsDefault = (evt: MouseEvent<HTMLDivElement>) => {
-    evt.preventDefault();
-    const spanChip = evt.currentTarget.id;
-    // console.log(spanChip);
+  // const handleClickProductsDefault = (evt: MouseEvent<HTMLDivElement>) => {
+  //   evt.preventDefault();
+  //   const spanChip = evt.currentTarget.id;
+  //   // console.log(spanChip);
 
-    const DefaultProduct = DefaultProducts.find((item) => item.id === spanChip);
-
-
-
-    formik.setFieldValue('codigo', DefaultProduct.codigo)
-    formik.setFieldValue('codProdSunat', DefaultProduct.codProdSunat)
-    formik.setFieldValue('descripcion', DefaultProduct.descripcion)
-    formik.setFieldValue('unidad', DefaultProduct.unidad)
+  //   const DefaultProduct = DefaultProducts.find((item) => item.id === spanChip);
 
 
-  };
+
+  //   formik.setFieldValue('codigo', DefaultProduct.codigo)
+  //   formik.setFieldValue('codProdSunat', DefaultProduct.codProdSunat)
+  //   formik.setFieldValue('descripcion', DefaultProduct.descripcion)
+  //   formik.setFieldValue('unidad', DefaultProduct.unidad)
+
+
+  // };
+
+  const handleCheckProduct = (producto:Producto):void => {
+
+    formik.setFieldValue('codigo', producto.codigo)
+    formik.setFieldValue('codProdSunat', producto.codProdSunat)
+    formik.setFieldValue('descripcion', producto.descripcion)
+    formik.setFieldValue('unidad', producto.unidad)
+    handleCloseModalForm()
+  }
 
   return (
     <>
@@ -82,7 +126,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
           width: "100%",
         }}
       >
-        {DefaultProducts.map((pro) => {
+        {/* {DefaultProducts.map((pro) => {
           return (
             <Chip
               sx={{
@@ -105,7 +149,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
               onClick={handleClickProductsDefault}
             />
           );
-        })}
+        })} */}
       </Paper>
       <form onSubmit={formik.handleSubmit}>
         <Box display={{xs:'block',md:'flex'}} columnGap={2}>
@@ -191,6 +235,43 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
           Agregar Item
         </Button>
       </form>
+
+      <Button variant="outlined" color="primary" sx={{mt:2}}
+       onClick={() => {
+        handleOpenModalForm(
+          <ModalProducto initialValue={null} edit={false} onConfirm={handleConfirm}/>,
+          'Producto'
+        )
+      }}
+      >
+        Crear Item
+      </Button>
+
+      <Button variant="outlined" color="primary" sx={{mt:2}}
+       onClick={() => {
+        handleOpenModalForm(
+          <SearchProducto onCheck={handleCheckProduct}/>,
+          'Buscar producto'
+        )
+      }}
+      >
+        Buscar producto
+      </Button>
+      <DialogComponentCustom
+        closeButton={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleCloseModalForm()}
+          >
+            Cerrar
+          </Button>
+        }
+        open={modalsForm.open}
+        title={modalsForm.title}
+        element={modalsForm.form}
+
+      />
     </>
   );
 };

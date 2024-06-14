@@ -1,7 +1,7 @@
 import React, { useState, useEffect, MouseEvent } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { Stack, Button, Chip, Paper } from "@mui/material";
+import { Stack, Button, Chip, Paper, InputAdornment, Tooltip, withStyles, Theme, styled, TooltipProps, tooltipClasses, keyframes } from "@mui/material";
 import { Departamentos, Provincias, Ubigeos } from "../../types/ubigeo";
 import { useFormik } from "formik";
 
@@ -9,6 +9,8 @@ import * as Yup from "yup";
 import { DirectionsUser, UserLogin } from "../../types/login.interface";
 import { Direccion } from "../../types/guias/guiaremision.interface";
 import { PartidaSchema } from "../../utils/validateGuiaRemision";
+import InfoIcon from '@mui/icons-material/Info';
+
 
 interface DireccionFormProps {
   initialValue: Direccion;
@@ -37,6 +39,45 @@ const DireccionUserValues: DirectionsUser = {
   ubigeo: "",
 };
 
+
+const pulse = keyframes`
+  0% {
+    border: 4px solid rgba(236, 206, 31, 0.4);
+    
+    background-color:  rgba(236, 206, 31, 0.4);
+  }
+  50% {
+    border: 4px solid rgba(236, 206, 31, .8);
+    background-color: rgba(236, 206, 31, .8);
+    
+  }
+  100% {
+    border: 4px solid rgba(236, 206, 31, 0.4);
+    background-color: rgba(236, 206, 31, 0.4);
+    
+  }
+`;
+
+// Creamos un componente estilizado para el InputAdornment
+const AnimatedInputAdornment = styled(InputAdornment)(({}) => ({
+  animation: `${pulse} 2s infinite`,
+  display: 'flex',
+  alignItems: 'center',
+  height:'auto',
+  borderRadius:'50%'
+}));
+
+const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: 'white',
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 11,
+  },
+}));
+
 const DatosDireccion = ({
   initialValue,
   onChange,
@@ -53,7 +94,6 @@ const DatosDireccion = ({
       onChange(values);
     },
   });
-
 
   const [directionChip, setDirectionChip] = useState<DirectionsUser>(DireccionUserValues)
 
@@ -297,6 +337,15 @@ const DatosDireccion = ({
           onBlur={formik.handleBlur}
           helperText={formik.touched.codLocal && formik.errors.codLocal}
           error={formik.touched.codLocal && Boolean(formik.errors.codLocal)}
+          InputProps={{
+            endAdornment: (
+              <AnimatedInputAdornment position="end">
+                <LightTooltip arrow title="Usa Código de Local solo si vas a considerar un RUC para establecer el punto de Ubicación, si no, dejalo por defecto {0000}">
+                  <InfoIcon color="action"/>
+                </LightTooltip>
+              </AnimatedInputAdornment>
+            ),
+          }}
         />
         <TextField
           margin="normal"
@@ -319,7 +368,7 @@ const DatosDireccion = ({
           fullWidth
           name="ruc"
           type="text"
-          label="R.U.C."
+          label="R.U.C. (solo valido para RUC de 11 caracteres)"
           sx={{ my:1.5 }}
         
           value={formik.values.ruc}
@@ -327,6 +376,15 @@ const DatosDireccion = ({
           onBlur={formik.handleBlur}
           helperText={formik.touched.ruc && formik.errors.ruc}
           error={formik.touched.ruc && Boolean(formik.errors.ruc)}
+          InputProps={{
+            endAdornment: (
+              <AnimatedInputAdornment position="end">
+                <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
+                  <InfoIcon color="action"/>
+                </LightTooltip>
+              </AnimatedInputAdornment>
+            ),
+          }}
         />
         <Autocomplete
           options={departamentos}

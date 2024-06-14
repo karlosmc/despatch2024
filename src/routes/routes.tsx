@@ -18,6 +18,7 @@ import Test2Stepper from "../views/Test2Stepper";
 import MultiStep from "../views/MultiStep";
 import CustomStepper from "../pages/CustomStepper";
 import GuiaRemisionMain from "../pages/GuiaRemision";
+import PuntoUbicacion from "../views/PuntosUbicacion";
 // import LoginForm from "../pages/login";
 
 export const router = createBrowserRouter([
@@ -29,9 +30,18 @@ export const router = createBrowserRouter([
         index:true,
         element:<Inicio/>
       },
-     
   ]
   },
+  // {
+  //       path: "/",
+  //       element: <AdminLayout />,
+  //       children:[
+  //         {
+  //           index:true,
+  //           element:<Inicio/>
+  //         }
+  //       ]
+  // },
   {
     path:'/auth',
     element:<AuthLayout/>,
@@ -66,6 +76,10 @@ export const router = createBrowserRouter([
       {
         path:'/admin/productos',
         element:<Productos/>
+      },
+      {
+        path:'/admin/puntos',
+        element:<PuntoUbicacion/>
       }
     ]
   }

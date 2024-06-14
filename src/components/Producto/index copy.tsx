@@ -44,11 +44,11 @@ const ProductoInitialValues: Producto = {
 
 interface ProductoFormProps {
   initialValue?: Producto;
-  onConfirm:(producto:Producto)=>void;
+  closeModal:(modalName:string)=>void;
   edit:Boolean,
 }
 
-const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
+const ModalProducto = ({ initialValue,closeModal,edit }: ProductoFormProps) => {
 
   const [fav, setFav] = useState<boolean>(initialValue?.fav||false);
 
@@ -58,7 +58,7 @@ const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
 
     
     try {
-      const { data,status } = await clienteAxios.post('/api/productos', {
+      const { data } = await clienteAxios.post('/api/productos', {
         codigo: values.codigo,
         descripcion: values.descripcion,
         fav: values.fav,
@@ -70,16 +70,10 @@ const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(data)
-      if(status===200){
-        onConfirm(data.producto);
-      }
     }
     catch(error){
       console.log(error)
     }
-
-    
 
   }
 
@@ -101,7 +95,7 @@ const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
     catch(error){
       console.log(error)
     }
-    // onConfirm();
+
   }
 
   const formik = useFormik({
@@ -114,7 +108,7 @@ const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
       }else{
         storeProducto(values)
       }
-      
+      closeModal('prueba')
     },
   });
 

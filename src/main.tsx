@@ -21,21 +21,22 @@ import { DialogProvider } from "./context/dialog.context.tsx";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ThemeConfig>
-      
-      <NotificationProvider>
-        <DialogProvider>
-          {/* <ParamsProvider> */}
+      <ModalProvider>
+        <NotificationProvider>
+          <DialogProvider>
+            {/* <ParamsProvider> */}
             {/* <TokenProvider> */}
-            <ModalProvider>
-              <AuxiliarProvider>
-                <RouterProvider  router={router}/>
-              </AuxiliarProvider>
-            </ModalProvider>
-              {/* <App /> */}
+
+            <AuxiliarProvider>
+              <RouterProvider router={router} />
+            </AuxiliarProvider>
+
+            {/* <App /> */}
             {/* </TokenProvider> */}
-          {/* </ParamsProvider> */}
-        </DialogProvider>
-      </NotificationProvider>
+            {/* </ParamsProvider> */}
+          </DialogProvider>
+        </NotificationProvider>
+      </ModalProvider>
     </ThemeConfig>
   </React.StrictMode>
 );
