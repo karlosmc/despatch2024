@@ -1,4 +1,4 @@
-import { dataFound } from "./persona.interface";
+// import { dataFound } from "./persona.interface";
 
 export interface Despatch {
     doc: Doc;

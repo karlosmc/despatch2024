@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 
 
-import { Stack, Button, Box } from "@mui/material";
-import { isObject, useFormik } from "formik";
+import { Stack, Button, Box, Table, TableBody, TableCell, TableHead, TableRow, Typography,  styled } from "@mui/material";
+import { useFormik } from "formik";
 
 import * as Yup from "yup";
 import { EnvioChoferes } from "../../types/guias/guiaremision.interface";
 import { ChoferSchema } from "../../utils/validateGuiaRemision";
 import ConductorForm from "./form";
 import { useNotification } from "../../context/notification.context";
+import { DialogComponentCustom } from "../../components";
+import ModalConductor from "../../components/Conductor";
+import { conductor } from "../../types/conductor.interface";
+import SearchConductor from "../../components/Conductor/SerachConductor";
+import clienteAxios from "../../config/axios";
+import ChipFavoritos from "../../components/ChipFavoritos";
+import { ChipInterface } from "../../types/general.interface";
+
+
 
 
 interface Props {
@@ -25,9 +34,40 @@ const ChoferValues: EnvioChoferes = {
   nroDoc: "",
 };
 
+type ModalsProps = {
+  open: boolean;
+  form: React.ReactNode | null;
+  title: string;
+};
+
+
+const StyledNewButton = styled(Button)(({})=>({
+  backgroundColor: '#375A7F',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#2F4D6C',
+  }
+}))
+
+const StyledSearchButton = styled(Button)(({})=>({
+  backgroundColor: '#00BC8C',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#00A077',
+  }
+}))
+
 const Conductores = ({ choferes, onConfirm }: Props) => {
   // const [chofer, setChofer] = useState<EnvioChoferes>(ChoferValues);
   const [listaChoferes, setListaChoferes] = useState<EnvioChoferes[]>(choferes);
+  const [modalsForm, setModalsForms] = useState<ModalsProps>({
+    open: false,
+    form: null,
+    title: "",
+  });
+
+  const [driver, setDriver] = useState<conductor>(null);
+
 
   const { getError } = useNotification();
 
@@ -43,17 +83,35 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
     },
   });
 
+  const [dataFilter, setDataFilter] = useState<conductor[]>([])
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  const token = localStorage.getItem('AUTH_TOKEN');
+
+  const filterFav = async (tipo:string) => {
+    try {
+
+      const { data, status } = await clienteAxios(`/api/conductor/buscar?${tipo}=1`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (status === 200) {
+        setIsLoading(false)
+        setDataFilter(data?.data)
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
   const handleNewChofer = (newChofer: EnvioChoferes): void => {
     // console.log(chofer)
     if (listaChoferes.length === 0) {
       if (newChofer.tipo !== 'Principal') {
         getError('El primer chofer debe ser Principal');
-        // ChoferValues.apellidos=newChofer.apellidos;
-        // ChoferValues.nroDoc=newChofer.nroDoc;
-        // ChoferValues.tipo=newChofer.tipo;
-        // ChoferValues.tipoDoc=newChofer.tipoDoc;
-        // ChoferValues.licencia=newChofer.licencia;
-        // ChoferValues.nombres=newChofer.nombres;
         return;
       }
     } else {
@@ -64,12 +122,6 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
 
     }
 
-
-    // if(listaChoferes.filter(chofer => chofer.tipo==='Principal').length>0){
-    //   getError('Ya existe un conductor principal');
-    //   return;
-    // }
-    // setChofer(newChofer);
     if (listaChoferes.length < 3) {
       setListaChoferes((chofer) => [...chofer, newChofer]);
     } else {
@@ -82,79 +134,131 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
     // console.log(listaChoferes)
   }, [listaChoferes]);
 
-  // const handleSubmit = () => {
-  //   onConfirm(listaChoferes);
-  // };
+
+  const handleConfirm = (conductor: conductor): void => {
+    setDriver(conductor)
+    handleCloseModalForm()
+  }
+
+  const handleSetFavorite = (item: ChipInterface): void => {
+    const conductor = dataFilter.find(it => it.id === item.id);
+    setDriver(conductor)
+  }
+
+
 
   const handleClean = () => {
     setListaChoferes([]);
     onConfirm([]);
   };
 
-  // useEffect(() => {
-  //   if (!formik.isSubmitting) return;
-  //   if (Object.keys(formik.errors).length > 0) {
-  //     const ErrorValues = Object.values(formik.errors)[0];
-  //     // console.log(ErrorValues);
-  //     //const ErrorKeys = Object.keys(formik.errors)[0]
-  //     if (isObject(ErrorValues)) {
-  //       // console.log(Object.values(ErrorValues)[0])
-  //       const ErrorValuesSub = Object.values(ErrorValues)[0];
-  //       // const ErrorKeySub = Object.keys(ErrorKeys)[0]
-  //       if (isObject(ErrorValuesSub)) {
-  //         //getError(`Error en la Seccion:${Object.keys(ErrorKeySub)[0]}: ${Object.values(ErrorValuesSub)[0]}`)
-  //         getError(`${Object.values(ErrorValuesSub)[0]}`);
-  //       } else {
-  //         //getError(`Error en la Seccion:${ErrorKeys.toUpperCase()}: ${ErrorValuesSub}`)
-  //         getError(ErrorValuesSub);
-  //       }
-  //     } else {
-  //       getError(ErrorValues);
-  //     }
-  //   }
-  // }, [formik]);
+  const handleOpenModalForm = (form: React.ReactNode, title: string) => {
+    setModalsForms({ open: true, form, title });
+  };
+
+  const handleCloseModalForm = () => {
+    // Cierra el modal en la posición especificada
+    setModalsForms((prev) => ({ ...prev, open: false }));
+  };
 
 
   const renderList = (): JSX.Element[] => {
     return listaChoferes.map((driver, index) => {
       return (
-        <li key={index}>
-          {driver.tipo}
-          {driver.tipoDoc}
-          {driver.nroDoc}
-          {driver.nombres}
-          {driver.apellidos}
-          {driver.licencia}
-        </li>
+        <TableRow
+          key={index}
+        >
+          <TableCell align="left">{driver.id}</TableCell>
+          <TableCell align="left">{driver.tipo}</TableCell>
+          <TableCell align="left">{driver.tipoDoc}</TableCell>
+          <TableCell align="left">{driver.nroDoc}</TableCell>
+          <TableCell align="left">{driver.apellidos} {driver.nombres}</TableCell>
+          <TableCell align="left">{driver.licencia}</TableCell>
+
+        </TableRow>
       );
     });
   };
 
+
+  useEffect(()=>{
+      filterFav('fav')
+
+  },[])
   return (
     <>
-      <form action="" onSubmit={formik.handleSubmit} >
-        <ConductorForm initialValue={ChoferValues} onChange={handleNewChofer} />
-        <Box>
-          <ul style={{ textAlign: "center" }}>
-            {/* <ChoferForm initialValue={ChoferValues} onChange={handleNewChofer} /> */}
-            Lista de Choferes
-            {renderList()}
+    <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Puntos de ubicación favoritos" />
+      <Box component='form' action="" onSubmit={formik.handleSubmit} >
+        <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
+          <StyledNewButton fullWidth variant="contained" 
+          onClick={() => {
+            handleOpenModalForm(
+              <ModalConductor initialValue={null} edit={false} onConfirm={handleConfirm} />,
+              'Crear Conductor'
+            )
+          }}
+          >
+            Crear
+          </StyledNewButton>
 
-          </ul>
+          <StyledSearchButton fullWidth variant="contained" color="warning"
+          onClick={() => {
+            handleOpenModalForm(
+              <SearchConductor onCheck={handleConfirm} />,
+              'Buscar Conductor'
+            )
+          }}
+          >
+            Buscar
+          </StyledSearchButton>
+        </Box>
+        <ConductorForm initialValue={ChoferValues} conductor={driver} onChange={handleNewChofer} />
+        <Typography textAlign={'center'}>Lista de choferes</Typography>
+        <Box>
+          <Table aria-label="simple table" size='small' sx={{ my: 2, border: '1px solid grey' }}>
+            <TableHead sx={{ background: 'grey' }}>
+              <TableRow>
+              <TableCell width={'5%'} align="left">Id</TableCell>
+                <TableCell width={'20%'} align="left">T.Conductor</TableCell>
+                <TableCell width={'10%'} align="left">Tip.Doc.</TableCell>
+                <TableCell width={'10%'} align="left">Nro.Doc.</TableCell>
+                <TableCell width={'50%'} align="left">Nombres</TableCell>
+                <TableCell width={'10%'} align="left">Nro.Licencia</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {renderList()}
+            </TableBody>
+          </Table>
         </Box>
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" color="success"
+          <Button fullWidth variant="contained" color="success"
             // onClick={handleSubmit}
             type="submit"
           >
             Completar
           </Button>
 
-          <Button variant="outlined" color="error" onClick={handleClean}>
+          <Button fullWidth variant="outlined" color="secondary" onClick={handleClean}>
             Limpiar todo
           </Button>
         </Stack>
-      </form>
+      </Box>
+      <DialogComponentCustom
+        closeButton={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleCloseModalForm()}
+          >
+            Cerrar
+          </Button>
+        }
+        open={modalsForm.open}
+        title={modalsForm.title}
+        element={modalsForm.form}
+
+      />
 
     </>
   );

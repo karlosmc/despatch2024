@@ -1,4 +1,3 @@
-import { Transportista } from "../doc.interface";
 
 export interface Despatch {
     doc: GuiaRemision;
@@ -27,6 +26,12 @@ export interface GuiaRemision {
     observacion:string,
     
 }
+
+export interface Transportista extends Client {
+    id?: number | null;
+    nroMtc: string;
+}
+
 
 export interface DatosGenerales {
     version:      string;//DatosGenerales
@@ -123,6 +128,7 @@ export interface Puerto {
 }
 
 export interface EnvioChoferes {
+    id?:number;
     tipo:      string;
     tipoDoc:   string;
     nroDoc:    string;
@@ -139,7 +145,7 @@ export interface Direccion {
 }
 
 export interface EnvioTransportista extends Client {
-    id: string | null;
+    id?: number | null;
     nroMtc: string;
 }
 

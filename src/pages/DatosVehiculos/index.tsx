@@ -16,13 +16,13 @@ import { useFormik } from "formik";
 import { VehiculoSchema } from "../../utils/validateGuiaRemision";
 
 
-const VehiculoValues: Vehiculo = {
-  placa: "",
-  codEmisor: "",
-  nroAutorizacion: "",
-  nroCirculacion: "",
-  secundarios: null,
-};
+// const VehiculoValues: Vehiculo = {
+//   placa: "",
+//   codEmisor: "",
+//   nroAutorizacion: "",
+//   nroCirculacion: "",
+//   secundarios: null,
+// };
 
 const EMISORES = [
   {
@@ -103,7 +103,7 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
   const formik = useFormik({
     initialValues: initialValue,
     validationSchema: VehiculoSchema,
-    onSubmit: (values) => {
+    onSubmit: (_values) => {
       // onChange(values);
     },
   });

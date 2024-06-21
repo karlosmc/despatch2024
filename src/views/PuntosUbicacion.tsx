@@ -2,8 +2,7 @@ import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, Tabl
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import clienteAxios from '../config/axios';
-import ModalProducto from '../components/Producto';
-import { Producto } from '../types/producto.interface';
+
 
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import GradeIcon from '@mui/icons-material/Grade';
@@ -66,7 +65,7 @@ const PuntoUbicacion = () => {
     }
   })
 
-  const { data, error, isLoading } = useSWR('/api/puntos', fetcher);
+  const { data,  isLoading } = useSWR('/api/puntos', fetcher);
 
   // if (isLoading) return <div>Cargando</div>
 
@@ -107,7 +106,7 @@ const PuntoUbicacion = () => {
     <Container>
       <Box my={3} display='flex' component='div' justifyContent='space-between'>
         <Typography>
-          Productos
+          Puntos de ubicación
         </Typography>
         <Button
           color='primary'
@@ -130,9 +129,10 @@ const PuntoUbicacion = () => {
               <TableCell width={'10%'} align="left">Ruc</TableCell>
               <TableCell width={'5%'} align="left">Cod. Local</TableCell>
               <TableCell width={'40%'} align="left">Dirección</TableCell>
-              <TableCell width={'20%'} align="left">Ubigeo</TableCell>
-              <TableCell width={'10%'} align="left">Fav?</TableCell>
+              <TableCell width={'30%'} align="left">Ubigeo</TableCell>
+              <TableCell width={'5%'} align="left">Fav?</TableCell>
               <TableCell width={'10%'} align="left">Propio?</TableCell>
+              <TableCell width={'10%'} align="left">Editar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

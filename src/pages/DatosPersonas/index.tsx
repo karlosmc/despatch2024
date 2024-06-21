@@ -1,5 +1,5 @@
-import { Grid, Typography } from "@mui/material";
-import { FormikProps, FormikValues } from "formik";
+import { Grid } from "@mui/material";
+import { FormikProps } from "formik";
 import PersonaForm from "../../components/Persona";
 import { Guia } from "../../types/guias/guias.interface";
 
@@ -23,10 +23,10 @@ const DatosPersonasStep = ({ formik }: DatosPersonasProps) => {
       
     >
       <Grid item container xs={6}>
-        <PersonaForm title={'Destinatario'} formik={formik} fieldPrefix="destinatario" />
+        {/* <PersonaForm title={'Destinatario'} formik={formik} fieldPrefix="destinatario" />
       </Grid>
       <Grid item container xs={6}>
-        <PersonaForm title={'Comprador'} formik={formik} fieldPrefix="comprador" />
+        <PersonaForm title={'Comprador'} formik={formik} fieldPrefix="comprador" /> */}
       </Grid>
 
     </Grid>

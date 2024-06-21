@@ -147,18 +147,18 @@ export const DestinatarioTest = object({
 });
 
 
-function ValidateCodTraslado(value:string,esquema:any){
+// function ValidateCodTraslado(value:string,esquema:any){
   
-  const arraySchema = esquema;
-  console.log(arraySchema)
-  const getFormatedArraySchema = arraySchema.map(item=> item.value)
-  console.log(getFormatedArraySchema)
-  const schemaEnvio = getFormatedArraySchema.find(item=> item.envio)?.envio;
+//   const arraySchema = esquema;
+//   console.log(arraySchema)
+//   const getFormatedArraySchema = arraySchema.map(item=> item.value)
+//   console.log(getFormatedArraySchema)
+//   const schemaEnvio = getFormatedArraySchema.find(item=> item.envio)?.envio;
 
-  console.log(schemaEnvio?.codTraslado,value)
-  return schemaEnvio?.codTraslado===value;
+//   console.log(schemaEnvio?.codTraslado,value)
+//   return schemaEnvio?.codTraslado===value;
   
-}
+// }
 
 export const PartidaSchema =yup.object().shape({
   ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
@@ -176,58 +176,69 @@ export const PuntosSchema =yup.object().shape({
   fav:yup.boolean(),
   isCompany:yup.boolean(),
   nombreCorto:yup.string()
+  .when("fav", {
+    is: true, // alternatively: (val) => val == true
+    then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
+    otherwise:(schema)=>schema.nullable()
+  })
+  .when("isCompany", {
+    is: true, // alternatively: (val) => val == true
+    then: (schema) => schema.required('Cuando Punto de la empresa está activo, debe colocar un nombre corto'),
+    otherwise:(schema)=>schema.nullable()
+  })
+
 })
 
-export const PartidaSchemaError =yup.object().shape({
-  ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
-  direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
-  // codlocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
-  codLocal: yup.string()
-  .test('onlyNumbers','Punto de partida: Solo debe escribir números',function(value){
-        const esquema = this.from;
-        const getFormatedArraySchema = esquema.map(item=> item.value)
-        console.log(getFormatedArraySchema)
-        const schemaEnvio = getFormatedArraySchema.find(item=> item.envio)?.envio;
+// export const PartidaSchemaError =yup.object().shape({
+//   ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
+//   direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
+//   // codlocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
+//   codLocal: yup.string()
+//   .test('onlyNumbers','Punto de partida: Solo debe escribir números',function(value){
+//         const esquema = this.from;
+//         const getFormatedArraySchema = esquema.map(item=> item.value)
+//         console.log(getFormatedArraySchema)
+//         const schemaEnvio = getFormatedArraySchema.find(item=> item.envio)?.envio;
         
 
-        if(ValidateCodTraslado('04',esquema)){
-          // console.log('entro')
-          const fourNumbers = new RegExp(/^[0-9]+$/);
-          // console.log(fourNumbers.test(value))
-          return !fourNumbers.test(value)
-        }
-        return true;
-    }),
-  // .test('exacto','Debe tener exactamente 4 digitos',function(value){
-  //   if(ValidateCodTraslado('04',this)){
-  //     return value?.length===4
-  //   }
-  //   return true;
-  // }),
+//         if(ValidateCodTraslado('04',esquema)){
+//           // console.log('entro')
+//           const fourNumbers = new RegExp(/^[0-9]+$/);
+//           // console.log(fourNumbers.test(value))
+//           return !fourNumbers.test(value)
+//         }
+//         return true;
+//     }),
+//   // .test('exacto','Debe tener exactamente 4 digitos',function(value){
+//   //   if(ValidateCodTraslado('04',this)){
+//   //     return value?.length===4
+//   //   }
+//   //   return true;
+//   // }),
   
-  // .test('onlyNumbers','Punto de partida: Solo debe escribir números',function(value){
-  //   const arraySchema = this.from;
-  //   const getFormatedArraySchema = arraySchema.map(item=> item.value)
-  //   // console.log(getFormatedArraySchema)
-  //   const schemaEnvio = getFormatedArraySchema.find(item=> item.envio)?.envio;
-  //   if(schemaEnvio?.codTraslado!=='04'){
-  //     const fourNumbers = new RegExp(/^[0-9]+$/);
-  //     return fourNumbers.test(value)
-  //   }
-  //   return false;
-  // .length(4, 'Punto de partida: Debe tener exactamente 4 dígitos'),
+//   // .test('onlyNumbers','Punto de partida: Solo debe escribir números',function(value){
+//   //   const arraySchema = this.from;
+//   //   const getFormatedArraySchema = arraySchema.map(item=> item.value)
+//   //   // console.log(getFormatedArraySchema)
+//   //   const schemaEnvio = getFormatedArraySchema.find(item=> item.envio)?.envio;
+//   //   if(schemaEnvio?.codTraslado!=='04'){
+//   //     const fourNumbers = new RegExp(/^[0-9]+$/);
+//   //     return fourNumbers.test(value)
+//   //   }
+//   //   return false;
+//   // .length(4, 'Punto de partida: Debe tener exactamente 4 dígitos'),
   
-    // .when('$envio', (envio: any, schema: yup.StringSchema<string>) => {
-    //   if (envio.codTraslado !== '04') {
-    //     return schema.required('Punto de partida: Debe escribir el código de local')
-    //       .matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números")
-    //       .length(4, 'Punto de partida: Debe tener exactamente 4 dígitos');
-    //   } else {
-    //     return schema.notRequired();
-    //   }
-    // }),
-  ruc:yup.string().required('Punto de partida: Debe escribir un RUC')
-})
+//     // .when('$envio', (envio: any, schema: yup.StringSchema<string>) => {
+//     //   if (envio.codTraslado !== '04') {
+//     //     return schema.required('Punto de partida: Debe escribir el código de local')
+//     //       .matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números")
+//     //       .length(4, 'Punto de partida: Debe tener exactamente 4 dígitos');
+//     //   } else {
+//     //     return schema.notRequired();
+//     //   }
+//     // }),
+//   ruc:yup.string().required('Punto de partida: Debe escribir un RUC')
+// })
 
 export const LlegadaSchema = yup.object().shape({
   ubigeo:yup.string().trim().required('Punto de llegada: Debe Elegir un ubigeo'),

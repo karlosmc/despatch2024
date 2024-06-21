@@ -2,6 +2,8 @@ import { useState } from 'react';
 import clienteAxiosElectronico from '../config/axiose';
 
 import { ParamsInterface } from '../types/params.interface';
+import clienteAxios from '../config/axios';
+import { IToken } from '../types/token.interface';
 
 const TOKEN_KEY = 'token_sunat';
 const TOKEN_EXPIRY_KEY = 'token_sunat_expiry';
@@ -41,9 +43,18 @@ const useAuthToken = () => {
 
 const fetchSunatParameters = async (): Promise<ParamsInterface | null> => {
   // Implement your API call to fetch a new token
-  const {data,statusText,} = await clienteAxiosElectronico('/GetToken/getSunatParams', null )
+
+  const token = localStorage.getItem('AUTH_TOKEN');
+  const {data,statusText,} = await clienteAxios('/api/sunat/parametros',
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
   if (statusText==="OK") {
-    return data;
+    // console.log(data)
+    return data.data;
   }
   return null;
 };
@@ -57,5 +68,20 @@ const fetchNewToken = async (): Promise<string | null> => {
   return null;
 };
 
+const checkToken = async ():Promise<IToken | null >=>{
+  const token = localStorage.getItem('AUTH_TOKEN');
+  const {data,statusText,} = await clienteAxios('/api/tokensunat/',
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+  if (statusText==="OK") {
+    // console.log(data)
+    return data;
+  }
+  return null;
+}
 export default useAuthToken;
   

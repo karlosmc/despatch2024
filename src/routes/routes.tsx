@@ -1,47 +1,46 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import DespatchPage from "../pages/despatch";
+// import DespatchPage from "../pages/despatch";
 
 import RegisterForm from "../views/RegisterForm";
-import Layout from "../layouts/Layout";
+// import Layout from "../layouts/Layout";
 import Inicio from "../views/Inicio";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginForm from "../views/LoginForm";
 import AdminLayout from "../layouts/AdminLayout";
 
 import Guias from "../views/Guias";
-import Dashboard from "../views/Dashboard";
+// import Dashboard from "../views/Dashboard";
 import Reportes from "../views/Reportes";
 import Productos from "../views/Productos";
-import TestStepForm from "../views/TestStepForm";
-import Test2Stepper from "../views/Test2Stepper";
-import MultiStep from "../views/MultiStep";
-import CustomStepper from "../pages/CustomStepper";
+// import TestStepForm from "../views/TestStepForm";
+// import Test2Stepper from "../views/Test2Stepper";
+// import MultiStep from "../views/MultiStep";
+// import CustomStepper from "../pages/CustomStepper";
 import GuiaRemisionMain from "../pages/GuiaRemision";
 import PuntoUbicacion from "../views/PuntosUbicacion";
+import Personas from "../views/Personas";
+import Conductores from "../views/Conductores";
+import Transportistas from "../views/Transportista";
+import SunatParameters from "../views/SunatParameters";
 // import LoginForm from "../pages/login";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/guiaremision",
     element: <GuiaRemisionMain />,
-    children:[
-      {
-        index:true,
-        element:<Inicio/>
-      },
-  ]
   },
-  // {
-  //       path: "/",
-  //       element: <AdminLayout />,
-  //       children:[
-  //         {
-  //           index:true,
-  //           element:<Inicio/>
-  //         }
-  //       ]
-  // },
+  {
+        path: "/",
+        
+        element: <AdminLayout />,
+        children:[
+          {
+            index:true,
+            element:<Inicio/>
+          }
+        ]
+  },
   {
     path:'/auth',
     element:<AuthLayout/>,
@@ -55,11 +54,6 @@ export const router = createBrowserRouter([
         element:<RegisterForm />
       }
     ]
-  },
- 
-  {
-    path: "/despatch",
-    element: <DespatchPage />,
   },
   {
     path:'/admin',
@@ -80,7 +74,24 @@ export const router = createBrowserRouter([
       {
         path:'/admin/puntos',
         element:<PuntoUbicacion/>
-      }
+      },
+      {
+        path:'/admin/personas',
+        element:<Personas/>
+      },
+      {
+        path:'/admin/conductores',
+        element:<Conductores/>
+      },
+      {
+        path:'/admin/transportista',
+        element:<Transportistas/>
+      },
+      {
+        path:'/admin/sunat',
+        element:<SunatParameters/>
+      },
+      
     ]
   }
  

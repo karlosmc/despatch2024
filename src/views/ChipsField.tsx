@@ -1,5 +1,5 @@
 import React from 'react';
-import { useField, FieldProps } from 'formik';
+import {  FieldProps } from 'formik';
 import { Box, Chip, FormControl, FormHelperText } from '@mui/material';
 
 
@@ -14,7 +14,7 @@ interface ChipsFieldProps extends FieldProps {
 
 const ChipsField: React.FC<ChipsFieldProps> = ({ field, form, options }) => {
 
-  const { name, value } = field;
+  const { name } = field;
   const { touched, errors, setFieldValue } = form;
 
   const handleChipClick = (value: number) => {

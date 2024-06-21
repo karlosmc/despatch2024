@@ -1,5 +1,5 @@
 import { Autocomplete, TextField } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect,  useState } from "react";
 import { Departamentos, Provincias, Ubigeos } from "../../types/ubigeo";
 
 
@@ -11,7 +11,7 @@ interface UbigeoComponentProps {
 const UbigeoComponent = ({initialValue, onChange }:UbigeoComponentProps) => {
   
   
-  const [ubigeoInicial, setUbigeoInicial] = useState<string>(initialValue)
+  const [ubigeoInicial, _setUbigeoInicial] = useState<string>(initialValue)
 
   const [departamentos, setDepartamentos] = useState<Departamentos[]>([]);
   const [provincias, setProvincias] = useState<Provincias[]>([]);

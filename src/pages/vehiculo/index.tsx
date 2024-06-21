@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Vehiculo } from "../../types/doc.interface";
 import {
   Button,
@@ -6,14 +6,14 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  
   Stack,
   TextField,
 } from "@mui/material";
 /* import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { useDialog } from "../../context/dialog.context"; */
 
-import * as Yup from "yup";
+
 import { useFormik } from "formik";
 import { VehiculoSchema } from "../../utils/validateForm";
 
@@ -100,7 +100,7 @@ interface VehiculoFormProps {
 }
 
 const VehiculoForm = ({ onChange, initialValue }: VehiculoFormProps) => {
-  const [dataVehiculo, setDataVehiculo] = useState<Vehiculo | null>(
+  const [_dataVehiculo, setDataVehiculo] = useState<Vehiculo | null>(
     initialValue
   );
 

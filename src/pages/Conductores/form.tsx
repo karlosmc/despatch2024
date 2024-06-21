@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import {
   Box,
   Button,
@@ -9,7 +9,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { dataFound } from "../../types/persona.interface";
+// import { dataFound } from "../../types/persona.interface";
 
 /* import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { useDialog } from "../../context/dialog.context"; */
@@ -17,30 +17,33 @@ import { useDialog } from "../../context/dialog.context"; */
 import { useFormik } from "formik";
 import { EnvioChoferes } from "../../types/guias/guiaremision.interface";
 import { ChoferSchema } from "../../utils/validateGuiaRemision";
+import { conductor } from "../../types/conductor.interface";
+import { useEffect } from "react";
 
-const ChoferValues: EnvioChoferes = {
-  tipo: "",
-  tipoDoc: "",
-  apellidos: "",
-  licencia: "",
-  nombres: "",
-  nroDoc: "",
-};
+// const ChoferValues: EnvioChoferes = {
+//   tipo: "",
+//   tipoDoc: "",
+//   apellidos: "",
+//   licencia: "",
+//   nombres: "",
+//   nroDoc: "",
+// };
 
 interface ChoferFormProps {
   onChange: (chofer: EnvioChoferes) => void;
+  conductor?:conductor 
   initialValue: EnvioChoferes;
 }
 
-const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
-  const [dataChofer, setDataChofer] = useState<EnvioChoferes | null>(
-    initialValue
-  );
-
+const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) => {
+  // const [dataChofer, setDataChofer] = useState<EnvioChoferes | null>(
+  //   initialValue
+  // );
+ 
   const formik = useFormik({
     initialValues: initialValue,
     validationSchema: ChoferSchema,
-    onSubmit: (values) => {
+    onSubmit: (_values) => {
       // onChange(values);
     },
   });
@@ -56,33 +59,44 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
     // formik.resetForm();
   };
 
-  const handleSearch = (data: dataFound): void => {
-    var apellidos: string = "";
-    var nombres: string = "";
+  // const handleSearch = (data: dataFound): void => {
+  //   var apellidos: string = "";
+  //   var nombres: string = "";
 
-    if (data.dniData && formik.values.tipoDoc === "1") {
-      apellidos =
-        data.dniData.apellidoMaterno + " " + data.dniData.apellidoPaterno;
-      nombres = data.dniData.nombres;
-    } else if (data.rucData && formik.values.tipoDoc === "6") {
-      apellidos = data.rucData.razonSocial;
-      nombres = "RUC";
-    } else {
-      apellidos = "NO ENCONTRADO";
-      nombres = "";
-    }
-    setDataChofer({ ...dataChofer, apellidos, nombres });
+  //   if (data.dniData && formik.values.tipoDoc === "1") {
+  //     apellidos =
+  //       data.dniData.apellidoMaterno + " " + data.dniData.apellidoPaterno;
+  //     nombres = data.dniData.nombres;
+  //   } else if (data.rucData && formik.values.tipoDoc === "6") {
+  //     apellidos = data.rucData.razonSocial;
+  //     nombres = "RUC";
+  //   } else {
+  //     apellidos = "NO ENCONTRADO";
+  //     nombres = "";
+  //   }
+  //   setDataChofer({ ...dataChofer, apellidos, nombres });
 
-    formik.setFieldValue("apellidos", apellidos);
-    formik.setFieldValue("nombres", nombres);
-  };
+  //   formik.setFieldValue("apellidos", apellidos);
+  //   formik.setFieldValue("nombres", nombres);
+  // };
 
   const handleClean = () => {
     formik.resetForm();
   };
 
+  useEffect(() => {
+    if(conductor){
+      formik.setFieldValue('tipoDoc', conductor.tipoDoc)
+      formik.setFieldValue('nroDoc', conductor.nroDoc)
+      formik.setFieldValue('nombres', conductor.nombres)
+      formik.setFieldValue('apellidos', conductor.apellidos)
+      formik.setFieldValue('licencia', conductor.licencia)
+    }
+  }, [conductor])
+  
+
   return (
-    <>
+    <Box border={1} borderColor={'gray'} borderRadius={2} p={1}>
       <Box
         display={"grid"}
         gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(3,1fr)" }}
@@ -178,26 +192,28 @@ const ConductorForm = ({ onChange, initialValue }: ChoferFormProps) => {
           onBlur={formik.handleBlur}
         />
       </Box>
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={2} sx={{my:1}}>
         <Button
-          variant="outlined"
+          fullWidth
+          variant="contained"
           size="small"
           color="success"
           type="button"
           onClick={handleChange}
         >
-          Agregar
+          Agregar a lista
         </Button>
         <Button
+          fullWidth
           variant="outlined"
           size="small"
-          color="error"
+          color="secondary"
           onClick={handleClean}
         >
-          Clean
+          Limpiar formulario
         </Button>
       </Stack>
-    </>
+    </Box>   
   );
 };
 

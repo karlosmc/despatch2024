@@ -79,7 +79,7 @@ const ButtonSearch = ({ type, valor, onSearch }: ButtonSearchProps) => {
     <Box>
       {loading ? (
         <IconButton
-          color="info"
+          color="warning"
           aria-label="add an alarm"
           //sx={BoxShadoWButton}
           // onClick={handleSearch}
@@ -88,7 +88,7 @@ const ButtonSearch = ({ type, valor, onSearch }: ButtonSearchProps) => {
         </IconButton>
       ) : (
         <IconButton
-          color="info"
+          color="warning"
           aria-label="add an alarm"
           //sx={BoxShadoWButton}
           onClick={handleSearch}

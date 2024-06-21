@@ -5,6 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { useAuth } from '../../hooks/useAuth';
 
 
 interface AppHeaderInterface{
@@ -13,7 +14,7 @@ interface AppHeaderInterface{
 }
 const AppHeader = ({sidebarCollapsed,setSidebarCollapsed}:AppHeaderInterface) => {
 
-  
+  const { logout } = useAuth({middleware:'auth',url:''});
 
 
   return (
@@ -39,7 +40,7 @@ const AppHeader = ({sidebarCollapsed,setSidebarCollapsed}:AppHeaderInterface) =>
         <IconButton title='Settings' color='secondary'>
             <SettingsIcon/>
         </IconButton>
-        <IconButton title='Settings' color='secondary'>
+        <IconButton  onClick={logout} title='Cerrar sesión' color='secondary'>
             <LogoutIcon/>
         </IconButton>
       </Toolbar>

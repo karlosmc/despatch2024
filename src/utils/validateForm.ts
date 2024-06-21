@@ -1,5 +1,6 @@
 import * as yup from "yup";
 import { object } from "yup";
+import rucValido from "../helpers/Validaciones";
 
 // export const LoginValidate = yup.object().shape({
 //     tipoDoc:   yup.string().trim().required("El Tipo de documento es requerido"),
@@ -226,6 +227,26 @@ export const ChoferSchema = yup.object().shape({
 })
 
 
+export const ConductorSchema = yup.object().shape({
+  tipoDoc:yup.string().trim().required('Debe elegir un tipo de documento'),
+  nroDoc:yup.string().trim().required('Debe escribir un Nro de documento'),
+  nombres:yup.string().trim().required('Debe escribir los nombres del conductor'),
+  apellidos:yup.string().trim().notRequired(),
+  licencia:yup.string().trim().required('Debe escribir el número de licencia'),
+  fav:yup.boolean(),
+  isCompany:yup.boolean(),
+  nombreCorto:yup.string()
+  .when("fav", {
+    is: true, // alternatively: (val) => val == true
+    then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
+    otherwise:(schema)=>schema.nullable()
+  })
+
+  
+})
+
+
+
 
 export const EnvioSchema = yup.object().shape({
   codTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir un motivo de traslado').optional(),
@@ -303,8 +324,78 @@ export const ProductoSchema = yup.object().shape({
   codProdSunat: yup.string().trim().notRequired(),
   descripcion: yup.string().trim().required('Debe escribir la descripción del producto'),
   unidad:yup.string().trim().required('Debe elegir la unidad de medida'),
-  fav:yup.boolean().notRequired()
+  fav:yup.boolean().notRequired(),
+  nombreCorto:yup.string()
+  .when("fav", {
+    is: true, // alternatively: (val) => val == true
+    then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
+    otherwise:(schema)=>schema.nullable()
+  })
+
 });
+
+
+export const PersonaSchema = object({
+  tipoDoc: yup
+    .string()
+    .required("Debe elegir el Tipo de Documento")
+    .trim(),
+  numDoc: yup
+    .string()
+    .required("Debe escribir un Número de documento")
+    .when("tipoDoc", {
+      is: "1", // alternatively: (val) => val == true
+      then: (schema) =>
+        schema.length(
+          8,
+          ({ length }) =>
+            `El campo Número de documento debe tener ${length} caracteres`
+        ),
+    })
+    .when("tipoDoc", {
+      is: "6", // alternatively: (val) => val == true
+      then: (schema) =>
+        schema.length(
+          11,
+          ({ length }) =>
+            `El campo Número de documento debe tener ${length} caracteres`
+        ).test('rucValido','RUC INVALIDO',function(value){
+          const isValid = rucValido(parseInt(value))
+          return isValid;
+        }),
+      otherwise: (schema) => schema,
+    }),
+  rznSocial: yup
+    .string()
+    .required("Debe escribir una razón social")
+    .trim(),
+  email:yup.string().nullable(),
+  telephone:yup.string().nullable(),
+  fav:yup.boolean(),
+  isCompany:yup.boolean(),
+  nombreCorto:yup.string()
+  .when("fav", {
+    is: true, // alternatively: (val) => val == true
+    then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
+    otherwise:(schema)=>schema.nullable()
+  })
+  
+});
+
+
+export const TransportistaSchema = yup.object().shape({
+  tipoDoc:yup.string().trim().required('Debe elegir un tipo de documento'),
+  numDoc:yup.string().trim().required('Debe escribir un Nro de documento'),
+  rznSocial:yup.string().trim().required('Debe escribir la Razón social'),
+  fav:yup.boolean(),
+  nombreCorto:yup.string()
+  .when("fav", {
+    is: true, // alternatively: (val) => val == true
+    then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
+    otherwise:(schema)=>schema.nullable()
+  })
+})
+
 
 export const DetailSchema = yup.object().shape({
   codigo:yup.string().trim().required('Debe tener un código de producto'),
@@ -327,6 +418,21 @@ export const RegisterSchema = yup.object().shape({
   email:yup.string().required('Debe escribir un email'),
   documento:yup.string().required('Debe escribir un numero de documento'),
   id_empresa:yup.number().required('Debe elegir una empresa')
+})
+
+export const SunatParamsSchema = yup.object().shape({
+  client_id:yup.string().trim().required('Debe escribir un id de cliente SUNAT'),
+  client_secret:yup.string().trim().required('Debe escribir la clave secreta de cliente SUNAT'),
+  username:yup.string().trim().required('Debe escribir el usuario SUNAT'),
+  password:yup.string().trim().required('Debe escribir la clave del usuario SUNAT'),
+  scope:yup.string().trim().required('Debe escribir el SCOPE'),
+  grant_type:yup.string().trim().required('Debe escribir en el campo'),
+  env:yup.string().trim().required('Debe elegir el tipo de ambiente'),
+  endpointurl:yup.string().trim().required('Debe escribir el endpoint de envio'),
+  certificado:yup.string(),
+  clavecertificado:yup.string().trim().required('Debe escribir la clave del certificado'),
+  urlsend:yup.string().trim().required('Debe escribir la url de envio'),
+  urlconsult:yup.string().trim().required('Debe escribir la url de consulta'),
 })
 
 

@@ -17,7 +17,7 @@ const VehiculoValues: Vehiculo = {
 };
 
 const ListaVehiculos = ({ vehiculos, onConfirm }: Props) => {
-  const [carro, setCarro] = useState<Vehiculo>(VehiculoValues);
+  const [_carro, setCarro] = useState<Vehiculo>(VehiculoValues);
   const [carros, setCarros] = useState<Vehiculo[]>(vehiculos);
 
   const handleNewVehiculo = (newVehiculo: Vehiculo): void => {

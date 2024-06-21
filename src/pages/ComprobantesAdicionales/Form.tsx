@@ -1,10 +1,10 @@
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
-import { useFormik, useFormikContext } from 'formik'
+import {  useFormikContext } from 'formik'
 
-import React from 'react'
 
-import { AddDoc, Guia } from '../../types/guias/guias.interface'
-import { AddDocSchema, AddDocsSchema } from '../../utils/validateGuias';
+
+import { AddDoc } from '../../types/guias/guias.interface'
+import {  AddDocsSchema } from '../../utils/validateGuias';
 
 interface ComprobantesAdicionalesFormProps {
   onNewAddDoc: (newDetail: AddDoc) => void;
@@ -15,12 +15,6 @@ const TipoDocumentos = [
   { valor: "01", descripcion: "FACTURA" },
 ];
 
-const AddDocValues: AddDoc = {
-  emisor: "",
-  nro: "",
-  tipo: "01",
-  tipoDesc: "FACTURA",
-};
 
 
 const ComprobantesAdicionalesForm = ({ onNewAddDoc }: ComprobantesAdicionalesFormProps) => {

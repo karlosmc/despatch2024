@@ -1,9 +1,9 @@
 import TextField from "@mui/material/TextField";
-import { ChangeEvent, ReactNode, useState } from "react";
+import { ChangeEvent,  useState } from "react";
 
 import { dataFound } from "../../types/persona.interface";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Field } from "formik";
+// import { Field } from "formik";
 
 interface TextSearchFormProps {
   valor: string;
@@ -18,37 +18,37 @@ const TextSearch = (props: TextSearchFormProps): JSX.Element => {
   const { valor, type, onSearch, onChangeValue, name, ...restProps } =
     props;
 
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, _setLoading] = useState<boolean>(false);
 
-  const handleKeyPress = async (evt: React.KeyboardEvent<HTMLInputElement>) => {
-    if (evt.key === "Enter") {
-      setLoading(true);
-      const res = await consultaApiPersonas();
+  // const handleKeyPress = async (evt: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (evt.key === "Enter") {
+  //     setLoading(true);
+  //     const res = await consultaApiPersonas();
 
-      try {
-        if (res && res.response.exito) {
-          const data =
-            type === "dni2"
-              ? { dniData: res.response, rucData: null }
-              : { dniData: null, rucData: res.response.ar };
-          onSearch(data);
-        } else {
-          onSearch({ dniData: null, rucData: null });
-        }
-        setLoading(false);
-      } catch (error) {
-        onSearch({ dniData: null, rucData: null });
-        setLoading(false);
-      }
-    }
-  };
+  //     try {
+  //       if (res && res.response.exito) {
+  //         const data =
+  //           type === "dni2"
+  //             ? { dniData: res.response, rucData: null }
+  //             : { dniData: null, rucData: res.response.ar };
+  //         onSearch(data);
+  //       } else {
+  //         onSearch({ dniData: null, rucData: null });
+  //       }
+  //       setLoading(false);
+  //     } catch (error) {
+  //       onSearch({ dniData: null, rucData: null });
+  //       setLoading(false);
+  //     }
+  //   }
+  // };
 
-  const consultaApiPersonas = async () => {
-    const url = `http://192.168.30.11:8080/ApiRestFE/Consultas/${type}/${valor}`;
-    const consultado = await fetch(url);
+  // const consultaApiPersonas = async () => {
+  //   const url = `http://192.168.30.11:8080/ApiRestFE/Consultas/${type}/${valor}`;
+  //   const consultado = await fetch(url);
 
-    return consultado.json();
-  };
+  //   return consultado.json();
+  // };
 
   return (
     <TextField

@@ -16,7 +16,8 @@ class AuthService {
       //   },
       //   body: JSON.stringify(dato),
       // };
-
+      nrodoc=nrodoc
+    password=password
 
       const token = await this.getTokenForEmpresa(empresaId);
 

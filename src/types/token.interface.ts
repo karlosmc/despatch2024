@@ -10,3 +10,10 @@ export interface TokenInterface {
   expires_at: string;
   sunatParams?:ParamsInterface
 }
+
+export interface IToken {
+  access_token: string;
+  token_type:string;
+  expires_in: number;
+  created_at: string;
+}

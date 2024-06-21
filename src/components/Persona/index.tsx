@@ -1,165 +1,248 @@
-
-import {
-
-  FormControl,
-
-  InputLabel,
-  MenuItem,
-  Select,
-
-  TextField,
-  Typography,
-} from "@mui/material";
+import {  Box, Button, FormControl,  InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { useEffect, useState } from 'react'
 
 
-import { DatosPersonas, Guia, Persona } from "../../types/guias/guias.interface";
-import { FormikProps, FormikValues } from "formik";
-import { CloseFullscreen } from "@mui/icons-material";
+import { useFormik } from 'formik';
+import clienteAxios from '../../config/axios';
 
 
-// const PersonaValues: Persona = {
-//   numDoc: "",
-//   rznSocial: "",
-//   tipoDoc: "1",
-//   direccion: "",
-//   ubigeo: "",
-// };
+import { persona } from '../../types/persona.interface';
+import { PersonaSchema } from '../../utils/validateForm';
+import { useNotification } from '../../context/notification.context';
 
-interface PersonaFormProps {
-  // onChange: (cliente: Client) => void;
-  // initialValue: Client;
-  // schema?: Yup.AnyObjectSchema;
-  formik: FormikProps<Guia>,
-  title: string,
-  fieldPrefix:  keyof DatosPersonas;
-  // persona: Persona
+
+
+const PersonaInitialValues: persona = {
+  rznSocial: '',
+  numDoc: '',
+  email: '',
+  telephone: '',
+  tipoDoc: '6',
+  fav: false,
+  isCompany: false,
+  id: 0,
+  nombreCorto: ''
 }
 
-const PersonaForm = ({ title, formik,  fieldPrefix }: PersonaFormProps) => {
+interface PersonaFormProps {
+  initialValue?: persona;
+  onConfirm: (puntos: any) => void;
+  edit: Boolean,
+}
+
+const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
+  
+
+  const {getError} = useNotification()
+
+  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
+
+  const token = localStorage.getItem('AUTH_TOKEN');
+
+  const storePersona = async (values: persona) => {
+
+
+    try {
+      const { data, status } = await clienteAxios.post('/api/clientes', {
+        numDoc: values.numDoc,
+        rznSocial: values.rznSocial,
+        fav: values.fav,
+        isCompany: values.isCompany,
+        email: values.email,
+        nombreCorto: values.nombreCorto,
+        telephone: values.telephone,
+        tipoDoc:values.tipoDoc,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      //  console.log(data)
+      if (status === 200) {
+        onConfirm(data.persona);
+      }
+    }
+    catch (error) {
+      // console.log(error)
+
+      getError(error?.response?.data?.message)
+
+
+    }
 
 
 
-  // console.log(formik)
-  // const [dataCliente, setDataCliente] = useState<Client | null>(initialValue);
+  }
 
-  // console.log(persona)
+  const updatePersona = async (values: persona) => {
+    try {
+      const { data, status } = await clienteAxios.put(`/api/clientes/${values.id}`, {
+        numDoc: values.numDoc,
+        rznSocial: values.rznSocial,
+        fav: values.fav,
+        email: values.email,
+        nombreCorto: values.nombreCorto,
+        telephone: values.telephone,
+        tipoDoc:values.tipoDoc,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      // console.log(data)
+      if (status === 200) {
+        onConfirm(data.cliente);
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+    // onConfirm();
+  }
 
 
-  // const handleClean = () => {
-  //   setDataCliente(ClientValues);
-  //   onChange(ClientValues);
-  // };
+
+
+  const formik = useFormik({
+    initialValues: initialValue || PersonaInitialValues,
+    validationSchema: PersonaSchema,
+    onSubmit: (values) => {
+
+      if(edit){
+        updatePersona(values)
+      }else{
+        storePersona(values)
+      }
+
+    },
+  });
+
+  useEffect(() => {
+    formik.setFieldValue('fav', fav)
+  }, [fav])
 
   return (
     <>
-            <Typography my={3}>{title}</Typography>
 
-            <FormControl fullWidth size="small">
-              <InputLabel id="demo-simple-select-label">Tipo de documento</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={formik.values[fieldPrefix].tipoDoc}
-                // value={dataCliente.tipoDoc}
-                label="Tipo de documento"
-                // onChange={(e: SelectChangeEvent): void => SelectHandleChange(e)}
-                error={formik.touched[fieldPrefix]?.tipoDoc && Boolean(formik.errors[fieldPrefix]?.tipoDoc)}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                name={`${fieldPrefix}.tipoDoc`}
-              >
-                <MenuItem selected value={"1"}>DNI</MenuItem>
-                <MenuItem value={"6"}>RUC</MenuItem>
-                <MenuItem value={"4"}>C.E.</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              margin="normal"
-              size="small"
-              fullWidth
-              name={`${fieldPrefix}.numDoc`}
-              label="Número de documento"
-              value={formik.values[fieldPrefix].numDoc}
-              error={formik.touched[fieldPrefix]?.numDoc && Boolean(formik.errors[fieldPrefix]?.numDoc)}
+      <Box component={'form'} onSubmit={formik.handleSubmit}>
+        <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
+          <FormControl fullWidth size="small">
+            <InputLabel id="demo-simple-select-label">Tipo de documento</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={formik.values.tipoDoc}
+              // value={dataCliente.tipoDoc}
+              label="Tipo de documento"
+              // onChange={(e: SelectChangeEvent): void => SelectHandleChange(e)}
+              error={formik.touched.tipoDoc && Boolean(formik.errors.tipoDoc)}
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-            // helperText={formik.touched.numDoc && formik.errors.numDoc}
-            />
+              name="tipoDoc"
+            >
+              <MenuItem selected value={"1"}>
+                DNI
+              </MenuItem>
+              <MenuItem value={"6"}>RUC</MenuItem>
+              <MenuItem value={"4"}>C.E.</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="numDoc"
+            type="text"
+            label="Número de documento"
+            sx={{ my: 1.5 }}
+            value={formik.values.numDoc}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.numDoc && formik.errors.numDoc}
+            error={formik.touched.numDoc && Boolean(formik.errors.numDoc)}
+          />
+        </Box>
 
-            <TextField
-              margin="normal"
-              size="small"
-              multiline
-              fullWidth
-              name={`${fieldPrefix}.rznSocial`}
-              label="Razón Social"
-              value={formik.values[fieldPrefix].rznSocial}
-              error={formik.touched[fieldPrefix]?.rznSocial && Boolean(formik.errors[fieldPrefix]?.rznSocial)}
-              // helperText={formik.touched.rznSocial && formik.errors.rznSocial}
-              onBlur={formik.handleBlur}
-              onChange={formik.handleChange}
-            />
+        <TextField
+          margin="normal"
+          size="small"
+          fullWidth
+          name="rznSocial"
+          type="text"
+          label="Razón social"
+          sx={{ my: 1.5 }}
 
+          value={formik.values.rznSocial}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          helperText={formik.touched.rznSocial && formik.errors.rznSocial}
+          error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
+        />
+        <TextField
+          margin="normal"
+          size="small"
+          fullWidth
+          name="email"
+          type="text"
+          label="Email"
+          sx={{ my: 1.5 }}
+
+          value={formik.values?.email||''}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          helperText={formik.touched.email && formik.errors.email}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+        />
+
+        <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
+
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="telephone"
+            type="text"
+            label="Teléfono"
+            sx={{ my: 1.5 }}
+
+            value={formik.values?.telephone||''}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.telephone && formik.errors.telephone}
+            error={formik.touched.telephone && Boolean(formik.errors.telephone)}
+          />
+
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="nombreCorto"
+            type="text"
+            label="Nombre corto de la persona"
+            sx={{ my: 1.5 }}
+
+            value={formik.values?.nombreCorto||''}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
+            error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+          />
+        </Box>
+
+        <Box textAlign={'center'}>
+          <Button onClick={() => setFav(!fav)} variant={!fav ? 'outlined' : 'contained'} color='warning' sx={{ display: 'inline-block', my: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>
+            FAVORITO
+          </Button>
+        </Box>
+
+        
+        <Button type='submit' color='success' variant='contained' sx={{ width: '50%', alignItems: 'start', display: 'inline-block' }}>
+          Guardar
+        </Button>
+      </Box>
     </>
-    )
-  }
+  );
+}
 
-export default PersonaForm;
-
-
-// return (
-//   <>
-//     <Typography my={3}>{title}</Typography>
-//     {
-//       personas.map((persona, index) => (
-//         <>
-//           <FormControl fullWidth size="small">
-//             <InputLabel id="demo-simple-select-label">Tipo de documento</InputLabel>
-//             <Select
-//               labelId="demo-simple-select-label"
-//               id="demo-simple-select"
-//               value={persona.tipoDoc}
-//               // value={dataCliente.tipoDoc}
-//               label="Tipo de documento"
-//               // onChange={(e: SelectChangeEvent): void => SelectHandleChange(e)}
-//               error={formik.touched[fieldPrefix]?.[index]?.tipoDoc && Boolean(formik.errors[fieldPrefix]?.[index]?.tipoDoc)}
-//               onBlur={formik.handleBlur}
-//               onChange={formik.handleChange}
-//               name={`${fieldPrefix}[${index}].tipoDoc`}
-//             >
-//               <MenuItem selected value={"1"}>DNI</MenuItem>
-//               <MenuItem value={"6"}>RUC</MenuItem>
-//               <MenuItem value={"4"}>C.E.</MenuItem>
-//             </Select>
-//           </FormControl>
-//           <TextField
-//             margin="normal"
-//             size="small"
-//             fullWidth
-//             name={`${fieldPrefix}[${index}].numDoc`}
-//             label="Número de documento"
-//             value={persona.numDoc}
-//             error={formik.touched[fieldPrefix]?.[index]?.numDoc && Boolean(formik.errors[fieldPrefix]?.[index]?.numDoc)}
-//             onBlur={formik.handleBlur}
-//             onChange={formik.handleChange}
-//           // helperText={formik.touched.numDoc && formik.errors.numDoc}
-//           />
-
-//           <TextField
-//             margin="normal"
-//             size="small"
-//             multiline
-//             fullWidth
-//             name={`${fieldPrefix}[${index}].rznSocial`}
-//             label="Razón Social"
-//             value={persona.rznSocial}
-//             error={formik.touched[fieldPrefix]?.[index]?.rznSocial && Boolean(formik.errors[fieldPrefix]?.[index]?.rznSocial)}
-//             // helperText={formik.touched.rznSocial && formik.errors.rznSocial}
-//             onBlur={formik.handleBlur}
-//             onChange={formik.handleChange}
-//           />
-//         </>
-//       ))
-//     }
-//   </>
-// );
+export default ModalPersona

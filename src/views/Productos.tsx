@@ -62,7 +62,7 @@ const Productos = () => {
     }
   })
 
-  const { data, error, isLoading } = useSWR('/api/productos', fetcher);
+  const { data,  isLoading } = useSWR('/api/productos', fetcher);
 
   // if (isLoading) return <div>Cargando</div>
 

@@ -1,11 +1,12 @@
 import { Menu, MenuItem, Sidebar } from 'react-pro-sidebar'
 import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 
-import { StyleOutlined } from '@mui/icons-material';
+// import { StyleOutlined } from '@mui/icons-material';
 
 import { SourceOutlined } from '@mui/icons-material';
 import { Avatar, Box, SxProps, Theme, Typography, css, styled, useTheme } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
+import { execPath } from 'process';
 
 
 
@@ -25,8 +26,6 @@ const SideNav = ({ sidebarCollapsed }: AppHeaderInterface) => {
 
   const theme = useTheme();
   // const toolbarHeight = theme.mixins.toolbar;
-
-
   const location = useLocation();
 
   return (
@@ -45,12 +44,12 @@ const SideNav = ({ sidebarCollapsed }: AppHeaderInterface) => {
         <Avatar sx={avatar} alt='Channel Name' src='/assets/img/avatars/avatar04.png' />
         {
           !sidebarCollapsed ?
-            <Typography variant='body2' sx={yourChannel}>Tu canal</Typography>
+            <Typography variant='body2' sx={yourChannel}>Usuario</Typography>
             : null
         }
         {
           !sidebarCollapsed ?
-            <Typography variant='overline'>React with masoud</Typography>
+            <Typography variant='overline'>Guias Electrónicas</Typography>
             : null
         }
       </Box>
@@ -71,16 +70,30 @@ const SideNav = ({ sidebarCollapsed }: AppHeaderInterface) => {
         <MyMenu active={location.pathname==='/admin/productos'} component={<Link to="/admin/productos"/>} icon={<SourceOutlined />}>
           <Typography variant='body2'>Productos</Typography>
         </MyMenu>
+        <MyMenu active={location.pathname==='/admin/puntos'} component={<Link to="/admin/puntos"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Puntos de ubicación</Typography>
+        </MyMenu>
 
-        <MyMenu active={location.pathname==='/admin/guias'} component={<Link to="/admin/guias"/>} icon={<SourceOutlined />}>
+        <MyMenu active={location.pathname==='/admin/personas'} component={<Link to="/admin/personas"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Personas</Typography>
+        </MyMenu>
+        <MyMenu active={location.pathname==='/admin/transportista'} component={<Link to="/admin/transportista"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Transportistas</Typography>
+        </MyMenu>
+        <MyMenu active={location.pathname==='/admin/conductores'} component={<Link to="/admin/conductores"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Conductores</Typography>
+        </MyMenu>
+
+        <MyMenu active={location.pathname==='/guiaremision'} component={<a href="/guiaremision"  target='_blank'rel='noopener noreferrer'/> } icon={<SourceOutlined />}>
           <Typography variant='body2'>Guias</Typography>
         </MyMenu>
 
         <MyMenu active={location.pathname==='/admin/reportes'} component={<Link to="/admin/reportes"/>} icon={<SourceOutlined />}>
           <Typography variant='body2'>Reportes</Typography>
         </MyMenu>
-        <MyMenu active={location.pathname==='/admin/puntos'} component={<Link to="/admin/puntos"/>} icon={<SourceOutlined />}>
-          <Typography variant='body2'>Puntos de ubicación</Typography>
+
+        <MyMenu active={location.pathname==='/admin/sunat'} component={<Link to="/admin/sunat"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Sunat</Typography>
         </MyMenu>
 
 
@@ -98,7 +111,6 @@ const avatarContainer: SxProps<Theme> = {
   alignItems: 'center',
   flexDirection: 'column',
   my: 5,
-
 }
 
 const avatar: SxProps<Theme> = {

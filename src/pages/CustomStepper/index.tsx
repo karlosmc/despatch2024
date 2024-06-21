@@ -8,7 +8,7 @@ import { useNotification } from '../../context/notification.context';
 
 import DatosGeneralesStep from '../DatosGenerales';
 import DatosPersonasStep from '../DatosPersonas';
-import { EnvioSchema } from '../../utils/validateForm';
+
 import DatosEnvioStep from '../DatosEnvio';
 import ComprobantesAdicionalesStep from '../ComprobantesAdicionales';
 
@@ -60,7 +60,7 @@ const validationSchemas = [
 
 const CustomStepper = () => {
 
-  const { getError, getSuccess } = useNotification();
+  const { getError } = useNotification();
   const [activeStep, setActiveStep] = useState(0);
   const [submitError, _] = useState<string | null>(null);
 

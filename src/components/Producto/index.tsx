@@ -1,12 +1,12 @@
-import { Box, Button, Container, FormControl, InputLabel, Select, TextField } from '@mui/material';
-import React, { SetStateAction, useEffect, useState } from 'react'
+import { Box, Button, FormControl, InputLabel, Select, TextField } from '@mui/material';
+import { useEffect, useState } from 'react'
 import { MenuItem } from '@mui/material';
 import { ProductoSchema } from '../../utils/validateForm';
 
 import { Producto } from '../../types/producto.interface'
 import { useFormik } from 'formik';
 import clienteAxios from '../../config/axios';
-import { update } from '@react-spring/web';
+
 
 type UnidadMedidaType = {
   codigo: string;
@@ -39,82 +39,88 @@ const ProductoInitialValues: Producto = {
   fav: false,
   unidad: 'NIU',
   codProdSunat: '',
-  id: 0
+  id: 0,
+  nombreCorto: ''
 }
 
 interface ProductoFormProps {
   initialValue?: Producto;
-  onConfirm:(producto:Producto)=>void;
-  edit:Boolean,
+  onConfirm: (producto: Producto) => void;
+  edit: Boolean,
 }
 
-const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
+const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => {
 
-  const [fav, setFav] = useState<boolean>(initialValue?.fav||false);
+  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
-  const storeProducto = async(values:Producto)=>{
+  const storeProducto = async (values: Producto) => {
 
-    
     try {
-      const { data,status } = await clienteAxios.post('/api/productos', {
+      const { data, status } = await clienteAxios.post('/api/productos', {
         codigo: values.codigo,
         descripcion: values.descripcion,
         fav: values.fav,
         unidad: values.unidad,
         codProdSunat: values.codProdSunat,
-       
+        nombreCorto: values.nombreCorto,
+
       }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(data)
-      if(status===200){
+      
+      if (status === 200) {
         onConfirm(data.producto);
       }
     }
-    catch(error){
+    catch (error) {
       console.log(error)
     }
 
-    
+
 
   }
 
-  const updateProducto = async(values:Producto)=>{
+  const updateProducto = async (values: Producto) => {
 
-    
+
     try {
-      const { data } = await clienteAxios.put(`/api/productos/${values.id}`, {
+      const { data ,status} = await clienteAxios.put(`/api/productos/${values.id}`, {
         descripcion: values.descripcion,
         fav: values.fav,
         unidad: values.unidad,
-        codProdSunat: values.codProdSunat||'',
+        codProdSunat: values.codProdSunat || '',
+        nombreCorto: values.nombreCorto || '',
       }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
+      if (status === 200) {
+        onConfirm(data.producto);
+      }
+      
     }
-    catch(error){
+    catch (error) {
       console.log(error)
     }
     // onConfirm();
   }
 
   const formik = useFormik({
-    initialValues: initialValue||ProductoInitialValues,
+    initialValues: initialValue || ProductoInitialValues,
     validationSchema: ProductoSchema,
     onSubmit: (values) => {
-      
-      if(edit){
+
+      if (edit) {
         updateProducto(values)
-      }else{
+      } else {
         storeProducto(values)
       }
-      
+
     },
   });
 
@@ -127,31 +133,33 @@ const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
 
     <Box component='form' onSubmit={formik.handleSubmit} alignItems={'center'} >
 
-      <TextField
-        margin='normal'
-        fullWidth
-        label='Código'
-        size='small'
-        value={formik.values.codigo}
-        error={formik.touched.codigo && Boolean(formik.errors.codigo)}
-        onBlur={formik.handleBlur}
-        onChange={formik.handleChange}
-        name="codigo"
-        helperText={formik.touched.codigo && formik.errors.codigo}
-        disabled={Boolean(edit)}
-      />
-      <TextField
-        margin='normal'
-        fullWidth
-        label='Código Sunat'
-        size='small'
-        value={formik.values.codProdSunat}
-        error={formik.touched.codProdSunat && Boolean(formik.errors.codProdSunat)}
-        onBlur={formik.handleBlur}
-        onChange={formik.handleChange}
-        name="codProdSunat"
-        helperText={formik.touched.codProdSunat && formik.errors.codProdSunat}
-      />
+      <Box display={'flex'} flexDirection={'row'} gap={1}>
+        <TextField
+          margin='normal'
+          fullWidth
+          label='Código'
+          size='small'
+          value={formik.values.codigo}
+          error={formik.touched.codigo && Boolean(formik.errors.codigo)}
+          onBlur={formik.handleBlur}
+          onChange={formik.handleChange}
+          name="codigo"
+          helperText={formik.touched.codigo && formik.errors.codigo}
+          disabled={Boolean(edit)}
+        />
+        <TextField
+          margin='normal'
+          fullWidth
+          label='Código Sunat'
+          size='small'
+          value={formik.values.codProdSunat}
+          error={formik.touched.codProdSunat && Boolean(formik.errors.codProdSunat)}
+          onBlur={formik.handleBlur}
+          onChange={formik.handleChange}
+          name="codProdSunat"
+          helperText={formik.touched.codProdSunat && formik.errors.codProdSunat}
+        />
+      </Box>
       <TextField
         margin='normal'
         fullWidth
@@ -166,28 +174,43 @@ const ModalProducto = ({ initialValue,onConfirm,edit }: ProductoFormProps) => {
         name="descripcion"
         helperText={formik.touched.descripcion && formik.errors.descripcion}
       />
-      <FormControl fullWidth size='small' sx={{ mt: 2 }}>
-        <InputLabel>Unidad de Medida</InputLabel>
 
-        <Select
-          label='Unidad de Medida'
-          value={formik.values.unidad}
-          error={formik.touched.unidad && Boolean(formik.errors.unidad)}
+      <Box display={'flex'} flexDirection={'row'} gap={1}>
+        <FormControl fullWidth size='small' sx={{ mt: 2 }}>
+          <InputLabel>Unidad de Medida</InputLabel>
+
+          <Select
+            label='Unidad de Medida'
+            value={formik.values.unidad}
+            error={formik.touched.unidad && Boolean(formik.errors.unidad)}
+            onBlur={formik.handleBlur}
+            onChange={formik.handleChange}
+            name="unidad"
+          >
+            {
+              _UNIDAD_MEDIDA.map(item => (
+                <MenuItem key={item.codigo} value={item.codigo}>{item.descripcion}</MenuItem>
+              ))
+            }
+
+          </Select>
+        </FormControl>
+        <TextField
+          margin='normal'
+          fullWidth
+          label='Nombre corto'
+          size='small'
+          value={formik.values.nombreCorto}
+          error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
-          name="unidad"
-        >
-          {
-            _UNIDAD_MEDIDA.map(item => (
-              <MenuItem key={item.codigo} value={item.codigo}>{item.descripcion}</MenuItem>
-            ))
-          }
-
-        </Select>
-      </FormControl>
+          name="nombreCorto"
+          helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
+        />
+      </Box>
       <Box textAlign={'center'}>
 
-        <Button  onClick={() => setFav(!fav)} variant={!fav ? 'outlined' : 'contained'} color='warning' sx={{ display: 'inline-block', my: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>
+        <Button onClick={() => setFav(!fav)} variant={!fav ? 'outlined' : 'contained'} color='warning' sx={{ display: 'inline-block', my: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>
           FAVORITO
         </Button>
       </Box>

@@ -4,9 +4,7 @@ import KeyIcon from "@mui/icons-material/Key";
 
 
 import {
-  Container,
-  Paper,
-  Alert,
+  
   Grid,
   TextField,
   InputAdornment,
@@ -20,9 +18,9 @@ import {
   Typography,
 } from "@mui/material";
 
-import LogoCente from "/assets/img/elcentenario.png";
+
 import { useFormik } from "formik";
-import { LoginSchema, RegisterSchema } from "../utils/validateForm";
+import {  RegisterSchema } from "../utils/validateForm";
 import { User } from "../types/user.interface";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
@@ -58,7 +56,7 @@ const RegisterForm = () => {
 
   const [errores, setErrores] = useState([]);
 
-  console.log(errores);
+  // console.log(errores);
 
   const formik = useFormik({
     initialValues: InitialValues,

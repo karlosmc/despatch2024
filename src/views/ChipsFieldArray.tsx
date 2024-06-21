@@ -1,18 +1,11 @@
-import React, { MouseEvent,  useEffect, useState } from 'react';
-import {  FieldProps, Formik } from 'formik';
-import {  Box, Chip, FormControl, FormHelperText, Tooltip } from '@mui/material';
+import React, { MouseEvent,  useEffect } from 'react';
+import {  FieldProps } from 'formik';
+import {  Box, Chip, FormControl, Tooltip } from '@mui/material';
 
 
 import {  useAuxiliares } from '../context/AuxiliarProvider';
 
 
-type indicadoresType = {
-  id: string;
-  name: string;
-  tooltip: string;
-  selected: boolean;
-  icon: JSX.Element;
-};
 
 
 
@@ -29,8 +22,8 @@ const ChipsFieldArray: React.FC<ChipsFieldPropsArray> = ({ field, form }) => {
 
   
 
-  const { name,value } = field;
-  const { touched, errors, setFieldValue,setErrors } = form;
+  const { name } = field;
+  const { touched, errors, setFieldValue } = form;
 
   // console.log(field)
 

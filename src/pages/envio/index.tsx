@@ -10,8 +10,6 @@ import {
   MenuItem,
   Paper,
   Select,
-  SelectChangeEvent,
-  Stack,
   TextField,
   Tooltip,
   Typography,
@@ -20,13 +18,13 @@ import {
 import React, { MouseEvent, useEffect, useRef, useState } from "react";
 import {
   Choferes,
-  Direccion,
+  // Direccion,
   Envio,
-  Puerto,
-  Transportista,
+  
+  
   Vehiculo,
 } from "../../types/doc.interface";
-import InventoryIcon from "@mui/icons-material/Inventory";
+
 import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import TaxiAlertIcon from "@mui/icons-material/TaxiAlert";
@@ -36,31 +34,31 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import CommuteIcon from "@mui/icons-material/Commute";
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import IconButton from "@mui/material/IconButton";
-import QueueIcon from "@mui/icons-material/Queue";
+
 import PersonPinCircleIcon from "@mui/icons-material/PersonPinCircle";
 import PinDropIcon from "@mui/icons-material/PinDrop";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import dayjs from "dayjs";
+
 
 //import { useDialog } from "../../context/dialog.context";
 
-import FormDireccion from "../direction/formDireccion";
-import FormPuerto from "../puerto/formPuerto";
+// import FormDireccion from "../direction/formDireccion";
+
 import VehiculoForm from "../vehiculo";
 import ListaVehiculos from "../vehiculo/lista";
 import ListaChoferes from "../chofer/lista";
-import TransportistaForm from "../transportista";
+// import TransportistaForm from "../transportista";
 
 import { DialogComponentCustom } from "../../components";
 
 //import TextSearch from "../../components/TextSearch";
 //import DireccionFormChat from "../direction/formDirectionChatGpt";
 
-import { isObject, useFormik } from "formik";
+import {  useFormik } from "formik";
 
-import { useNotification } from "../../context/notification.context";
-import { AeropuertoSchema, EnvioSchema, LlegadaSchema } from "../../utils/validateForm";
+
+import {  EnvioSchema } from "../../utils/validateForm";
 
 const _MOTIVO_TRASLADO = [
   { id: "01", valor: "Venta" },
@@ -126,24 +124,7 @@ const _UNIDAD_PESO_TOTAL = [
   { id: "TNL", valor: "TONELADAS" },
 ];
 
-const DireccionValues: Direccion = {
-  codlocal: "",
-  direccion: "",
-  ruc: "",
-  ubigeo: "",
-};
-const VehiculoValues: Vehiculo = {
-  placa: "",
-  codEmisor: "",
-  nroAutorizacion: "",
-  nroCirculacion: "",
-  secundarios: null,
-};
 
-const PuertoValues: Puerto = {
-  codigo: "",
-  nombre: "",
-};
 
 // const EnvioValues: Envio = {
 //   codTraslado: "",
@@ -198,27 +179,21 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-  const [expanded, setExpanded] = useState<string | false>(false);
+  const [expanded, _setExpanded] = useState<string | false>(false);
 
-  const handleChangeAccordion =
-    (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? panel : false);
-    };
 
-  const [container, setContainer] = useState<string[]>([]);
+
+  const [container, _setContainer] = useState<string[]>([]);
 
   const [dataEnvio, setDataEnvio] = useState<Envio>(EnvioValues);
 
-  const [contenedor, setContenedor] = useState<string>("");
+  // const [_contenedor, setContenedor] = useState<string>("");
 
   const [indicadores, setIndicadores] = useState<indicadoresType[]>(
     _INDICADORES_ESPECIALES
   );
 
-  const handleContenedor = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = evt.target;
-    setContenedor(value);
-  };
+
 
   const containerRef = useRef<HTMLInputElement>(null);
 
@@ -283,26 +258,26 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
   }, [formik]);
  */
 
-  const handlePartidaChange = (direccion: Direccion): void => {
-    // setDataEnvio((prevData) => ({
-    //   ...prevData,
-    //   partida: direccion,
-    // }));
-    formik.setFieldValue('partida',direccion);
-    setModalsForms({ ...modalsForm, open: false });
-  };
+  // const handlePartidaChange = (direccion: Direccion): void => {
+  //   // setDataEnvio((prevData) => ({
+  //   //   ...prevData,
+  //   //   partida: direccion,
+  //   // }));
+  //   formik.setFieldValue('partida',direccion);
+  //   setModalsForms({ ...modalsForm, open: false });
+  // };
 
   
 
-  const handleLlegadaChange = (direccion: Direccion): void => {
-    // setDataEnvio((prevData) => ({
-    //   ...prevData,
-    //   llegada: direccion,
-    // }));
-    formik.setFieldValue('llegada',direccion);
-    //setOpenModalPartida(false);
-    setModalsForms({ ...modalsForm, open: false });
-  };
+  // const handleLlegadaChange = (direccion: Direccion): void => {
+  //   // setDataEnvio((prevData) => ({
+  //   //   ...prevData,
+  //   //   llegada: direccion,
+  //   // }));
+  //   formik.setFieldValue('llegada',direccion);
+  //   //setOpenModalPartida(false);
+  //   setModalsForms({ ...modalsForm, open: false });
+  // };
 
   const handleVehiculoChange = (vehiculo: Vehiculo): void => {
 
@@ -315,26 +290,26 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
     //setOpenModalVehiculo(false);
   };
 
-  const handleAddContainer = (evt: MouseEvent<HTMLButtonElement>) => {
-    evt.preventDefault();
-    const contenedorValor = containerRef.current.value;
+  // const handleAddContainer = (evt: MouseEvent<HTMLButtonElement>) => {
+  //   evt.preventDefault();
+  //   const contenedorValor = containerRef.current.value;
     
-    setContainer([...container, contenedorValor]);
-    // setDataEnvio((prev) => ({
-    //   ...prev,
-    //   contenedores: [...prev.contenedores, contenedorValor],
-    // }));
-    setContenedor("");
-    containerRef.current.focus();
-  };
+  //   setContainer([...container, contenedorValor]);
+  //   // setDataEnvio((prev) => ({
+  //   //   ...prev,
+  //   //   contenedores: [...prev.contenedores, contenedorValor],
+  //   // }));
+  //   setContenedor("");
+  //   containerRef.current.focus();
+  // };
 
-  const handleDeleteContainer = (chipToDelete: string) => {
-    setContainer(container.filter((item) => item !== chipToDelete));
-    // setDataEnvio((prev) => ({
-    //   ...prev,
-    //   contenedores: prev.contenedores.filter((item) => item !== chipToDelete),
-    // }));
-  };
+  // const handleDeleteContainer = (chipToDelete: string) => {
+  //   setContainer(container.filter((item) => item !== chipToDelete));
+  //   // setDataEnvio((prev) => ({
+  //   //   ...prev,
+  //   //   contenedores: prev.contenedores.filter((item) => item !== chipToDelete),
+  //   // }));
+  // };
 
   const handleClickIndicator = (evt: MouseEvent<HTMLDivElement>) => {
     evt.preventDefault();
@@ -392,44 +367,44 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
   //   });
   // };
 
-  const handleChange = (
-    event: React.ChangeEvent<any>
-  ) => {
-    const { name, value } = event.target;
-    // console.log(name,value);
-    formik.setFieldValue(name,value)
+  // const handleChange = (
+  //   event: React.ChangeEvent<any>
+  // ) => {
+  //   const { name, value } = event.target;
+  //   // console.log(name,value);
+  //   formik.setFieldValue(name,value)
   
-  };
+  // };
 
-  const SelectHandleChange = (event: SelectChangeEvent<unknown>) => {
-    const { name, value } = event.target;
-    setDataEnvio({
-      ...dataEnvio,
-      [name]: value,
-    });
-  };
+  // const SelectHandleChange = (event: SelectChangeEvent<unknown>) => {
+  //   const { name, value } = event.target;
+  //   setDataEnvio({
+  //     ...dataEnvio,
+  //     [name]: value,
+  //   });
+  // };
 
-  const handlePuertoChange = (puerto: Puerto): void => {
-    console.log('envio',puerto);
-    // setDataEnvio((prevData) => ({
-    //   ...prevData,
-    //   puerto: puerto,
-    // }));
+  // const handlePuertoChange = (puerto: Puerto): void => {
+  //   console.log('envio',puerto);
+  //   // setDataEnvio((prevData) => ({
+  //   //   ...prevData,
+  //   //   puerto: puerto,
+  //   // }));
 
-    formik.setFieldValue('puerto', puerto);
-    //setOpenModalPartida(false);
+  //   formik.setFieldValue('puerto', puerto);
+  //   //setOpenModalPartida(false);
     
-  };
+  // };
 
 
-  const handleAeroPuertoChange = (puerto: Puerto): void => {
-    // setDataEnvio((prevData) => ({
-    //   ...prevData,
-    //   aeropuerto: puerto,
-    // }));
+  // const handleAeroPuertoChange = (puerto: Puerto): void => {
+  //   // setDataEnvio((prevData) => ({
+  //   //   ...prevData,
+  //   //   aeropuerto: puerto,
+  //   // }));
 
-    formik.setFieldValue('aeropuerto',puerto);
-  };
+  //   formik.setFieldValue('aeropuerto',puerto);
+  // };
 
   const handleConfirmListVehiculo = (vehiculos: Vehiculo[]): void => {
     setDataEnvio((prevData) => ({
@@ -456,14 +431,14 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
   };
 
 
-  const handleTransportistaChange = (transportista: Transportista): void => {
-    setDataEnvio((prevData) => ({
-      ...prevData,
-      transportista: transportista,
-    }));
-    //setOpenModalTransportista(false);
-    setModalsForms({ ...modalsForm, open: false });
-  };
+  // const handleTransportistaChange = (transportista: Transportista): void => {
+  //   setDataEnvio((prevData) => ({
+  //     ...prevData,
+  //     transportista: transportista,
+  //   }));
+  //   //setOpenModalTransportista(false);
+  //   setModalsForms({ ...modalsForm, open: false });
+  // };
 
   /*  Styles   */
   const theme = useTheme();
@@ -748,15 +723,15 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
                 <Paper elevation={5} sx={paperDirection}>
                   <Button
                     variant="outlined"
-                    onClick={(_e) =>
-                      handleOpenModalForm(
-                        <FormDireccion
-                          initialValue={formik.values.partida}
-                          onChange={handlePartidaChange}
-                        />,
-                        "Partida"
-                      )
-                    }
+                    // onClick={(_e) =>
+                    //   handleOpenModalForm(
+                    //     <FormDireccion
+                    //       initialValue={formik.values.partida}
+                    //       onChange={handlePartidaChange}
+                    //     />,
+                    //     "Partida"
+                    //   )
+                    // }
                     color="info"
                     startIcon={<PersonPinCircleIcon />}
                     sx={{ height: 80, width: 100 }}
@@ -769,16 +744,16 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
                 <Paper elevation={5} sx={paperDirection}>
                   <Button
                     variant="outlined"
-                    onClick={(_e) =>
-                      handleOpenModalForm(
-                        <FormDireccion
-                          initialValue={formik.values.llegada}
-                          onChange={handleLlegadaChange}
-                          schema={LlegadaSchema}
-                        />,
-                        "Llegada"
-                      )
-                    }
+                    // onClick={(_e) =>
+                    //   handleOpenModalForm(
+                    //     <FormDireccion
+                    //       initialValue={formik.values.llegada}
+                    //       onChange={handleLlegadaChange}
+                    //       schema={LlegadaSchema}
+                    //     />,
+                    //     "Llegada"
+                    //   )
+                    // }
                     color="info"
                     startIcon={<PinDropIcon />}
                     sx={{ height: 80, width: 100 }}
@@ -1036,15 +1011,15 @@ const EnvioForm = ({ onChange ,EnvioValues }: EnvioFormProps) => {
                   aria-label="add an alarm"
                   sx={BoxShadoWButton}
                   disabled
-                  onClick={(_e) =>
-                    handleOpenModalForm(
-                      <TransportistaForm
-                        initialValue={dataEnvio.transportista}
-                        onChange={handleTransportistaChange}
-                      />,
-                      "Transportista"
-                    )
-                  }
+                  // onClick={(_e) =>
+                  //   // handleOpenModalForm(
+                  //   //   <TransportistaForm
+                  //   //     initialValue={dataEnvio.transportista}
+                  //   //     onChange={handleTransportistaChange}
+                  //   //   />,
+                  //   //   "Transportista"
+                  //   // )
+                  // }
                 >
                   <CommuteIcon fontSize="large" />
                 </IconButton>

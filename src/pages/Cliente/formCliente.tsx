@@ -1,27 +1,25 @@
-import React, { useEffect, useState } from "react";
+import  {  useState } from "react";
 import { Client } from "../../types/doc.interface";
 import {
-  Autocomplete,
-  Box,
+  
   Button,
   FormControl,
-  IconButton,
+  
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  
   Stack,
   TextField,
 } from "@mui/material";
-import TextSearch from "../../components/TextSearch";
+
 import { dataFound } from "../../types/persona.interface";
 import { useFormik } from "formik";
 import { DestinatarioSchema } from "../../utils/validateForm";
-import VehiculoForm from "../vehiculo";
-import SearchIcon from "@mui/icons-material/Search";
+
 import ButtonSearch from "../../components/ButtonSearch";
 import * as Yup from "yup";
-import { Ubigeos, Departamentos, Provincias } from "../../types/ubigeo";
+
 import UbigeoComponent from "../../components/UbigeForm";
 
 const ClientValues: Client = {
@@ -39,7 +37,7 @@ interface ClienteFormProps {
 }
 
 const Cliente = ({ initialValue, onChange, schema }: ClienteFormProps) => {
-  const [dataCliente, setDataCliente] = useState<Client | null>(initialValue);
+  const [_dataCliente, setDataCliente] = useState<Client | null>(initialValue);
   
 
   const formik = useFormik({
@@ -50,37 +48,37 @@ const Cliente = ({ initialValue, onChange, schema }: ClienteFormProps) => {
     },
   });
 
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = event.target;
-    setDataCliente({
-      ...dataCliente,
-      [name]: value,
-    });
-  };
+  // const handleChange = (
+  //   event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  // ) => {
+  //   const { name, value } = event.target;
+  //   setDataCliente({
+  //     ...dataCliente,
+  //     [name]: value,
+  //   });
+  // };
 
-  const SelectHandleChange = (event: SelectChangeEvent<unknown>) => {
-    const { name, value } = event.target;
-    setDataCliente({
-      ...dataCliente,
-      [name]: value,
-    });
-  };
+  // const SelectHandleChange = (event: SelectChangeEvent<unknown>) => {
+  //   const { name, value } = event.target;
+  //   setDataCliente({
+  //     ...dataCliente,
+  //     [name]: value,
+  //   });
+  // };
 
-  const handleSubmit = (values) => {
-    console.log(values);
-    onChange(dataCliente);
-  };
+  // const handleSubmit = (values) => {
+  //   console.log(values);
+  //   onChange(dataCliente);
+  // };
 
   const handleClean = () => {
     setDataCliente(ClientValues);
     onChange(ClientValues);
   };
 
-  const handleChangeUbigeo= (ubigeo : string) =>{
-    formik.setFieldValue('ubigeo',ubigeo);
-  }
+  // const handleChangeUbigeo= (ubigeo : string) =>{
+  //   formik.setFieldValue('ubigeo',ubigeo);
+  // }
 
   const handleSearch = (data: dataFound): void => {
     //setDataFoundIt(data);

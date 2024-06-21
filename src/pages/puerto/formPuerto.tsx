@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect } from "react";
 import { Puerto } from "../../types/doc.interface";
 import {
   FormControl,
   InputLabel,
   Select,
-  SelectChangeEvent,
+  
   MenuItem,
 } from "@mui/material";
 
@@ -306,7 +306,7 @@ const FormPuerto = ({ onChange, initialValue, opcion,schema }: PuertoFormProps) 
   });
 
   const eleccion = opcion === "P" ? "Elija el Puerto" : "Elija el Aeropuerto";
-  const [dataPuerto, setDataPuerto] = useState<Puerto>(initialValue);
+  
 
   useEffect(() => {
     console.log(formik.values);

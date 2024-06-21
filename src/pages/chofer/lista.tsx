@@ -23,7 +23,7 @@ const ChoferValues: Choferes = {
 };
 
 const ListaChoferes = ({ choferes, onConfirm }: Props) => {
-  const [chofer, setChofer] = useState<Choferes>(ChoferValues);
+  const [_chofer, setChofer] = useState<Choferes>(ChoferValues);
   const [listaChoferes, setListaChoferes] = useState<Choferes[]>(choferes);
 
   const formik = useFormik({

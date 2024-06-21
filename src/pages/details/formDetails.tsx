@@ -1,9 +1,9 @@
-import React, { MouseEvent,useState } from "react";
+import  { MouseEvent } from "react";
 import { Detail } from "../../types/doc.interface";
 import { Button, Chip, Paper, TextField, Typography } from "@mui/material";
 
 import { useFormik } from "formik";
-import * as Yup from "yup";
+
 import { DetailSchema } from "../../utils/validateForm";
 import { Producto, UserLogin } from "../../types/login.interface";
 
@@ -27,16 +27,16 @@ const DetailValues: Detail = {
   unidad: "",
 };
 
-const ProductoValues: Producto = {
-  alias: "",
-  codigo: "",
-  codProdSunat: "",
-  company: "",
-  descripcion: "",
-  id: "",
-  product: "",
-  unidad:''
-};
+// const ProductoValues: Producto = {
+//   alias: "",
+//   codigo: "",
+//   codProdSunat: "",
+//   company: "",
+//   descripcion: "",
+//   id: "",
+//   product: "",
+//   unidad:''
+// };
 
 const FormDetail = ({ onNewDetail }: DetailFormProps) => {
   const formik = useFormik({

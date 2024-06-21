@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import { useModal } from "../context/modal.context";
 import { Breakpoint, Button, Dialog, DialogActions, DialogContent, DialogTitle, Portal } from "@mui/material";
 
@@ -13,7 +13,7 @@ type useModalComponentsProps = {
 export const useModalComponent = ({ title, content,modalName,maxWidth=false }: useModalComponentsProps) => {
 
   const { isModalOpen, closeModal } = useModal()
-  const [isMounted, setIsMounted] = useState<boolean>(false)
+  // const [isMounted, setIsMounted] = useState<boolean>(false)
 
 
   // useEffect(() => {

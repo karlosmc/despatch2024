@@ -1,12 +1,10 @@
-import React, { useState, useEffect, MouseEvent } from "react";
+import React, { useState, useEffect } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { Stack, Button, Chip, Paper, InputAdornment, Tooltip, styled, TooltipProps, tooltipClasses, keyframes, Box } from "@mui/material";
-
+import { Stack, Button, InputAdornment, Tooltip, styled, TooltipProps, tooltipClasses, keyframes, Box } from "@mui/material";
 import { useFormik } from "formik";
-
 import * as Yup from "yup";
-import { DirectionsUser, UserLogin } from "../../types/login.interface";
+
 import { Direccion } from "../../types/guias/guiaremision.interface";
 import { PartidaSchema } from "../../utils/validateGuiaRemision";
 import InfoIcon from '@mui/icons-material/Info';
@@ -15,6 +13,9 @@ import { DialogComponentCustom } from "../../components";
 import ModalPuntoUbicacion from "../../components/Puntos";
 import { puntoUbicacion } from "../../types/puntoubicacion.interface";
 import SearchPuntos from "../../components/Puntos/SearchPuntos";
+import clienteAxios from "../../config/axios";
+import ChipFavoritos from "../../components/ChipFavoritos";
+import { ChipInterface } from "../../types/general.interface";
 
 
 interface DireccionFormProps {
@@ -25,19 +26,6 @@ interface DireccionFormProps {
 }
 
 const DireccionValues: Direccion = {
-  codLocal: "",
-  direccion: "",
-  ruc: "",
-  ubigeo: "",
-};
-
-const DireccionUserValues: DirectionsUser = {
-  alias: "",
-  company: "",
-  direction: "",
-  id: "",
-  isconcurrent: "",
-  tipo: "",
   codLocal: "",
   direccion: "",
   ruc: "",
@@ -89,6 +77,21 @@ type ModalsProps = {
   title: string;
 };
 
+const StyledNewButton = styled(Button)(({ }) => ({
+  backgroundColor: '#375A7F',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#2F4D6C',
+  }
+}))
+
+const StyledSearchButton = styled(Button)(({ }) => ({
+  backgroundColor: '#00BC8C',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#00A077',
+  }
+}))
 
 const DatosDireccion = ({
   initialValue,
@@ -107,16 +110,12 @@ const DatosDireccion = ({
     },
   });
 
-  const [directionChip, setDirectionChip] = useState<DirectionsUser>(DireccionUserValues)
-
-  const [ubigeoInicial, setUbigeoInicial] = useState<string>(initialValue.ubigeo || '')
-
   const [inputValue, setInputValue] = useState('');
-  const [selectedUbigeo, setSelectedUbigeo] = useState<string | null>(null);
+  const [_selectedUbigeo, setSelectedUbigeo] = useState<string | null>(null);
 
   const [value, setValue] = useState<Ubigeos | null>(null);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  // const token = localStorage.getItem('AUTH_TOKEN');
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -124,22 +123,33 @@ const DatosDireccion = ({
     title: "",
   });
 
+  const [dataFilter, setDataFilter] = useState<puntoUbicacion[]>([])
 
+  const [isLoading, setIsLoading] = useState(true)
 
-  // const dataUser: UserLogin = JSON.parse(localStorage.getItem('userlogin'));
-  // console.log(dataUser);
+  const token = localStorage.getItem('AUTH_TOKEN');
 
-  // if(schema=== undefined){
+  const filterFav = async (tipo:string) => {
+    try {
 
-  // }
-  // const listDirections: DirectionsUser[] = dataUser.directions.filter(item => schema === undefined ? item.tipo === 'P' : item.tipo === 'L');
-  const listDirections: DirectionsUser[] = [];
+      const { data, status } = await clienteAxios(`/api/puntos/buscar?${tipo}=1`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (status === 200) {
+        setIsLoading(false)
+        setDataFilter(data?.data)
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
   // const correlativo = parseInt(dataUser.sercor.correlativo)+1
 
-
   const [ubigeos, setUbigeos] = useState<Ubigeos[]>([]);
-
-
 
 
   useEffect(() => {
@@ -150,21 +160,19 @@ const DatosDireccion = ({
     };
 
     loadData();
+    // filterFav();
   }, []);
+  useEffect(()=>{
+    if(codTraslado==='04'){
+      filterFav('isCompany')
+    }
+    else{
+      filterFav('fav')
+    }
+
+  },[codTraslado])
 
   /* establecer valores dando click a los valores por defecto */
-  useEffect(() => {
-    if (directionChip.alias !== '') {
-
-      formik.setFieldValue('codlocal', directionChip.codLocal)
-      formik.setFieldValue('direccion', directionChip.direccion)
-      formik.setFieldValue('ruc', directionChip.ruc)
-      formik.setFieldValue('ubigeo', directionChip.ubigeo)
-      // initialValue.ubigeo=directionChip.ubigeo
-      setUbigeoInicial(directionChip.ubigeo)
-    }
-  }, [directionChip])
-
 
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
@@ -181,20 +189,21 @@ const DatosDireccion = ({
   };
 
 
-  const handleConfirm=(punto:puntoUbicacion):void=>{
-
+  const handleConfirm = (punto: puntoUbicacion): void => {
     formik.setFieldValue('ubigeo', punto.ubigeo)
     formik.setFieldValue('direccion', punto.direccion)
     formik.setFieldValue('codLocal', punto.codLocal)
-    formik.setFieldValue('ruc', punto.ruc?punto.ruc:'')
+    formik.setFieldValue('ruc', punto.ruc ? punto.ruc : '')
     handleCloseModalForm()
   }
 
-  const handleClickDirection = (evt: MouseEvent<HTMLDivElement>) => {
-    evt.preventDefault();
-    const spanChip = evt.currentTarget.id;
-    setDirectionChip(listDirections.find(item => item.id === spanChip));
-  };
+  const handleSetFavorite = (item: ChipInterface): void => {
+    const punto = dataFilter.find(it => it.id === item.id);
+    formik.setFieldValue('ubigeo', punto.ubigeo)
+    formik.setFieldValue('direccion', punto.direccion)
+    formik.setFieldValue('codLocal', punto.codLocal)
+    formik.setFieldValue('ruc', punto.ruc ? punto.ruc : '')
+  }
 
   const onChangeUbigeo = (_event: unknown, newValue: Ubigeos) => {
     if (newValue) {
@@ -207,16 +216,6 @@ const DatosDireccion = ({
     }
   }
 
-  // const handleCheckProduct = (punto:puntoUbicacion):void => {
-
-  //   formik.setFieldValue('ubi', producto.ubi)
-  //   formik.setFieldValue('codProdSunat', producto.codProdSunat)
-  //   formik.setFieldValue('descripcion', producto.descripcion)
-  //   formik.setFieldValue('unidad', producto.unidad)
-  //   handleCloseModalForm()
-  // }
-
-
   useEffect(() => {
 
     if (ubigeos.length > 0) {
@@ -225,54 +224,13 @@ const DatosDireccion = ({
       setValue(initialUbigeo);
       setSelectedUbigeo(initialUbigeo?.ubigeo || null);
     }
-  }, [formik.values.ubigeo,ubigeos]);
-
-
-
+  }, [formik.values.ubigeo, ubigeos]);
 
   return (
     <>
-      <Paper
-        elevation={15}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          my: 2,
-          py: 2,
-          borderRadius: 10,
-          width: "100%",
-        }}
-      >
-        {listDirections.map((direc) => {
-          return (
-            <Chip
-              sx={{
-                height: "auto",
-                margin: 1,
-                py: 1,
-                width: 180,
-                "& .MuiChip-label": {
-                  display: "block",
-                  whiteSpace: "normal",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                },
-                color: "white",
-              }}
-              id={direc.id}
-              label={direc.alias}
-              key={direc.id}
-              // color={indicador.selected ? "success" : "default"}
-              clickable={true}
-              onClick={handleClickDirection}
-            // icon={indicador.icon}
-            />
-          );
-        })}
-      </Paper>
+      <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Puntos de ubicación favoritos" />
       <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
-        <Button fullWidth variant="contained" color="success"
+        <StyledNewButton fullWidth variant="contained"
           onClick={() => {
             handleOpenModalForm(
               <ModalPuntoUbicacion initialValue={null} edit={false} onConfirm={handleConfirm} />,
@@ -280,19 +238,19 @@ const DatosDireccion = ({
             )
           }}
         >
-          Crear
-        </Button>
+          Crear Punto
+        </StyledNewButton>
 
-        <Button fullWidth variant="contained" color="warning"
-         onClick={() => {
-          handleOpenModalForm(
-            <SearchPuntos onCheck={handleConfirm}/>,
-            'Buscar Punto de ubicación'
-          )
-        }}
+        <StyledSearchButton fullWidth variant="contained"
+          onClick={() => {
+            handleOpenModalForm(
+              <SearchPuntos onCheck={handleConfirm} />,
+              'Buscar Punto de ubicación'
+            )
+          }}
         >
           Buscar
-        </Button>
+        </StyledSearchButton>
       </Box>
       <Box component={'form'} onSubmit={formik.handleSubmit}>
         <TextField
@@ -367,6 +325,9 @@ const DatosDireccion = ({
               option.distrito.toLowerCase().includes(state.inputValue.toLowerCase())
             )
           }
+          isOptionEqualToValue={(option, value) =>
+            option.id === value.id
+          }
           renderInput={(params) => (
             <TextField
               {...params}
@@ -380,15 +341,13 @@ const DatosDireccion = ({
           onChange={onChangeUbigeo}
         />
 
-
-
         <Stack direction="row" spacing={2} mt={1}>
-          <Button variant="outlined" color="success" type="submit">
+          <Button fullWidth variant="contained" color="success" type="submit">
             Agregar
           </Button>
 
-          <Button variant="outlined" color="error" onClick={handleClean}>
-            Clean
+          <Button fullWidth variant="outlined" color="secondary" onClick={handleClean}>
+            Limpiar
           </Button>
         </Stack>
       </Box>

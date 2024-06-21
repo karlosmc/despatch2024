@@ -3,7 +3,8 @@ import clienteAxios from "../config/axios";
 import useSWR from 'swr'
 
 import {useNavigate} from 'react-router-dom'
-import Inicio from "../views/Inicio";
+import { useNotification } from "../context/notification.context";
+// import Inicio from "../views/Inicio";
 
 
 interface authInterface {
@@ -20,6 +21,7 @@ export const useAuth = ({middleware , url}:authInterface) =>{
   middleware=middleware
   url=url
 
+  const { getSuccess }= useNotification()
   const token  = localStorage.getItem('AUTH_TOKEN');
 
   const navigate = useNavigate();
@@ -39,9 +41,14 @@ export const useAuth = ({middleware , url}:authInterface) =>{
   const registro = async({datos, setErrores}:request) =>{
     
     try {
-      const {data} = await clienteAxios.post('/api/registro',datos);
-      localStorage.setItem('AUTH_TOKEN',data.token)
-      setErrores([])
+      await clienteAxios.post('/api/registro',datos);
+      
+      getSuccess('Usuario Creado satisfactoriamente');
+      setTimeout(() => {
+        navigate('/auth/login');
+      }, 3000);
+      // localStorage.setItem('AUTH_TOKEN',data.token)
+      // setErrores([])
       await mutate();
     } catch (error) {
         setErrores(Object.values(error.response.data.errors))
@@ -52,7 +59,11 @@ export const useAuth = ({middleware , url}:authInterface) =>{
 
     try {
       const {data} = await clienteAxios.post('/api/login',datos);
-      
+      console.log(data)
+      if(data.token===''){
+        setErrores([data.error])
+        return;
+      }
       localStorage.setItem('AUTH_TOKEN',data.token)
       setErrores([]);
       await mutate()
@@ -61,6 +72,23 @@ export const useAuth = ({middleware , url}:authInterface) =>{
       setErrores(Object.values(error.response.data.errors))
     }
 
+  }
+
+  const logout = async() =>{
+    try {
+      
+      await clienteAxios.post('/api/logout',null,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      })
+      localStorage.removeItem('AUTH_TOKEN');
+      await mutate(undefined)
+    } catch (error) {
+
+      console.log(error)
+      throw Error(error?.response?.data?.errors)
+    }
   }
 
   useEffect(() => {
@@ -76,6 +104,10 @@ export const useAuth = ({middleware , url}:authInterface) =>{
     //   console.log('no entro')
     // }
 
+    if(middleware === 'auth' && url==='/guiaremision' && user){
+      navigate(url);
+    }
+
     if(middleware === 'auth' && error){
       navigate('/auth/login');
     }
@@ -89,7 +121,8 @@ export const useAuth = ({middleware , url}:authInterface) =>{
     user,
     error,
     login,
-    isLoading
+    isLoading,
+    logout
   }
   
 }

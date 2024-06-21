@@ -15,8 +15,7 @@ import dayjs from "dayjs";
 import { useNotification } from "../../context/notification.context";
 import { isObject, useFormik } from "formik";
 import {
-  CompradorSchema,
-  GuiaRemisionSchema,
+    GuiaRemisionSchema,
   LlegadaSchema,
   TerceroSchema
 } from "../../utils/validateGuiaRemision";
@@ -50,7 +49,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import BadgeIcon from '@mui/icons-material/Badge';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+// import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -73,21 +72,7 @@ import VehiculosSecundarios from "../DatosVehiculos/secundarios";
 import ObservacionesTextField from "../Observaciones";
 
 import useAuthToken from "../../hooks/useAuthToken";
-import { Guia } from "../../types/guias/guias.interface";
-import PdfViewer from "../PdfViewer";
-
-
-
-
-
-// const ChoferesValues: EnvioChoferes = {
-//   tipo: "",
-//   tipoDoc: "",
-//   apellidos: "",
-//   licencia: "",
-//   nombres: "",
-//   nroDoc: "",
-// };
+import { useAuth } from "../../hooks/useAuth";
 
 const VehiculoValues: EnvioVehiculo = {
   placa: "V0Z331",
@@ -166,7 +151,7 @@ const initialValues: GuiaRemision = {
     ubigeo: "230101",
   },
   transportista: {
-    id: "",
+    id: 0,
     nroMtc: "",
     numDoc: "",
     rznSocial: "",
@@ -182,6 +167,10 @@ type ModalsProps = {
 };
 
 const GuiaRemisionMain = () => {
+
+
+  useAuth({ middleware: 'auth', url: '/guiaremision' });
+
   const { getError, getSuccess,getWarning } = useNotification();
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
@@ -240,10 +229,12 @@ const GuiaRemisionMain = () => {
         vehiculo: values.vehiculo.placa!==''?values.vehiculo:null,
         aeropuerto: null,
         puerto: null,
-        choferes: values.choferes
+        choferes: values.choferes,
+        transportista:values.transportista.numDoc!==''?values.transportista:null
       },
       addDocs: values.addDocs,
-      details: values.details
+      details: values.details,
+      
     }
 
     const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
@@ -306,10 +297,12 @@ const GuiaRemisionMain = () => {
             vehiculo: values.vehiculo.placa!==''?values.vehiculo:null,
             aeropuerto: null,
             puerto: null,
-            choferes: values.choferes
+            choferes: values.choferes,
+            transportista:values.transportista.numDoc!==''?values.transportista:null
           },
           addDocs: values.addDocs,
-          details: values.details
+          details: values.details,
+          
         }
 
         // console.log(doc)

@@ -9,7 +9,7 @@ import {
   Address,
   Direccion,
   Vehiculo,
-  Puerto,
+  
   AddDoc,
   Choferes,
   //Transportista,
@@ -24,16 +24,14 @@ import {
   Select,
   Stack,
   TextField,
-  SelectChangeEvent,
+  
   Button,
   Paper,
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Typography,
-  Box,
-  CircularProgress,
-  FormHelperText,
+
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 //import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
@@ -60,7 +58,7 @@ import {
   CompradorSchema,
   DocumentValidateSchema,
 } from "../../utils/validateForm";
-import { DataArray } from "@mui/icons-material";
+
 import { UserLogin } from "../../types/login.interface";
 
 //import { client } from "../../api/client";
@@ -99,22 +97,22 @@ const DocumentoElectronico: React.FC = () => {
   const { getError, getSuccess } = useNotification();
 
   const DireccionValues: Direccion = {
-    codlocal: "",
+    codLocal: "",
     direccion: "",
     ruc: "",
     ubigeo: "",
   };
 
-  const ClientValues: Client = {
-    numDoc: "",
-    rznSocial: "",
-    tipoDoc: "",
-  };
+  // const ClientValues: Client = {
+  //   numDoc: "",
+  //   rznSocial: "",
+  //   tipoDoc: "",
+  // };
 
-  const PuertoValues: Puerto = {
-    codigo: "",
-    nombre: "",
-  };
+  // const PuertoValues: Puerto = {
+  //   codigo: "",
+  //   nombre: "",
+  // };
 
   const ChoferValues: Choferes = {
     tipo: "",
@@ -358,7 +356,7 @@ const DocumentoElectronico: React.FC = () => {
     return resp.json();
   };
 
-  const [formData, setFormData] = useState<Doc | null>(initialValues);
+  // const [formData, setFormData] = useState<Doc | null>(initialValues);
 
   const [detalles, setDetalles] = useState<Detail[]>([]);
 

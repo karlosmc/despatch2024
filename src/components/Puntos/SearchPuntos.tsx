@@ -1,7 +1,6 @@
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box, SelectChangeEvent, Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box,  Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
 import clienteAxios from '../../config/axios';
-import { Producto } from '../../types/producto.interface';
 
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import GradeIcon from '@mui/icons-material/Grade';
@@ -12,7 +11,7 @@ import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 import { puntoUbicacion } from '../../types/puntoubicacion.interface';
-import useSWR from 'swr';
+
 
 
 interface SearchProductoProps {

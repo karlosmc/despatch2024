@@ -1,5 +1,5 @@
-import { Autocomplete, Box, Button, Chip, Container, FormControl, InputAdornment, InputLabel, Paper, Select, Stack, TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
-import React, { SetStateAction, useEffect, useState } from 'react'
+import { Autocomplete, Box, Button, InputAdornment,  TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
+import  {  useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
@@ -35,7 +35,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
   const [isCompany, setIsCompany] = useState<boolean>(initialValue?.isCompany || false);
 
   const [inputValue, setInputValue] = useState('');
-  const [selectedUbigeo, setSelectedUbigeo] = useState<string | null>(null);
+  const [_selectedUbigeo, setSelectedUbigeo] = useState<string | null>(null);
 
   const [value, setValue] = useState<Ubigeos | null>(null);
 

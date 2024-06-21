@@ -54,11 +54,13 @@ let theme = createTheme({
         //     main:themePalette.dark_error
         // },
         success:{
-            main:themePalette.dark_success
+            main:themePalette.dark_success,
+            contrastText:'#fff'
         },
         warning:{
             main:themePalette.dark_warning
         },
+        
      
     },
     typography:{

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Choferes } from "../../types/doc.interface";
 import {
   Button,
@@ -6,17 +6,17 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
+  
   Stack,
   TextField,
 } from "@mui/material";
 import { dataFound } from "../../types/persona.interface";
-import TextSearch from "../../components/TextSearch";
+
 /* import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import { useDialog } from "../../context/dialog.context"; */
 
 import { useFormik } from "formik";
-import * as Yup from 'yup';
+
 import { ChoferSchema } from "../../utils/validateForm";
 import ButtonSearch from "../../components/ButtonSearch";
 

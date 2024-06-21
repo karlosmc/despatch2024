@@ -1,6 +1,6 @@
-import { MouseEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { Detail } from "../../types/doc.interface";
-import { Box, Button, Chip, Paper, TextField, Typography } from "@mui/material";
+import { Box, Button,  TextField,  styled } from "@mui/material";
 
 import { useFormik } from "formik";
 
@@ -11,13 +11,9 @@ import { DialogComponentCustom } from "../../components";
 import ModalProducto from "../../components/Producto";
 import SearchProducto from "../../components/Producto/SearchProducto";
 import { Producto } from "../../types/producto.interface";
-
-/* const DestinatarioValues: Client = {
-  id: "",
-  numDoc: "",
-  rznSocial: "",
-  tipoDoc: "",
-}; */
+import clienteAxios from "../../config/axios";
+import { ChipInterface } from "../../types/general.interface";
+import ChipFavoritos from "../../components/ChipFavoritos";
 
 interface DetailFormProps {
   onNewDetail: (newDetail: Detail) => void;
@@ -38,7 +34,47 @@ type ModalsProps = {
   title: string;
 };
 
+const StyledNewButton = styled(Button)(({ }) => ({
+  backgroundColor: '#375A7F',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#2F4D6C',
+  }
+}))
+
+const StyledSearchButton = styled(Button)(({ }) => ({
+  backgroundColor: '#00BC8C',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#00A077',
+  }
+}))
+
 const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
+
+  const [dataFilter, setDataFilter] = useState<Producto[]>([])
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  const token = localStorage.getItem('AUTH_TOKEN');
+
+  const filterFav = async () => {
+    try {
+
+      const { data, status } = await clienteAxios(`/api/productos/buscar?fav=1`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (status === 200) {
+        setIsLoading(false)
+        setDataFilter(data?.data)
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -55,10 +91,10 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-  const handleConfirm=(producto:Producto):void=>{
+  const handleConfirm = (producto: Producto): void => {
 
     formik.setFieldValue('codigo', producto.codigo)
-    formik.setFieldValue('codProdSunat', producto.codProdSunat?producto.codProdSunat:'')
+    formik.setFieldValue('codProdSunat', producto.codProdSunat ? producto.codProdSunat : '')
     formik.setFieldValue('descripcion', producto.descripcion)
     formik.setFieldValue('unidad', producto.unidad)
 
@@ -73,36 +109,8 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
     },
   });
 
-  // const [chipProductDefault, setChipProductDefault] = useState<Producto>(
-  //   ProductoValues || null
-  // );
 
-  // const dataUser: UserLogin = JSON.parse(localStorage.getItem("userlogin"));
-
-  // const DefaultProducts: Producto[] = dataUser.products;
-
-  const DefaultProducts: Producto[] = [];
-
-
-
-  // const handleClickProductsDefault = (evt: MouseEvent<HTMLDivElement>) => {
-  //   evt.preventDefault();
-  //   const spanChip = evt.currentTarget.id;
-  //   // console.log(spanChip);
-
-  //   const DefaultProduct = DefaultProducts.find((item) => item.id === spanChip);
-
-
-
-  //   formik.setFieldValue('codigo', DefaultProduct.codigo)
-  //   formik.setFieldValue('codProdSunat', DefaultProduct.codProdSunat)
-  //   formik.setFieldValue('descripcion', DefaultProduct.descripcion)
-  //   formik.setFieldValue('unidad', DefaultProduct.unidad)
-
-
-  // };
-
-  const handleCheckProduct = (producto:Producto):void => {
+  const handleCheckProduct = (producto: Producto): void => {
 
     formik.setFieldValue('codigo', producto.codigo)
     formik.setFieldValue('codProdSunat', producto.codProdSunat)
@@ -111,48 +119,49 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
     handleCloseModalForm()
   }
 
+  const handleSetFavorite = (item: ChipInterface): void => {
+    const producto = dataFilter.find(it => it.id === item.id);
+    // formik.setFieldValue('tipoDoc', persona.tipoDoc)
+    formik.setFieldValue('codigo', producto.codigo)
+    formik.setFieldValue('codProdSunat', producto.codProdSunat)
+    formik.setFieldValue('descripcion', producto.descripcion)
+    formik.setFieldValue('unidad', producto.unidad)
+    
+  }
+
+
+  useEffect(()=>{
+    filterFav()
+  },[])
+
   return (
     <>
-      <Typography sx={{ textAlign: "center" }}>Clientes por Defecto</Typography>
-      <Paper
-        elevation={15}
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          my: 2,
-          py: 2,
-          borderRadius: 10,
-          width: "100%",
-        }}
-      >
-        {/* {DefaultProducts.map((pro) => {
-          return (
-            <Chip
-              sx={{
-                height: "auto",
-                margin: 1,
-                py: 1,
-                width: 180,
-                "& .MuiChip-label": {
-                  display: "block",
-                  whiteSpace: "normal",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                },
-                color: "white",
-              }}
-              id={pro.id}
-              label={pro.alias}
-              key={pro.id}
-              clickable={true}
-              onClick={handleClickProductsDefault}
-            />
-          );
-        })} */}
-      </Paper>
-      <form onSubmit={formik.handleSubmit}>
-        <Box display={{xs:'block',md:'flex'}} columnGap={2}>
+    <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Productos favoritos" />
+      <Box component={'form'} onSubmit={formik.handleSubmit}>
+        <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
+          <StyledNewButton fullWidth variant="contained" 
+            onClick={() => {
+              handleOpenModalForm(
+                <ModalProducto initialValue={null} edit={false} onConfirm={handleConfirm} />,
+                'Producto'
+              )
+            }}
+          >
+            Crear Item
+          </StyledNewButton>
+
+          <StyledSearchButton fullWidth variant="contained" 
+            onClick={() => {
+              handleOpenModalForm(
+                <SearchProducto onCheck={handleCheckProduct} />,
+                'Buscar producto'
+              )
+            }}
+          >
+            Buscar producto
+          </StyledSearchButton>
+        </Box>
+        <Box display={{ xs: 'block', md: 'flex' }} columnGap={2}>
           <TextField
             margin="normal"
             size="small"
@@ -181,7 +190,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             error={formik.touched.cantidad && Boolean(formik.errors.cantidad)}
           />
         </Box>
-        <Box display={{xs:'block',md:'flex'}} columnGap={2}>
+        <Box display={{ xs: 'block', md: 'flex' }} columnGap={2}>
           <TextField
             margin="normal"
             size="small"
@@ -228,35 +237,16 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
         />
 
         <Button
-          variant="outlined"
+          variant="contained"
           color="success"
           type="submit"
+          fullWidth
         >
           Agregar Item
         </Button>
-      </form>
+      </Box>
 
-      <Button variant="outlined" color="primary" sx={{mt:2}}
-       onClick={() => {
-        handleOpenModalForm(
-          <ModalProducto initialValue={null} edit={false} onConfirm={handleConfirm}/>,
-          'Producto'
-        )
-      }}
-      >
-        Crear Item
-      </Button>
 
-      <Button variant="outlined" color="primary" sx={{mt:2}}
-       onClick={() => {
-        handleOpenModalForm(
-          <SearchProducto onCheck={handleCheckProduct}/>,
-          'Buscar producto'
-        )
-      }}
-      >
-        Buscar producto
-      </Button>
       <DialogComponentCustom
         closeButton={
           <Button

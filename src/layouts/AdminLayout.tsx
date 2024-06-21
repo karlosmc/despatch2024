@@ -4,12 +4,13 @@ import SideNav from '../components/Dashboard/SideNav'
 import { Box, SxProps, Theme } from '@mui/material'
 import { Outlet } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
-import Inicio from '../views/Inicio'
+// import Inicio from '../views/Inicio'
 
 
 const AdminLayout = () => {
 
-  const { isLoading } = useAuth({ middleware: 'auth', url: '' });
+  // const { isLoading } = useAuth({ middleware: 'auth', url: '' });
+  useAuth({ middleware: 'auth', url: '' });
 
 
 

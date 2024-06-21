@@ -1,5 +1,4 @@
 import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material'
-import React from 'react'
 import { Guia } from '../../types/guias/guias.interface';
 import { Field, FormikProps } from 'formik';
 import ChipsFieldArray from '../../views/ChipsFieldArray';

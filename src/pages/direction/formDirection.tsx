@@ -4,7 +4,7 @@ import { Autocomplete, Box, Button, Stack, TextField } from "@mui/material";
 import { Departamentos, Provincias, Ubigeos } from "../../types/ubigeo";
 
 const DireccionValues: Direccion = {
-  codlocal: "",
+  codLocal: "",
   direccion: "",
   ruc: "",
   ubigeo: "",
@@ -74,7 +74,7 @@ const DireccionForm = ({ initialValue, onChange }: DireccionFormProps) => {
     initialValue
   );
 
-  const [ro, setRo] = useState(initialValue.ubigeo===""?false:true);
+  const [_ro, setRo] = useState(initialValue.ubigeo===""?false:true);
   const [dataUbigeo, setDataUbigeo] = useState<Ubigeos[]>([]);
   const [dataDepartamento, setDataDepartamento] = useState<Departamentos[]>([]);
   const [dataProvincia, setDataProvincia] = useState<Provincias[]>([]);
@@ -197,7 +197,7 @@ const DireccionForm = ({ initialValue, onChange }: DireccionFormProps) => {
             type="text"
             label="Código de Local"
             sx={{ mt: 1.5, mb: 1.5 }}
-            value={dataDireccion.codlocal}
+            value={dataDireccion.codLocal}
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void =>
               handleChange(e)
             }

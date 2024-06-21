@@ -4,5 +4,6 @@ export interface Producto {
   codProdSunat?:string;
   descripcion:string;
   unidad:string;
-  fav:boolean
+  fav:boolean;
+  nombreCorto?:string;
 }

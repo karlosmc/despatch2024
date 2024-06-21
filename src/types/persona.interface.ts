@@ -20,3 +20,17 @@ export interface dniData {
     dniData?: dniData | null;
     rucData?: rucData | null;
   }
+
+  export interface persona {
+    id?: number;
+    numDoc: string;
+    rznSocial: string;
+    email?: string;
+    telephone?: string;
+    fav: boolean;
+    isCompany: boolean;
+    // id_tipodocumento?: number;
+    tipodocumento?:string;
+    tipoDoc?:string;
+    nombreCorto?:string;
+  }

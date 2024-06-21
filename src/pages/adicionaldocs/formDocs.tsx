@@ -1,15 +1,15 @@
-import React, { MouseEvent, useEffect, useState } from "react";
+import  { MouseEvent, useEffect, useState } from "react";
 import { AddDoc } from "../../types/doc.interface";
 import {
   Button,
   Chip,
   FormControl,
-  Grid,
+  
   InputLabel,
   MenuItem,
   Paper,
   Select,
-  SelectChangeEvent,
+  
   Stack,
   TextField,
   Typography,
@@ -269,7 +269,6 @@ const FormAddDocs = ({ onNewAddDoc }: AddDocFormProps) => {
             ))}
           </Select>
         </FormControl>
-        <InputLabel htmlFor="nro">Numero Comprobante</InputLabel>
         <TextField
           margin="normal"
           type="text"

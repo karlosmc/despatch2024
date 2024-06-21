@@ -4,8 +4,7 @@ import KeyIcon from "@mui/icons-material/Key";
 
 
 import {
-  Container,
-  Paper,
+  
   Alert,
   Grid,
   TextField,
@@ -20,10 +19,10 @@ import {
   Typography,
 } from "@mui/material";
 
-import LogoCente from "/assets/img/elcentenario.png";
+
 import { useFormik } from "formik";
 import { LoginSchema } from "../utils/validateForm";
-import { LoginUser, User } from "../types/user.interface";
+import { LoginUser } from "../types/user.interface";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -56,7 +55,7 @@ const LoginForm = () => {
 
   const [errores, setErrores] = useState([]);
 
-  console.log(errores);
+  // console.log(errores);
 
   const formik = useFormik({
     initialValues: InitialValues,
