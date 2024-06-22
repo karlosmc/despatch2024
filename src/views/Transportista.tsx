@@ -6,8 +6,6 @@ import clienteAxios from '../config/axios';
 
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import GradeIcon from '@mui/icons-material/Grade';
-import StoreIcon from '@mui/icons-material/Store';
-import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';

@@ -10,7 +10,7 @@ import { NotificationProvider } from "./context/notification.context.tsx";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./routes/routes.tsx";
 // import { CssBaseline } from "@mui/material";
-import { ModalProvider } from "./context/modal.context.tsx";
+
 import { AuxiliarProvider } from "./context/AuxiliarProvider.tsx";
 import { DialogProvider } from "./context/dialog.context.tsx";
 
@@ -21,22 +21,20 @@ import { DialogProvider } from "./context/dialog.context.tsx";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ThemeConfig>
-      <ModalProvider>
+      
         <NotificationProvider>
           <DialogProvider>
             {/* <ParamsProvider> */}
             {/* <TokenProvider> */}
-
             <AuxiliarProvider>
               <RouterProvider router={router} />
             </AuxiliarProvider>
-
             {/* <App /> */}
             {/* </TokenProvider> */}
             {/* </ParamsProvider> */}
           </DialogProvider>
         </NotificationProvider>
-      </ModalProvider>
+      
     </ThemeConfig>
   </React.StrictMode>
 );

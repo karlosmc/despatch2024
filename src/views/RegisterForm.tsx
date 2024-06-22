@@ -16,6 +16,7 @@ import {
   Select,
   Box,
   Typography,
+  Alert,
 } from "@mui/material";
 
 
@@ -23,7 +24,7 @@ import { useFormik } from "formik";
 import {  RegisterSchema } from "../utils/validateForm";
 import { User } from "../types/user.interface";
 import { useAuth } from "../hooks/useAuth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 // import CryptoJS from 'crypto-js';
@@ -53,6 +54,7 @@ const RegisterForm = () => {
 
 
   const { registro } = useAuth({ middleware: 'guest', url: '/' });
+  const [message, setMessage] = useState('');
 
   const [errores, setErrores] = useState([]);
 
@@ -76,11 +78,20 @@ const RegisterForm = () => {
     },
   });
 
+  useEffect(() => {
+    if(errores.length>0){
+      setMessage(errores[0])
+    }
+  }, [errores])
+
   
   // const classes = useStyles();
   return (
 
     <Grid item md={6} xs={12}>
+        <div style={{ marginBottom: "1.5rem", width: "100%" }}>
+        {message !== "" ? <Alert severity="error">{message}</Alert> : ""}
+      </div>
       <Typography variant='h4'>
         Registro
       </Typography>

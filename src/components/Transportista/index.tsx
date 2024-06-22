@@ -6,9 +6,9 @@ import { useFormik } from 'formik';
 import clienteAxios from '../../config/axios';
 
 
-import { ConductorSchema, TransportistaSchema } from '../../utils/validateForm';
+import {  TransportistaSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
-import { conductor } from '../../types/conductor.interface';
+
 import { transportista } from '../../types/transportista.interface';
 
 

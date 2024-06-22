@@ -1,5 +1,5 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import { useEffect, useState } from 'react'
+import {  useState } from 'react'
 
 
 import { useFormik } from 'formik';
@@ -9,7 +9,7 @@ import clienteAxios from '../../config/axios';
 import { SunatParamsSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 
-import { transportista } from '../../types/transportista.interface';
+
 import { SunatParams } from '../../types/sunatparameters.interface';
 
 
