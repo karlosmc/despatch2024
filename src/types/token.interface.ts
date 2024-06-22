@@ -16,4 +16,5 @@ export interface IToken {
   token_type:string;
   expires_in: number;
   created_at: string;
+  expiryTime:number;
 }

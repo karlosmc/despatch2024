@@ -9,6 +9,7 @@ import { PuntosSchema } from '../../utils/validateGuiaRemision';
 
 import InfoIcon from '@mui/icons-material/Info';
 import { Ubigeos } from '../../types/ubigeos.interface';
+import { useAuxiliares } from '../../context/AuxiliarProvider';
 
 
 
@@ -39,8 +40,6 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
 
   const [value, setValue] = useState<Ubigeos | null>(null);
 
-
-  const [ubigeos, setUbigeos] = useState<Ubigeos[]>([]);
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
@@ -172,15 +171,8 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
     formik.setFieldValue('isCompany', isCompany)
   }, [isCompany])
 
-  useEffect(() => {
-    const loadData = async () => {
-      const loadUbigeo = await fetch("../src/files/ubigeos.json");
-      const loadUbigeoJson = await loadUbigeo.json();
-      setUbigeos(loadUbigeoJson);
-    };
 
-    loadData();
-  }, []);
+  const { ubigeos } = useAuxiliares()
 
   useEffect(() => {
     if (ubigeos.length > 0) {

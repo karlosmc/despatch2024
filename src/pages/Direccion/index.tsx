@@ -16,6 +16,7 @@ import SearchPuntos from "../../components/Puntos/SearchPuntos";
 import clienteAxios from "../../config/axios";
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { ChipInterface } from "../../types/general.interface";
+import { useAuxiliares } from "../../context/AuxiliarProvider";
 
 
 interface DireccionFormProps {
@@ -149,19 +150,9 @@ const DatosDireccion = ({
 
   // const correlativo = parseInt(dataUser.sercor.correlativo)+1
 
-  const [ubigeos, setUbigeos] = useState<Ubigeos[]>([]);
 
+  const {ubigeos} = useAuxiliares();
 
-  useEffect(() => {
-    const loadData = async () => {
-      const loadUbigeo = await fetch("src/files/ubigeos.json");
-      const loadUbigeoJson = await loadUbigeo.json();
-      setUbigeos(loadUbigeoJson);
-    };
-
-    loadData();
-    // filterFav();
-  }, []);
   useEffect(()=>{
     if(codTraslado==='04'){
       filterFav('isCompany')

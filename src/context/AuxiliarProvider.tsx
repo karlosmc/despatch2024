@@ -1,9 +1,11 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import TaxiAlertIcon from "@mui/icons-material/TaxiAlert";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import { Ubigeos } from '../types/ubigeos.interface';
+import clienteAxios from '../config/axios';
 
 
 // Define el tipo de los indicadores
@@ -18,6 +20,7 @@ interface IndicadorInterface {
 interface IndicadoresContextProps {
   indicadores: IndicadorInterface[];
   setIndicadores: React.Dispatch<React.SetStateAction<IndicadorInterface[]>>;
+  ubigeos:Ubigeos[];
 }
 
 
@@ -58,12 +61,26 @@ export const AuxiliarProvider: React.FC<{ children: ReactNode }> = ({ children }
     },
   ]);
 
+  const [ubigeos, setUbigeos] = useState<Ubigeos[]>([]);
+
+  const GetAllUbigeos=async()=>{
+    const data = await getUbigeos();
+    if(data){
+      setUbigeos(data)
+    }
+  }
+
+  useEffect(()=>{
+    GetAllUbigeos()
+  },[])
+
 
   return (
 
     <AuxiliarContext.Provider value={{
       indicadores,
-      setIndicadores
+      setIndicadores,
+      ubigeos
     }}>
       {children}
     </AuxiliarContext.Provider>
@@ -76,3 +93,19 @@ export const useAuxiliares = () => {
   if (!context) throw new Error("No existe contexto");
   return context;
 };
+
+const getUbigeos = async():Promise<Ubigeos[]|null> =>{
+  const token = localStorage.getItem('AUTH_TOKEN');
+  const { data, statusText, } = await clienteAxios('/api/ubigeos',
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+  if (statusText === "OK") {
+    // console.log(data)
+    return data.data;
+  }
+  return null;
+}
