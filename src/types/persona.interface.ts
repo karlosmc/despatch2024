@@ -34,3 +34,18 @@ export interface dniData {
     tipoDoc?:string;
     nombreCorto?:string;
   }
+
+  export interface searchPersona {
+    status:string;
+    message:string;
+
+    persona:{
+      numero:string;
+      nombreRazonSocial:string;
+      nombres?:string;
+      apellidos?:string;
+      direccionCompleta:string;
+      ubigeo?:string
+    }
+
+  }

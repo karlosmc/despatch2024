@@ -144,9 +144,9 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
 
   return (
     <>
-      <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Clientes favoritos" />
+      <ChipFavoritos activo={tipo==='default'} isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Clientes favoritos" />
       <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
-        <StyledNewButton fullWidth variant="contained" color="success"
+        <StyledNewButton fullWidth variant="contained" color="success" disabled={tipo==='default'}
           onClick={() => {
             handleOpenModalForm(
               <ModalPersona initialValue={null} edit={false} onConfirm={handleConfirm} />,
@@ -157,7 +157,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
           Crear
         </StyledNewButton>
 
-        <StyledSearchButton fullWidth variant="contained" color="warning"
+        <StyledSearchButton fullWidth variant="contained" color="warning" disabled={tipo==='default'}
           onClick={() => {
             handleOpenModalForm(
               <SearchPersona onCheck={handleConfirm} />,
@@ -182,7 +182,9 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
             name="tipoDoc"
-            readOnly={tipo === 'default' ? true : false}
+            // readOnly={tipo === 'default' ? true : false}
+            readOnly={true}
+            
           >
             <MenuItem selected value={"1"}>
               DNI
@@ -203,7 +205,9 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           helperText={formik.touched.numDoc && formik.errors.numDoc}
-          InputProps={{ readOnly: tipo === 'default' ? true : false }}
+          // InputProps={{ readOnly: tipo === 'default' ? true : false }}
+          InputProps={{ readOnly: true}}
+          
         />
         <TextField
           margin="normal"
@@ -217,7 +221,9 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
           helperText={formik.touched.rznSocial && formik.errors.rznSocial}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
-          InputProps={{ readOnly: tipo === 'default' ? true : false }}
+          // InputProps={{ readOnly: tipo === 'default' ? true : false }}
+          InputProps={{ readOnly: true}}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
 
         <Stack direction="row" spacing={2}>

@@ -10,6 +10,8 @@ import {  TransportistaSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 
 import { transportista } from '../../types/transportista.interface';
+import ButtonSearch from '../ButtonSearch';
+import { searchPersona } from '../../types/persona.interface';
 
 
 
@@ -114,6 +116,19 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
     },
   });
 
+  const handleSearch = (searchPerson: searchPersona): void => {
+
+    if (!searchPerson){
+      getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
+      return;
+    }
+    if (searchPerson.status === 'error') {
+      getError(searchPerson.message)
+      return;
+    }
+    formik.setFieldValue('rznSocial', searchPerson.persona.nombreRazonSocial)
+  }
+
   useEffect(() => {
     formik.setFieldValue('fav', fav)
   }, [fav])
@@ -136,6 +151,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
               error={formik.touched.tipoDoc && Boolean(formik.errors.tipoDoc)}
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
+              
               name="tipoDoc"
             >
               <MenuItem value={"6"}>RUC</MenuItem>
@@ -155,7 +171,9 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
             onBlur={formik.handleBlur}
             helperText={formik.touched.numDoc && formik.errors.numDoc}
             error={formik.touched.numDoc && Boolean(formik.errors.numDoc)}
+            disabled={Boolean(edit)}
           />
+          <ButtonSearch type={formik.values.tipoDoc} valor={formik.values.numDoc} onSearch={handleSearch} />
         </Box>
 
         <TextField
@@ -166,12 +184,13 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
           type="text"
           label="Razón Social"
           sx={{ my: 1.5 }}
-
+          
           value={formik.values?.rznSocial}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched?.rznSocial && formik.errors?.rznSocial}
           error={formik.touched?.rznSocial && Boolean(formik.errors?.rznSocial)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
 
 
@@ -190,6 +209,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
             onBlur={formik.handleBlur}
             helperText={formik.touched?.nroMtc && formik.errors?.nroMtc}
             error={formik.touched?.nroMtc && Boolean(formik.errors.nroMtc)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
           <TextField
             margin="normal"
@@ -204,6 +224,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
             error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
         </Box>
 

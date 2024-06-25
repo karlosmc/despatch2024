@@ -127,6 +127,7 @@ const SearchPersona = ({ onCheck }: SearchPersonaProps) => {
         size='small'
         fullWidth
         sx={{ mb: 1 }}
+        inputProps={{ style: { textTransform: "uppercase" } }}
 
       />
       <Button fullWidth sx={{ my: 2 }} size='small' variant='contained' color='primary' onClick={handleSearch}>

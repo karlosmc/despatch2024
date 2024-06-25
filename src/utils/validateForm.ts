@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { object } from "yup";
-import rucValido from "../helpers/Validaciones";
+
 
 // export const LoginValidate = yup.object().shape({
 //     tipoDoc:   yup.string().trim().required("El Tipo de documento es requerido"),
@@ -211,10 +211,20 @@ export const AeropuertoSchema = yup.object().shape({
 
 export const VehiculoSchema = yup.object().shape({
   // placa:yup.string().trim().required('Vehiculo: Debe escribir una placa'),
+  id:yup.number().notRequired(),
   placa:yup.string().trim().notRequired(),
   nroCirculacion:yup.string().notRequired(),
   codEmisor:yup.string().notRequired(),
-  nroAutorizacion:yup.string().notRequired()
+  nroAutorizacion:yup.string().notRequired(),
+  fav:yup.boolean(),
+  isCompany:yup.boolean(),
+  nombreCorto:yup.string()
+  .when("fav", {
+    is: true, // alternatively: (val) => val == true
+    then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
+    otherwise:(schema)=>schema.nullable()
+  })
+
 })
 
 export const ChoferSchema = yup.object().shape({
@@ -359,10 +369,7 @@ export const PersonaSchema = object({
           11,
           ({ length }) =>
             `El campo Número de documento debe tener ${length} caracteres`
-        ).test('rucValido','RUC INVALIDO',function(value){
-          const isValid = rucValido(parseInt(value))
-          return isValid;
-        }),
+        ),
       otherwise: (schema) => schema,
     }),
   rznSocial: yup

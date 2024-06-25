@@ -9,6 +9,8 @@ import clienteAxios from '../../config/axios';
 import { ConductorSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 import { conductor } from '../../types/conductor.interface';
+import ButtonSearch from '../ButtonSearch';
+import { searchPersona } from '../../types/persona.interface';
 
 
 
@@ -121,6 +123,27 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
     },
   });
 
+  const handleSearch = (searchPerson: searchPersona): void => {
+
+    if (!searchPerson){
+      getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
+      return;
+    }
+    if (searchPerson.status === 'error') {
+      getError(searchPerson.message)
+      return;
+    }
+
+    if(formik.values.tipoDoc==='6'){
+      formik.setFieldValue('apellidos', searchPerson.persona.nombreRazonSocial)
+      formik.setFieldValue('nombres', '-')
+    }else{
+
+      formik.setFieldValue('apellidos', searchPerson.persona.apellidos)
+      formik.setFieldValue('nombres', searchPerson.persona.nombres)
+    }
+  }
+
   useEffect(() => {
     formik.setFieldValue('fav', fav)
   }, [fav])
@@ -146,6 +169,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               name="tipoDoc"
+              readOnly={Boolean(edit)}
             >
               <MenuItem selected value={"1"}>
                 DNI
@@ -167,7 +191,9 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
             onBlur={formik.handleBlur}
             helperText={formik.touched.nroDoc && formik.errors.nroDoc}
             error={formik.touched.nroDoc && Boolean(formik.errors.nroDoc)}
+            disabled={Boolean(edit)}
           />
+          <ButtonSearch type={formik.values.tipoDoc} valor={formik.values.nroDoc} onSearch={handleSearch} />
         </Box>
 
         <TextField
@@ -184,6 +210,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
           onBlur={formik.handleBlur}
           helperText={formik.touched?.nombres && formik.errors?.nombres}
           error={formik.touched?.nombres && Boolean(formik.errors?.nombres)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
         <TextField
           margin="normal"
@@ -199,6 +226,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
           onBlur={formik.handleBlur}
           helperText={formik.touched.apellidos && formik.errors.apellidos}
           error={formik.touched.apellidos && Boolean(formik.errors.apellidos)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
 
         <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
@@ -217,6 +245,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
             onBlur={formik.handleBlur}
             helperText={formik.touched.licencia && formik.errors.licencia}
             error={formik.touched.licencia && Boolean(formik.errors.licencia)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
 
           <TextField
@@ -233,6 +262,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
             error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
         </Box>
 

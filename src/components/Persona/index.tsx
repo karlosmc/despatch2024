@@ -1,4 +1,4 @@
-import {  Box, Button, FormControl,  InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { useEffect, useState } from 'react'
 
 
@@ -6,9 +6,10 @@ import { useFormik } from 'formik';
 import clienteAxios from '../../config/axios';
 
 
-import { persona } from '../../types/persona.interface';
+import { persona, searchPersona } from '../../types/persona.interface';
 import { PersonaSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
+import ButtonSearch from '../ButtonSearch';
 
 
 
@@ -27,17 +28,31 @@ const PersonaInitialValues: persona = {
 interface PersonaFormProps {
   initialValue?: persona;
   onConfirm: (puntos: any) => void;
-  edit: Boolean,
+  edit: boolean,
 }
 
 const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
-  
 
-  const {getError} = useNotification()
+
+  const { getError } = useNotification()
 
   const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
+
+  const handleSearch = (searchPerson: searchPersona): void => {
+
+    if (!searchPerson){
+      getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
+      return;
+    }
+    if (searchPerson.status === 'error') {
+      getError(searchPerson.message)
+      return;
+    }
+    formik.setFieldValue('rznSocial', searchPerson.persona.nombreRazonSocial)
+  }
+
 
   const storePersona = async (values: persona) => {
 
@@ -51,7 +66,7 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
         email: values.email,
         nombreCorto: values.nombreCorto,
         telephone: values.telephone,
-        tipoDoc:values.tipoDoc,
+        tipoDoc: values.tipoDoc,
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -83,7 +98,7 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
         email: values.email,
         nombreCorto: values.nombreCorto,
         telephone: values.telephone,
-        tipoDoc:values.tipoDoc,
+        tipoDoc: values.tipoDoc,
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -101,17 +116,14 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
     // onConfirm();
   }
 
-
-
-
   const formik = useFormik({
     initialValues: initialValue || PersonaInitialValues,
     validationSchema: PersonaSchema,
     onSubmit: (values) => {
 
-      if(edit){
+      if (edit) {
         updatePersona(values)
-      }else{
+      } else {
         storePersona(values)
       }
 
@@ -140,6 +152,7 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
               name="tipoDoc"
+              readOnly={edit}
             >
               <MenuItem selected value={"1"}>
                 DNI
@@ -161,7 +174,9 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
             onBlur={formik.handleBlur}
             helperText={formik.touched.numDoc && formik.errors.numDoc}
             error={formik.touched.numDoc && Boolean(formik.errors.numDoc)}
+            disabled={edit}
           />
+          <ButtonSearch type={formik.values.tipoDoc} valor={formik.values.numDoc} onSearch={handleSearch} />
         </Box>
 
         <TextField
@@ -178,6 +193,7 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
           onBlur={formik.handleBlur}
           helperText={formik.touched.rznSocial && formik.errors.rznSocial}
           error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
+          
         />
         <TextField
           margin="normal"
@@ -188,11 +204,12 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
           label="Email"
           sx={{ my: 1.5 }}
 
-          value={formik.values?.email||''}
+          value={formik.values?.email || ''}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.email && formik.errors.email}
           error={formik.touched.email && Boolean(formik.errors.email)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
 
         <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
@@ -206,11 +223,12 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
             label="Teléfono"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.telephone||''}
+            value={formik.values?.telephone || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.telephone && formik.errors.telephone}
             error={formik.touched.telephone && Boolean(formik.errors.telephone)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
 
           <TextField
@@ -222,11 +240,12 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
             label="Nombre corto de la persona"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.nombreCorto||''}
+            value={formik.values?.nombreCorto || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
             error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
         </Box>
 
@@ -236,7 +255,7 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
           </Button>
         </Box>
 
-        
+
         <Button type='submit' color='success' variant='contained' sx={{ width: '50%', alignItems: 'start', display: 'inline-block' }}>
           Guardar
         </Button>

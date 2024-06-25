@@ -1,30 +1,38 @@
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, CircularProgress, TablePagination } from '@mui/material'
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
 import clienteAxios from '../../config/axios';
-import { Producto } from '../../types/producto.interface';
 
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import GradeIcon from '@mui/icons-material/Grade';
 
+import StoreIcon from '@mui/icons-material/Store';
+import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
+
 
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 
+import { vehiculo } from '../../types/vehiculo.interface';
 
-interface SearchProductoProps {
-  onCheck: (producto: Producto) => void;
+
+
+interface SearchVehiculoProps {
+  onCheck: (vehiculo: vehiculo) => void;
 }
 
-const SearchProducto = ({ onCheck }: SearchProductoProps) => {
+const SearchVehiculo = ({ onCheck }: SearchVehiculoProps) => {
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
-  const [foundProducts, setfoundProducts] = useState<Producto[]>([])
+  const [foundVehiculos, setfoundVehiculos] = useState<vehiculo[]>([])
 
   const [searchField, setSearchField] = useState('')
 
   const [inputQuery, setInputQuery] = useState('')
 
   const [isLoading, setIsLoading] = useState(false);
+
+
+
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(event.target.value as string);
@@ -37,13 +45,13 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
   const handleSearch = async () => {
     try {
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/productos/buscar?${searchField}=${inputQuery}`, {
+      const { data, status } = await clienteAxios(`/api/vehiculos/buscar?${searchField}=${inputQuery}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
       if (status === 200) {
-        setfoundProducts(data?.data)
+        setfoundVehiculos(data?.data)
         setIsLoading(false)
       }
       // console.log(data)
@@ -54,6 +62,11 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
       console.log(error)
     }
   }
+
+  const handleCheck = (vehiculo: vehiculo) => {
+    onCheck(vehiculo)
+  }
+
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
@@ -66,28 +79,26 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
     setPage(0);
   };
 
-  const handleCheck = (producto: Producto) => {
-    onCheck(producto)
-  }
-  
   const rows = [];
 
-  foundProducts?.forEach((fil:Producto) => {
+  foundVehiculos?.forEach((fil: vehiculo) => {
     rows.push(
       <TableRow
         key={fil.id}
       >
-         <TableCell align="left">{fil.id}</TableCell>
-                <TableCell align="left">{fil.codigo}</TableCell>
-                <TableCell align="left">{fil.descripcion}</TableCell>
-                <TableCell align="left">{fil.unidad}</TableCell>
-                <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
-                <TableCell align="center"><Fab color='success' size='small' onClick={() => handleCheck(fil)}><PanToolAltIcon sx={{ color: 'white' }} /></Fab></TableCell>
+       <TableCell align="left">{fil.id}</TableCell>
+        <TableCell align="left">{fil.placa}</TableCell>
+        <TableCell align="left">{fil.nombreCorto}</TableCell>
+        <TableCell align="left">{fil.nroCirculacion}</TableCell>
+        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><Icon color={fil.isCompany ? 'info' : 'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
+        <TableCell align="center"><Fab color='success' size='small' onClick={() => handleCheck(fil)}><PanToolAltIcon sx={{ color: 'white' }} /></Fab></TableCell>
       </TableRow>
     )
   })
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+
   return (
     <>
       <Box display={'flex'} flexDirection={'row'}>
@@ -99,8 +110,8 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
             label="Búsqueda por"
             onChange={handleChange}
           >
-            <MenuItem value={'codigo'}>Código</MenuItem>
-            <MenuItem value={'descripcion'}>Descripción</MenuItem>
+            <MenuItem value={'placa'}>Placa</MenuItem>
+            <MenuItem value={'nombreCorto'}>nombreCorto</MenuItem>
           </Select>
         </FormControl>
 
@@ -114,7 +125,6 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
         size='small'
         fullWidth
         sx={{ mb: 1 }}
-        inputProps={{ style: { textTransform: "uppercase" } }}
 
       />
       <Button fullWidth sx={{ my: 2 }} size='small' variant='contained' color='primary' onClick={handleSearch}>
@@ -125,16 +135,17 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
         <Table aria-label="simple table" size='small'>
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
-              <TableCell align="left">Codigo</TableCell>
-              <TableCell align="left">Descripción</TableCell>
-              <TableCell align="left">Unidad</TableCell>
-              <TableCell align="left">Fav</TableCell>
-              <TableCell align="left">Seleccionar</TableCell>
+            <TableCell width={'5%'}>Id</TableCell>
+              <TableCell width={'10%'} align="left">Placa</TableCell>
+              <TableCell width={'20%'} align="left">Nombre corto</TableCell>
+              <TableCell width={'30%'} align="left">Nro. Circulación</TableCell>
+              <TableCell width={'10%'} align="left">Fav?</TableCell>
+              <TableCell width={'10%'} align="left">Propio?</TableCell>
+              <TableCell width={'10%'} align="left">Editar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-          {
+            {
               isLoading ? (<TableRow style={{ height: 53 * rowsPerPage }}><TableCell colSpan={11} align="center"><CircularProgress /></TableCell></TableRow>) :
                 rows.length > 0 ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   :
@@ -160,4 +171,4 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
   )
 }
 
-export default SearchProducto
+export default SearchVehiculo

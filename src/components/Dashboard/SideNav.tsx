@@ -83,9 +83,18 @@ const SideNav = ({ sidebarCollapsed }: AppHeaderInterface) => {
           <Typography variant='body2'>Conductores</Typography>
         </MyMenu>
 
-        <MyMenu active={location.pathname==='/guiaremision'} component={<a href="/guiaremision"  target='_blank'rel='noopener noreferrer'/> } icon={<SourceOutlined />}>
-          <Typography variant='body2'>Guias</Typography>
+        <MyMenu active={location.pathname==='/admin/vehiculos'} component={<Link to="/admin/vehiculos"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Vehiculos</Typography>
         </MyMenu>
+
+        <MyMenu active={location.pathname==='/gre/guiaremision'} component={<a href="/gre/guiaremision"  target='_blank'rel='noopener noreferrer'/> } icon={<SourceOutlined />}>
+          <Typography variant='body2'>Guias otra pestaña</Typography>
+        </MyMenu>
+
+        <MyMenu active={location.pathname==='/gre/guiaremision'} component={<Link to="/gre/guiaremision"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Guias misma pestaña</Typography>
+        </MyMenu>
+
 
         <MyMenu active={location.pathname==='/admin/reportes'} component={<Link to="/admin/reportes"/>} icon={<SourceOutlined />}>
           <Typography variant='body2'>Reportes</Typography>

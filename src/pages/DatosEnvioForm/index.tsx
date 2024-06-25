@@ -211,7 +211,7 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             name="fecTraslado"
             onChange={formik.handleChange}
             label="Fecha de traslado"
-            type="datetime-local"
+            type="date"
             style={{ colorScheme: "dark" }}
             error={formik.touched.fecTraslado && Boolean(formik.errors.fecTraslado)}
             onBlur={formik.handleBlur}

@@ -146,6 +146,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
           name="codigo"
           helperText={formik.touched.codigo && formik.errors.codigo}
           disabled={Boolean(edit)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
         <TextField
           margin='normal'
@@ -158,6 +159,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
           onChange={formik.handleChange}
           name="codProdSunat"
           helperText={formik.touched.codProdSunat && formik.errors.codProdSunat}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
       </Box>
       <TextField
@@ -173,6 +175,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
         onChange={formik.handleChange}
         name="descripcion"
         helperText={formik.touched.descripcion && formik.errors.descripcion}
+        inputProps={{ style: { textTransform: "uppercase" } }}
       />
 
       <Box display={'flex'} flexDirection={'row'} gap={1}>
@@ -206,6 +209,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
           onChange={formik.handleChange}
           name="nombreCorto"
           helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
       </Box>
       <Box textAlign={'center'}>

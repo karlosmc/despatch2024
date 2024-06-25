@@ -66,7 +66,7 @@ export interface Client {
 }
 
 export interface Detail {
-    id?:string;
+    id?:number;
     codigo:       string;
     descripcion:  string;
     unidad:       string;
@@ -138,6 +138,7 @@ export interface EnvioChoferes {
 }
 
 export interface Direccion {
+    id?:number;
     ubigeo:    string;
     direccion: string;
     codLocal:  string;
@@ -150,6 +151,7 @@ export interface EnvioTransportista extends Client {
 }
 
 export interface EnvioVehiculo {
+    id?:number;
     placa:           string;
     nroCirculacion?:  string|null;
     codEmisor?:       string|null;

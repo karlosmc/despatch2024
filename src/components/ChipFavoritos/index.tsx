@@ -11,6 +11,7 @@ interface ChipFavoritosProps<T extends ChipInterface>  {
   items:T[];
   onPick:(favorito:ChipInterface)=>void;
   title:string;
+  activo?:boolean;
 }
 
 const chipStyle={
@@ -31,7 +32,7 @@ const chipStyle={
   // }
 }
 
-const ChipFavoritos = <T extends ChipInterface>({isLoading,items,onPick,title}: ChipFavoritosProps<T>) => {
+const ChipFavoritos = <T extends ChipInterface>({isLoading,items,onPick,title,activo=false}: ChipFavoritosProps<T>) => {
   
   const [chipSelected, setChipSelected] = useState(null)
   const handleSetFavorite=(favorito:ChipInterface)=>{
@@ -71,6 +72,7 @@ const ChipFavoritos = <T extends ChipInterface>({isLoading,items,onPick,title}: 
                 key={index}
                 label={favorito.nombreCorto}
                 onClick={() => handleSetFavorite(favorito)}
+                disabled={activo}
                 
               />
 

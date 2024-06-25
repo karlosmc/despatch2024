@@ -3,26 +3,61 @@ import {
   Box,
   Button,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   InputLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Select,
   Stack,
   TextField,
+  styled,
 } from "@mui/material";
 
 
 
 import { useFormik } from "formik";
 import { VehiculoSchema } from "../../utils/validateGuiaRemision";
+import { useEffect, useState } from "react";
+import { vehiculo } from "../../types/vehiculo.interface";
+import clienteAxios from "../../config/axios";
+import ChipFavoritos from "../../components/ChipFavoritos";
+import { DialogComponentCustom } from "../../components";
+import { ChipInterface } from "../../types/general.interface";
+import ModalVehiculo from "../../components/Vehiculo";
+import SearchVehiculo from "../../components/Vehiculo/SearchVehiculo";
 
 
-// const VehiculoValues: Vehiculo = {
-//   placa: "",
-//   codEmisor: "",
-//   nroAutorizacion: "",
-//   nroCirculacion: "",
-//   secundarios: null,
-// };
+const VehiculoValues: Vehiculo = {
+  placa: "",
+  codEmisor: "",
+  nroAutorizacion: "",
+  nroCirculacion: "",
+  secundarios: null,
+};
+
+type ModalsProps = {
+  open: boolean;
+  form: React.ReactNode | null;
+  title: string;
+};
+
+const StyledNewButton = styled(Button)(({ }) => ({
+  backgroundColor: '#375A7F',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#2F4D6C',
+  }
+}))
+
+const StyledSearchButton = styled(Button)(({ }) => ({
+  backgroundColor: '#00BC8C',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#00A077',
+  }
+}))
 
 const EMISORES = [
   {
@@ -100,6 +135,48 @@ interface VehiculoFormProps {
 
 const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
 
+
+  const [modalsForm, setModalsForms] = useState<ModalsProps>({
+    open: false,
+    form: null,
+    title: "",
+  });
+
+  const [dataFilter, setDataFilter] = useState<vehiculo[]>([])
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  const token = localStorage.getItem('AUTH_TOKEN');
+
+  const [criterio, setCriterio] = useState('isCompany');
+
+  const handleChangeCriterio = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCriterio((event.target as HTMLInputElement).value);
+  };
+
+
+  const filterFav = async () => {
+    try {
+
+      const { data, status } = await clienteAxios(`/api/vehiculos/buscar?${criterio}=1`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (status === 200) {
+        setIsLoading(false)
+        setDataFilter(data?.data)
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    filterFav()
+  }, [criterio])
+
   const formik = useFormik({
     initialValues: initialValue,
     validationSchema: VehiculoSchema,
@@ -108,17 +185,17 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
     },
   });
 
-  
+
 
   const handleChange = () => {
     // console.log(formik.values)
 
     formik.handleSubmit();
-    if(formik.values.placa===''){
+    if (formik.values.placa === '') {
       return;
     }
     if (Object.keys(formik.errors).length > 0) {
-    
+
       return;
     }
     onChange(formik.values);
@@ -126,20 +203,93 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
     // formik.resetForm();
   };
 
- 
+
+  const handleOpenModalForm = (form: React.ReactNode, title: string) => {
+    setModalsForms({ open: true, form, title });
+  };
+
+  const handleCloseModalForm = () => {
+    // Cierra el modal en la posición especificada
+    setModalsForms((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleConfirm = (vehiculo: vehiculo): void => {
+    formik.setFieldValue('id', vehiculo.id)
+    formik.setFieldValue('placa', vehiculo.placa)
+    formik.setFieldValue('nroCirculacion', vehiculo.nroCirculacion)
+    formik.setFieldValue('nroAutorizacion', vehiculo.nroAutorizacion)
+    formik.setFieldValue('codEmisor', vehiculo.codEmisor)
+    formik.setFieldValue('nombreCorto', vehiculo.nombreCorto)
+    handleCloseModalForm()
+  }
+
+
+  const handleSetFavorite = (item: ChipInterface): void => {
+    const vehiculo = dataFilter.find(it => it.id === item.id);
+    formik.setFieldValue('id', vehiculo.id)
+    formik.setFieldValue('placa', vehiculo.placa)
+    formik.setFieldValue('nroCirculacion', vehiculo.nroCirculacion)
+    formik.setFieldValue('nroAutorizacion', vehiculo.nroAutorizacion)
+    formik.setFieldValue('codEmisor', vehiculo.codEmisor)
+    formik.setFieldValue('nombreCorto', vehiculo.nombreCorto)
+  }
+
   const handleClean = () => {
-    
-    // onChange(VehiculoValues);
-    formik.resetForm();
+
+    onChange(VehiculoValues);
+    // formik.resetForm();
   };
 
   return (
-    
-      <Box 
-        // component={'form'} 
-        // onSubmit={formik.handleSubmit} 
-        display={'grid'} 
-        gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }} 
+    <>
+      <Box component={FormControl} display={"flex"} border={1} sx={{ borderColor: '#918b8b' }} borderRadius={2} mb={1}>
+        <FormLabel sx={{ fontSize: 15, textAlign: 'center' }} id="demo-controlled-radio-buttons-group">Filtrar por:</FormLabel>
+        <RadioGroup
+          aria-labelledby="demo-controlled-radio-buttons-group"
+          name="controlled-radio-buttons-group"
+          value={criterio}
+          onChange={handleChangeCriterio}
+
+          sx={{
+            '& .MuiSvgIcon-root': {
+              fontSize: 15,
+            },
+          }}
+        >
+          <Box display={"flex"} flexDirection={'row'} justifyContent={'center'} textAlign={'center'}>
+            <FormControlLabel value="isCompany" control={<Radio />} label="Empresa" />
+            <FormControlLabel value="fav" control={<Radio />} label="Favoritos" />
+          </Box>
+        </RadioGroup>
+      </Box>
+
+      <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Vehiculos favoritos" />
+      <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
+        <StyledNewButton fullWidth variant="contained" color="success"
+          onClick={() => {
+            handleOpenModalForm(
+              <ModalVehiculo initialValue={null} edit={false} onConfirm={handleConfirm} />,
+              'Crear Vehiculo'
+            )
+          }}
+        >
+          Crear
+        </StyledNewButton>
+
+        <StyledSearchButton fullWidth variant="contained" color="warning"
+          onClick={() => {
+            handleOpenModalForm(
+              <SearchVehiculo onCheck={handleConfirm} />,
+              'Buscar Vehiculo'
+            )
+          }}
+        >
+          Buscar
+        </StyledSearchButton>
+      </Box>
+      <Box
+        display={'grid'}
+        gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }}
         columnGap={1}
       >
         <TextField
@@ -187,16 +337,31 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
           value={formik.values.nroAutorizacion}
           onChange={formik.handleChange}
         />
-        <Stack direction="row" spacing={2}>
-          <Button variant="outlined" color="success" onClick={handleChange}>
-            Agregar
-          </Button>
-          <Button variant="outlined" color="error" onClick={handleClean}>
-            Clean
-          </Button>
-        </Stack>
       </Box>
-    
+      <Stack direction="row" spacing={2} justifyContent={'center'}>
+        <Button sx={{width:'30%'}} variant="contained" color="success" onClick={handleChange}>
+          Agregar
+        </Button>
+        <Button sx={{width:'30%'}} variant="outlined" color="secondary" onClick={handleClean}>
+          Limpiar
+        </Button>
+      </Stack>
+      <DialogComponentCustom
+        closeButton={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleCloseModalForm()}
+          >
+            Cerrar
+          </Button>
+        }
+        open={modalsForm.open}
+        title={modalsForm.title}
+        element={modalsForm.form}
+
+      />
+    </>
   );
 };
 

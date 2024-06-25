@@ -181,6 +181,7 @@ const DatosDireccion = ({
 
 
   const handleConfirm = (punto: puntoUbicacion): void => {
+    formik.setFieldValue('id', punto.id)
     formik.setFieldValue('ubigeo', punto.ubigeo)
     formik.setFieldValue('direccion', punto.direccion)
     formik.setFieldValue('codLocal', punto.codLocal)
@@ -190,6 +191,7 @@ const DatosDireccion = ({
 
   const handleSetFavorite = (item: ChipInterface): void => {
     const punto = dataFilter.find(it => it.id === item.id);
+    formik.setFieldValue('id', punto.id)
     formik.setFieldValue('ubigeo', punto.ubigeo)
     formik.setFieldValue('direccion', punto.direccion)
     formik.setFieldValue('codLocal', punto.codLocal)
@@ -281,6 +283,7 @@ const DatosDireccion = ({
           onBlur={formik.handleBlur}
           helperText={formik.touched.direccion && formik.errors.direccion}
           error={formik.touched.direccion && Boolean(formik.errors.direccion)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
         <TextField
           margin="normal"

@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import { useNotification } from "../../context/notification.context";
 import { isObject, useFormik } from "formik";
 import {
-    GuiaRemisionSchema,
+  GuiaRemisionSchema,
   LlegadaSchema,
   TerceroSchema
 } from "../../utils/validateGuiaRemision";
@@ -72,7 +72,8 @@ import VehiculosSecundarios from "../DatosVehiculos/secundarios";
 import ObservacionesTextField from "../Observaciones";
 
 import useAuthToken from "../../hooks/useAuthToken";
-import { useAuth } from "../../hooks/useAuth";
+
+// import { useAuth } from "../../hooks/useAuth";
 
 const VehiculoValues: EnvioVehiculo = {
   placa: "V0Z331",
@@ -85,12 +86,12 @@ const VehiculoValues: EnvioVehiculo = {
 const EnvioValues: Envio = {
   codTraslado: "02",
   desTraslado: "COMPRA",
-  fecTraslado: dayjs().format("YYYY-MM-DDTHH:mm"),
+  fecTraslado: dayjs().format("YYYY-MM-DD"),
   indicadores: [],
   indTransbordo: "",
   modTraslado: "02",
-  numBultos: 1,
-  pesoTotal: 1000,
+  numBultos: 0,
+  pesoTotal: 1,
   undPesoTotal: "KGM",
   // pesoItems:0,
   // sustentoPeso:''
@@ -104,7 +105,7 @@ const DestinatarioDefaultValues: Client = {
 
 const DatosGeneralesValues: DatosGenerales = {
   correlativo: "9",
-  fechaEmision: dayjs().format("YYYY-MM-DDTHH:mm"),
+  fechaEmision: dayjs().format("YYYY-MM-DD"),
   serie: "T002",
   tipoDoc: "09",
   version: "2.0",
@@ -117,14 +118,14 @@ const initialValues: GuiaRemision = {
     rznSocial: "",
     tipoDoc: "6",
   },
-  tercero:{
+  tercero: {
     numDoc: "",
     rznSocial: "",
     tipoDoc: "6",
   },
   envio: EnvioValues,
   addDocs: [
-    
+
   ],
   details: [
     {
@@ -139,16 +140,18 @@ const initialValues: GuiaRemision = {
   vehiculo: VehiculoValues,
 
   partida: {
+    id:0,
     codLocal: "0000",
-    direccion: "Av. industrial nro 260 Tacna",
-    ruc: "20119207640",
-    ubigeo: "150101",
+    direccion: "",
+    ruc: "",
+    ubigeo: "",
   },
   llegada: {
+    id:0,
     codLocal: "0000",
-    direccion: "Av. CIRCUNVALACION 23232",
-    ruc: "20119207640",
-    ubigeo: "230101",
+    direccion: "",
+    ruc: "",
+    ubigeo: "",
   },
   transportista: {
     id: 0,
@@ -168,10 +171,7 @@ type ModalsProps = {
 
 const GuiaRemisionMain = () => {
 
-
-  useAuth({ middleware: 'auth', url: '/guiaremision' });
-
-  const { getError, getSuccess,getWarning } = useNotification();
+  const { getError, getSuccess, getWarning } = useNotification();
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -217,24 +217,30 @@ const GuiaRemisionMain = () => {
   // console.log(API_GUIAS)
 
   const previewPDF = (values: GuiaRemision) => {
+
+
     const doc = {
-      ...values.datosGenerales,
+      fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
+      correlativo: values.datosGenerales.correlativo,
+      serie: values.datosGenerales.serie,
+      tipoDoc: values.datosGenerales.tipoDoc,
+      version: values.datosGenerales.version,
       destinatario: values.destinatario,
-      tercero:values.tercero.numDoc!==''?values.tercero:null,
+      tercero: values.tercero.numDoc !== '' ? values.tercero : null,
       comprador: null,
       envio: {
         ...values.envio,
         partida: values.partida,
         llegada: values.llegada,
-        vehiculo: values.vehiculo.placa!==''?values.vehiculo:null,
+        vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
         aeropuerto: null,
         puerto: null,
         choferes: values.choferes,
-        transportista:values.transportista.numDoc!==''?values.transportista:null
+        transportista: values.transportista.numDoc !== '' ? values.transportista : null
       },
       addDocs: values.addDocs,
       details: values.details,
-      
+
     }
 
     const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
@@ -264,7 +270,8 @@ const GuiaRemisionMain = () => {
     enableReinitialize: false,
     onSubmit: async (values) => {
 
-      
+
+      console.log(values)
       const fechaEmision = values.datosGenerales.fechaEmision;
       const fecTraslado = values.envio.fecTraslado;
 
@@ -272,7 +279,9 @@ const GuiaRemisionMain = () => {
 
         const parseFechaEmision = new Date(fechaEmision)
         const parseFecTraslado = new Date(fecTraslado)
-        if (parseFecTraslado <= parseFechaEmision) {
+
+        // console.log(parseFecTraslado, parseFechaEmision)
+        if (parseFecTraslado < parseFechaEmision) {
           getError('Datos de Envío: La fecha de traslado debe ser mayor a la fecha de Emisión de la Guía')
           return;
         }
@@ -286,23 +295,28 @@ const GuiaRemisionMain = () => {
       const token = await getToken()
       if (token) {
         const doc = {
-          ...values.datosGenerales,
+          // ...values.datosGenerales,
+          fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
+          correlativo: values.datosGenerales.correlativo,
+          serie: values.datosGenerales.serie,
+          tipoDoc: values.datosGenerales.tipoDoc,
+          version: values.datosGenerales.version,
           destinatario: values.destinatario,
-          tercero:values.tercero.numDoc!==''?values.tercero:null,
+          tercero: values.tercero.numDoc !== '' ? values.tercero : null,
           comprador: null,
           envio: {
             ...values.envio,
             partida: values.partida,
             llegada: values.llegada,
-            vehiculo: values.vehiculo.placa!==''?values.vehiculo:null,
+            vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
             aeropuerto: null,
             puerto: null,
             choferes: values.choferes,
-            transportista:values.transportista.numDoc!==''?values.transportista:null
+            transportista: values.transportista.numDoc !== '' ? values.transportista : null
           },
           addDocs: values.addDocs,
           details: values.details,
-          
+
         }
 
         // console.log(doc)
@@ -487,8 +501,8 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const handleDeleteAdddoc = (item:AddDoc): void =>{
-    const filterAdicionalDocs = adicionalDocs.filter( it => it.emisor!==item.emisor && it.nro!== item.nro);
+  const handleDeleteAdddoc = (item: AddDoc): void => {
+    const filterAdicionalDocs = adicionalDocs.filter(it => it.emisor !== item.emisor && it.nro !== item.nro);
     setAdicionalDocs(filterAdicionalDocs);
   }
 
@@ -500,9 +514,9 @@ const GuiaRemisionMain = () => {
 
   const handleDeleteDetail = (item: Detail): void => {
     // console.log(newDetail)
-    const filterDetails = detalles.filter( it => it.codigo!==item.codigo);
+    const filterDetails = detalles.filter(it => it.codigo !== item.codigo);
     setDetalles(filterDetails);
-    
+
   };
 
   const handlePartidaChange = (direccion: Direccion): void => {
@@ -511,7 +525,7 @@ const GuiaRemisionMain = () => {
   };
 
   const handleLlegadaChange = (direccion: Direccion): void => {
-    console.log("entro");
+    // console.log("entro");
     formik.setFieldValue("llegada", direccion);
     setModalsForms({ ...modalsForm, open: false });
   };
@@ -543,20 +557,20 @@ const GuiaRemisionMain = () => {
     // }
   }, [detalles]);
 
-  useEffect(()=>{
-    if(formik.values.envio.codTraslado === '02' || formik.values.envio.codTraslado === '04'){
-      formik.setFieldValue('destinatario',DestinatarioDefaultValues)
-      if(formik.values.envio.codTraslado === '02'){
+  useEffect(() => {
+    if (formik.values.envio.codTraslado === '02' || formik.values.envio.codTraslado === '04') {
+      formik.setFieldValue('destinatario', DestinatarioDefaultValues)
+      if (formik.values.envio.codTraslado === '02') {
         getWarning('Proveedor: Registro Opcional. Si desea registre el proveedor dónde realizó la compra')
       }
-    }else{
-      formik.setFieldValue('destinatario',{
+    } else {
+      formik.setFieldValue('destinatario', {
         numDoc: "",
         rznSocial: "",
         tipoDoc: "6",
       })
     }
-  },[formik.values.envio.codTraslado])
+  }, [formik.values.envio.codTraslado])
 
   const handleConfirmListaChoferes = (choferes: EnvioChoferes[]): void => {
     // console.log(choferes)
@@ -609,14 +623,10 @@ const GuiaRemisionMain = () => {
                 <FolderSharedIcon />
               </AccordionSummary>
               <AccordionDetails>
-
-                <Grid spacing={2} container item xs={12}>
-                  <DatosGeneralesForm
-                    onChange={onHandleDatosGeneralesChange}
-                    datosGeneralesValues={formik.values.datosGenerales}
-                  />
-                </Grid>
-
+                <DatosGeneralesForm
+                  onChange={onHandleDatosGeneralesChange}
+                  datosGeneralesValues={formik.values.datosGenerales}
+                />
               </AccordionDetails>
             </Accordion>
             {/* Datos generales */}
@@ -649,8 +659,8 @@ const GuiaRemisionMain = () => {
               </AccordionDetails>
             </Accordion>
             {/* Envio */}
-            
-            
+
+
             {/* Destinatario y comprador */}
 
             <Accordion
@@ -942,7 +952,6 @@ const GuiaRemisionMain = () => {
                 <BadgeIcon />
               </AccordionSummary>
               <AccordionDetails>
-
                 <Grid
                   item
                   container
@@ -1001,7 +1010,7 @@ const GuiaRemisionMain = () => {
                           aria-label="add an alarm"
                           sx={{ ...BoxShadoWButton }}
                           size="large"
-                          // disabled
+                          disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') || formik.values.envio.modTraslado==='02'}
                           onClick={(_e) =>
                             handleOpenModalForm(
                               <DatosTransportista
@@ -1074,9 +1083,9 @@ const GuiaRemisionMain = () => {
                                 handleOpenModalForm(
                                   <VehiculosSecundarios
                                     onConfirm={handleConfirmListVehiculo}
-                                    vehiculos={formik.values.vehiculo.secundarios}
+                                    vehiculos={formik.values.vehiculo?.secundarios}
                                   />,
-                                  "Vehiculo"
+                                  "Vehiculos secundarios"
                                 )
                               }
                             >
@@ -1154,13 +1163,13 @@ const GuiaRemisionMain = () => {
           onClose={handleClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
-          
+
         >
           <Box sx={style}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Visor de Pdf
             </Typography>
-            <Box sx={{width:'100%',height:'70vh'}} component={'embed'} src={`data:application/pdf;base64,${base64Pdf}`} />
+            <Box sx={{ width: '100%', height: '70vh' }} component={'embed'} src={`data:application/pdf;base64,${base64Pdf}`} />
           </Box>
         </Modal>
       </Container>

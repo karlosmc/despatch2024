@@ -12,6 +12,7 @@ import {
   
   Stack,
   TextField,
+  styled,
   
 } from "@mui/material";
 
@@ -19,18 +20,27 @@ import { useFormik } from "formik";
 // import * as Yup from 'yup';
 
 import ButtonSearch from "../../components/ButtonSearch";
-import { dataFound, persona } from "../../types/persona.interface";
+import {  persona, searchPersona } from "../../types/persona.interface";
 
 import { AddDocSchema } from "../../utils/validateGuiaRemision";
 import clienteAxios from "../../config/axios";
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { ChipInterface } from "../../types/general.interface";
+import { useNotification } from "../../context/notification.context";
+import SearchPersona from "../../components/Persona/SearchPersona";
+import { DialogComponentCustom } from "../../components";
 
 // import MaskedInput from "react-text-mask";
 
 interface AddDocFormProps {
   onNewAddDoc: (newDetail: AddDoc) => void;
 }
+
+type ModalsProps = {
+  open: boolean;
+  form: React.ReactNode | null;
+  title: string;
+};
 
 const AddDocValues: AddDoc = {
   emisor: "",
@@ -45,13 +55,29 @@ const TipoDocumentos = [
   { valor: "81", descripcion: "CODIGO DE AUTORIZACION EMITIDA POR EL SCOP" },
 ];
 
+const StyledSearchButton = styled(Button)(({ }) => ({
+  backgroundColor: '#00BC8C',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: '#00A077',
+  }
+}))
+
 const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
   const [chipRazonSocial, setChipRazonSocial] = useState("");
   const [dataFilter, setDataFilter] = useState<persona[]>([])
 
   const [isLoading, setIsLoading] = useState(true)
 
+  const {getError} = useNotification()
+
   const token = localStorage.getItem('AUTH_TOKEN');
+
+  const [modalsForm, setModalsForms] = useState<ModalsProps>({
+    open: false,
+    form: null,
+    title: "",
+  });
 
   const filterFav = async () => {
     try {
@@ -101,27 +127,39 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
   });
 
 
-
-
-  const handleSearch = (_data: dataFound): void => {
-    // //setDataFoundIt(data);
-
-    // var razonSocial: string = "";
-    // if (data.dniData && formik.values.tipo === "03") {
-    //   razonSocial =
-    //     data.dniData.apellidoMaterno +
-    //     " " +
-    //     data.dniData.apellidoPaterno +
-    //     " " +
-    //     data.dniData.nombres;
-    // } else if (data.rucData && formik.values.tipo === "01") {
-    //   razonSocial = data.rucData.razonSocial;
-    // } else {
-    //   razonSocial = "NO ENCONTRADO";
-    // }
-    // //setDataCliente({ ...dataCliente, rznSocial: razonSocial });
-    // setChipRazonSocial(razonSocial);
+  const handleOpenModalForm = (form: React.ReactNode, title: string) => {
+    setModalsForms({ open: true, form, title });
   };
+
+  const handleCloseModalForm = () => {
+    // Cierra el modal en la posición especificada
+    setModalsForms((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleConfirm = (persona: persona): void => {
+    // formik.setFieldValue('tipoDoc', persona.tipoDoc)
+    // formik.setFieldValue('numDoc', persona.numDoc)
+    formik.setFieldValue('emisor', persona.numDoc)
+    setChipRazonSocial(persona.rznSocial)
+    handleCloseModalForm()
+  }
+
+
+
+  const handleSearch = (searchPerson: searchPersona): void => {
+
+    if (!searchPerson){
+      getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
+      return;
+    }
+    if (searchPerson.status === 'error') {
+      getError(searchPerson.message)
+      return;
+    }
+    // formik.setFieldValue('rznSocial', searchPerson.persona.nombreRazonSocial)
+    setChipRazonSocial(searchPerson.persona.nombreRazonSocial)
+  }
+
 
   const handleSetFavorite = (item: ChipInterface): void => {
     const persona = dataFilter.find(it => it.id === item.id);
@@ -137,12 +175,25 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
   return (
     <>
       <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Clientes favoritos" />
+      <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
+
+        <StyledSearchButton fullWidth variant="contained" color="warning" 
+          onClick={() => {
+            handleOpenModalForm(
+              <SearchPersona onCheck={handleConfirm} />,
+              'Buscar Persona'
+            )
+          }}
+        >
+          Buscar
+        </StyledSearchButton>
+      </Box>
       <Box component={'form'} onSubmit={formik.handleSubmit}>
         <Stack
           direction="row"
           justifyItems="center"
           alignItems="baseline"
-          spacing={2}
+          spacing={1}
         >
           <TextField
             margin="normal"
@@ -158,7 +209,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
            
           />
           <ButtonSearch
-            type={formik.values.tipo === "01" ? "6" : "1"}
+            type={"6"}
             valor={formik.values.emisor}
             onSearch={handleSearch}
           />
@@ -221,6 +272,21 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
           Agregar Item
         </Button>
       </Box>
+      <DialogComponentCustom
+        closeButton={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => handleCloseModalForm()}
+          >
+            Cerrar
+          </Button>
+        }
+        open={modalsForm.open}
+        title={modalsForm.title}
+        element={modalsForm.form}
+
+      />
     </>
   );
 };

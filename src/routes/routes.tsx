@@ -9,7 +9,7 @@ import AuthLayout from "../layouts/AuthLayout";
 import LoginForm from "../views/LoginForm";
 import AdminLayout from "../layouts/AdminLayout";
 
-import Guias from "../views/Guias";
+// import Guias from "../views/Guias";
 // import Dashboard from "../views/Dashboard";
 import Reportes from "../views/Reportes";
 import Productos from "../views/Productos";
@@ -23,13 +23,11 @@ import Personas from "../views/Personas";
 import Conductores from "../views/Conductores";
 import Transportistas from "../views/Transportista";
 import SunatParameters from "../views/SunatParameters";
+import Grelayout from "../layouts/GreLayout";
+import Vehiculos from "../views/Vehiculos";
 // import LoginForm from "../pages/login";
 
 export const router = createBrowserRouter([
-  {
-    path: "/guiaremision",
-    element: <GuiaRemisionMain />,
-  },
   {
         path: "/",
         
@@ -59,10 +57,7 @@ export const router = createBrowserRouter([
     path:'/admin',
     element:<AdminLayout/>,
     children:[
-      {
-        path:'/admin/guias',
-        element:<Guias/>
-      },
+     
       {
         path:'/admin/reportes',
         element:<Reportes/>
@@ -91,7 +86,21 @@ export const router = createBrowserRouter([
         path:'/admin/sunat',
         element:<SunatParameters/>
       },
+      {
+        path:'/admin/vehiculos',
+        element:<Vehiculos/>
+      },
       
+    ]
+  },
+  {
+    path:'/gre',
+    element:<Grelayout/>,
+    children:[
+      {
+      path:'/gre/guiaremision',
+      element:<GuiaRemisionMain/>
+      }
     ]
   }
  

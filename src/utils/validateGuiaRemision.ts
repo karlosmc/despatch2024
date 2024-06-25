@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { object } from "yup";
-import rucValido from "../helpers/Validaciones";
+
 
 
 export const DestinatarioSchema = object({
@@ -27,10 +27,7 @@ export const DestinatarioSchema = object({
           11,
           ({ length }) =>
             `Destinatario: El campo Número de documento debe tener ${length} caracteres`
-        ).test('rucValido','Destinatario: RUC INVALIDO',function(value){
-          const isValid = rucValido(parseInt(value))
-          return isValid;
-        }),
+        ),
       otherwise: (schema) => schema,
     }),
   rznSocial: yup
@@ -59,10 +56,7 @@ export const CompradorSchema = object({
     .when("tipoDoc", {
       is: "6", // alternatively: (val) => val == true
       then: (schema) =>schema.length(11,({ length }) =>`Comprador: El campo Número de documento debe tener ${length} caracteres`)
-      .test('rucValido','Comprador: RUC INVALIDO',function(value){
-        const isValid = rucValido(parseInt(value))
-        return isValid;
-      }),
+      ,
       otherwise: (schema) => schema,
     }).optional(),
   rznSocial: yup
@@ -94,10 +88,7 @@ export const TerceroSchema = object({
     .when("tipoDoc", {
       is: "6", // alternatively: (val) => val == true
       then: (schema) =>schema.length(11,({ length }) =>`Proveedor: El campo Número de documento debe tener ${length} caracteres`)
-      .test('rucValido','Proveedor: RUC INVALIDO',function(value){
-        const isValid = rucValido(parseInt(value))
-        return isValid;
-      }),
+      ,
       otherwise: (schema) => schema,
     }).optional(),
   rznSocial: yup
@@ -161,6 +152,7 @@ export const DestinatarioTest = object({
 // }
 
 export const PartidaSchema =yup.object().shape({
+  id:yup.number().notRequired(),
   ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
   direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
   codLocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
@@ -241,6 +233,7 @@ export const PuntosSchema =yup.object().shape({
 // })
 
 export const LlegadaSchema = yup.object().shape({
+  id:yup.number().notRequired(),
   ubigeo:yup.string().trim().required('Punto de llegada: Debe Elegir un ubigeo'),
   direccion:yup.string().trim().required('Punto de llegada: Debe escribir una dirección'),
   codLocal:yup.string().required('Punto de llegada: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de llegada: Solo debe escribir números").min(4,'Punto de llegada: Debe tener exactamente 4 digitos').max(4,'Punto de llegada: Debe tener exactamente 4 digitos'),
@@ -266,7 +259,8 @@ export const SecundariosSchema = yup.object().shape({
 
 export const VehiculoSchema = yup.object().shape({
   // placa:yup.string().trim().required('Vehiculo: Debe escribir una placa'),
-  placa:yup.string().trim().required(),
+  id:yup.number().notRequired(),
+  placa:yup.string().trim().required('Debe escribir una placa'),
   nroCirculacion:yup.string().notRequired(),
   codEmisor:yup.string().notRequired(),
   nroAutorizacion:yup.string().notRequired(),
@@ -342,6 +336,7 @@ export const AddDocSchema = yup.object().shape({
 })
 
 export const DetailSchema = yup.object().shape({
+  id:yup.number().notRequired(),
   codigo:yup.string().trim().required('Debe tener un código de producto'),
   descripcion:yup.string().trim().required('Debe escribir la descripción del producto'),
   unidad:yup.string().trim().required('Debe escribir una Unidad de medida'),
@@ -366,6 +361,7 @@ export const DatosGeneralesSchema= yup.object().shape({
 });
 
 export const TransportistaSchema = yup.object().shape({
+  id:yup.number().notRequired(),
   tipoDoc: yup
     .string()
     .required("Transportista: Debe elegir el Tipo de Documento")

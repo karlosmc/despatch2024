@@ -120,6 +120,7 @@ const DatosTransportista = ({
 
   const handleConfirm = (transportista: transportista): void => {
     // setDriver(conductor)
+    formik.setFieldValue('id',transportista.id)
     formik.setFieldValue('numDoc',transportista.numDoc)
     formik.setFieldValue('rznSocial',transportista.rznSocial)
     formik.setFieldValue('tipoDoc',transportista.tipoDoc)
@@ -129,6 +130,7 @@ const DatosTransportista = ({
 
   const handleSetFavorite = (item: ChipInterface): void => {
     const transportista = dataFilter.find(it => it.id === item.id);
+    formik.setFieldValue('id',transportista.id)
     formik.setFieldValue('numDoc',transportista.numDoc)
     formik.setFieldValue('rznSocial',transportista.rznSocial)
     formik.setFieldValue('tipoDoc',transportista.tipoDoc)
@@ -204,6 +206,7 @@ const DatosTransportista = ({
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           helperText={formik.touched.numDoc && formik.errors.numDoc}
+          InputProps={{ readOnly: true}}
         />
 
         <TextField
@@ -217,6 +220,8 @@ const DatosTransportista = ({
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           helperText={formik.touched.rznSocial && formik.errors.rznSocial}
+          inputProps={{ style: { textTransform: "uppercase" } }}
+          InputProps={{ readOnly: true}}
         />
 
         <TextField
@@ -225,11 +230,13 @@ const DatosTransportista = ({
           fullWidth
           name="nroMtc"
           label="Nro. MTC (opcional)"
-          value={formik.values.nroMtc}
+          value={formik.values.nroMtc||''}
           error={formik.touched?.nroMtc && Boolean(formik.errors?.nroMtc)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
           helperText={formik.touched.nroMtc && formik.errors.nroMtc}
+          inputProps={{ style: { textTransform: "uppercase" } }}
+          InputProps={{ readOnly: true}}
         />
         <Stack direction="row" spacing={2}>
           <Button fullWidth variant="contained" color="success" type="submit">

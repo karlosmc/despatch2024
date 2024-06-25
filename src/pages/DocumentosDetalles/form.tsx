@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Detail } from "../../types/doc.interface";
-import { Box, Button,  TextField,  styled } from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField, styled } from "@mui/material";
 
 import { useFormik } from "formik";
 
@@ -19,13 +19,327 @@ interface DetailFormProps {
   onNewDetail: (newDetail: Detail) => void;
 }
 
+const _UNIDAD_MEDIDA = [
+  {
+    "id": 1,
+    "codigo": "NIU",
+    "descripcion": "NIU: UNIDAD (BIENES)"
+  },
+  {
+    "id": 2,
+    "codigo": "GLL",
+    "descripcion": "GLL: US GALON (3,7843 L)"
+  },
+  {
+    "id": 3,
+    "codigo": "KGM",
+    "descripcion": "KGM: KILOGRAMO"
+  },
+  {
+    "id": 4,
+    "codigo": "MTR",
+    "descripcion": "MTR: METRO"
+  },
+  {
+    "id": 5,
+    "codigo": "ZZ",
+    "descripcion": "ZZ: UNIDAD (SERVICIOS)"
+  },
+  {
+    "id": 6,
+    "codigo": "4A",
+    "descripcion": "4A: BOBINAS"
+  },
+  {
+    "id": 7,
+    "codigo": "BJ",
+    "descripcion": "BJ: BALDE"
+  },
+  {
+    "id": 8,
+    "codigo": "BLL",
+    "descripcion": "BLL: BARRILES"
+  },
+  {
+    "id": 9,
+    "codigo": "BG",
+    "descripcion": "BG: BOLSA"
+  },
+  {
+    "id": 10,
+    "codigo": "BO",
+    "descripcion": "BO: BOTELLAS"
+  },
+  {
+    "id": 11,
+    "codigo": "BX",
+    "descripcion": "BX: CAJA"
+  },
+  {
+    "id": 12,
+    "codigo": "CT",
+    "descripcion": "CT: CARTONES"
+  },
+  {
+    "id": 13,
+    "codigo": "CMK",
+    "descripcion": "CMK: CENTIMETRO CUADRADO"
+  },
+  {
+    "id": 14,
+    "codigo": "CMQ",
+    "descripcion": "CMQ: CENTIMETRO CUBICO"
+  },
+  {
+    "id": 15,
+    "codigo": "CMT",
+    "descripcion": "CMT: CENTIMETRO LINEAL"
+  },
+  {
+    "id": 16,
+    "codigo": "CEN",
+    "descripcion": "CEN: CIENTO DE UNIDADES"
+  },
+  {
+    "id": 17,
+    "codigo": "CY",
+    "descripcion": "CY: CILINDRO"
+  },
+  {
+    "id": 18,
+    "codigo": "CJ",
+    "descripcion": "CJ: CONOS"
+  },
+  {
+    "id": 19,
+    "codigo": "DZN",
+    "descripcion": "DZN: DOCENA"
+  },
+  {
+    "id": 20,
+    "codigo": "DZP",
+    "descripcion": "DZP: DOCENA POR 10**6"
+  },
+  {
+    "id": 21,
+    "codigo": "BE",
+    "descripcion": "BE: FARDO"
+  },
+  {
+    "id": 22,
+    "codigo": "GLI",
+    "descripcion": "GLI: GALON INGLES (4,545956L)"
+  },
+  {
+    "id": 23,
+    "codigo": "GRM",
+    "descripcion": "GRM: GRAMO"
+  },
+  {
+    "id": 24,
+    "codigo": "GRO",
+    "descripcion": "GRO: GRUESA"
+  },
+  {
+    "id": 25,
+    "codigo": "HLT",
+    "descripcion": "HLT: HECTOLITRO"
+  },
+  {
+    "id": 26,
+    "codigo": "LEF",
+    "descripcion": "LEF: HOJA"
+  },
+  {
+    "id": 27,
+    "codigo": "SET",
+    "descripcion": "SET: JUEGO"
+  },
+  {
+    "id": 28,
+    "codigo": "KTM",
+    "descripcion": "KTM: KILOMETRO"
+  },
+  {
+    "id": 29,
+    "codigo": "KWH",
+    "descripcion": "KWH: KILOVATIO HORA"
+  },
+  {
+    "id": 30,
+    "codigo": "KT",
+    "descripcion": "KT: KIT"
+  },
+  {
+    "id": 31,
+    "codigo": "CA",
+    "descripcion": "CA: LATAS"
+  },
+  {
+    "id": 32,
+    "codigo": "LBR",
+    "descripcion": "LBR: LIBRAS"
+  },
+  {
+    "id": 33,
+    "codigo": "LTR",
+    "descripcion": "LTR: LITRO"
+  },
+  {
+    "id": 34,
+    "codigo": "MWH",
+    "descripcion": "MWH: MEGAWATT HORA"
+  },
+  {
+    "id": 35,
+    "codigo": "MTK",
+    "descripcion": "MTK: METRO CUADRADO"
+  },
+  {
+    "id": 36,
+    "codigo": "MTQ",
+    "descripcion": "MTQ: METRO CUBICO"
+  },
+  {
+    "id": 37,
+    "codigo": "MGM",
+    "descripcion": "MGM: MILIGRAMOS"
+  },
+  {
+    "id": 38,
+    "codigo": "MLT",
+    "descripcion": "MLT: MILILITRO"
+  },
+  {
+    "id": 39,
+    "codigo": "MMT",
+    "descripcion": "MMT: MILIMETRO"
+  },
+  {
+    "id": 40,
+    "codigo": "MMK",
+    "descripcion": "MMK: MILIMETRO CUADRADO"
+  },
+  {
+    "id": 41,
+    "codigo": "MMQ",
+    "descripcion": "MMQ: MILIMETRO CUBICO"
+  },
+  {
+    "id": 42,
+    "codigo": "MLL",
+    "descripcion": "MLL: MILLARES"
+  },
+  {
+    "id": 43,
+    "codigo": "UM",
+    "descripcion": "UM: MILLON DE UNIDADES"
+  },
+  {
+    "id": 44,
+    "codigo": "ONZ",
+    "descripcion": "ONZ: ONZAS"
+  },
+  {
+    "id": 45,
+    "codigo": "PF",
+    "descripcion": "PF: PALETAS"
+  },
+  {
+    "id": 46,
+    "codigo": "PK",
+    "descripcion": "PK: PAQUETE"
+  },
+  {
+    "id": 47,
+    "codigo": "PR",
+    "descripcion": "PR: PAR"
+  },
+  {
+    "id": 48,
+    "codigo": "FOT",
+    "descripcion": "FOT: PIES"
+  },
+  {
+    "id": 49,
+    "codigo": "FTK",
+    "descripcion": "FTK: PIES CUADRADOS"
+  },
+  {
+    "id": 50,
+    "codigo": "FTQ",
+    "descripcion": "FTQ: PIES CUBICOS"
+  },
+  {
+    "id": 51,
+    "codigo": "C62",
+    "descripcion": "C62: PIEZAS"
+  },
+  {
+    "id": 52,
+    "codigo": "PG",
+    "descripcion": "PG: PLACAS"
+  },
+  {
+    "id": 53,
+    "codigo": "ST",
+    "descripcion": "ST: PLIEGO"
+  },
+  {
+    "id": 54,
+    "codigo": "INH",
+    "descripcion": "INH: PULGADAS"
+  },
+  {
+    "id": 55,
+    "codigo": "RM",
+    "descripcion": "RM: RESMA"
+  },
+  {
+    "id": 56,
+    "codigo": "DR",
+    "descripcion": "DR: TAMBOR"
+  },
+  {
+    "id": 57,
+    "codigo": "STN",
+    "descripcion": "STN: TONELADA CORTA"
+  },
+  {
+    "id": 58,
+    "codigo": "LTN",
+    "descripcion": "LTN: TONELADA LARGA"
+  },
+  {
+    "id": 59,
+    "codigo": "TNE",
+    "descripcion": "TNE: TONELADAS"
+  },
+  {
+    "id": 60,
+    "codigo": "TU",
+    "descripcion": "TU: TUBOS"
+  },
+  {
+    "id": 61,
+    "codigo": "YRD",
+    "descripcion": "YRD: YARDA"
+  },
+  {
+    "id": 62,
+    "codigo": "YDK",
+    "descripcion": "YDK: YARDA CUADRADA"
+  }
+]
+
 const DetailValues: Detail = {
+  id:0,
   atributos: null,
   cantidad: 1,
   codigo: "",
   codProdSunat: "",
   descripcion: "",
-  unidad: "",
+  unidad: "NIU",
 };
 
 type ModalsProps = {
@@ -93,8 +407,9 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
 
   const handleConfirm = (producto: Producto): void => {
 
+    formik.setFieldValue('id', producto.id)
     formik.setFieldValue('codigo', producto.codigo)
-    formik.setFieldValue('codProdSunat', producto.codProdSunat ? producto.codProdSunat : '')
+    formik.setFieldValue('codProdSunat', producto.codProdSunat)
     formik.setFieldValue('descripcion', producto.descripcion)
     formik.setFieldValue('unidad', producto.unidad)
 
@@ -110,36 +425,35 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
   });
 
 
-  const handleCheckProduct = (producto: Producto): void => {
-
-    formik.setFieldValue('codigo', producto.codigo)
-    formik.setFieldValue('codProdSunat', producto.codProdSunat)
-    formik.setFieldValue('descripcion', producto.descripcion)
-    formik.setFieldValue('unidad', producto.unidad)
-    handleCloseModalForm()
-  }
+  // const handleCheckProduct = (producto: Producto): void => {
+  //   formik.setFieldValue('id', producto.id)
+  //   formik.setFieldValue('codigo', producto.codigo)
+  //   formik.setFieldValue('codProdSunat', producto.codProdSunat)
+  //   formik.setFieldValue('descripcion', producto.descripcion)
+  //   formik.setFieldValue('unidad', producto.unidad)
+  //   handleCloseModalForm()
+  // }
 
   const handleSetFavorite = (item: ChipInterface): void => {
     const producto = dataFilter.find(it => it.id === item.id);
     // formik.setFieldValue('tipoDoc', persona.tipoDoc)
+    formik.setFieldValue('id', producto.id)
     formik.setFieldValue('codigo', producto.codigo)
     formik.setFieldValue('codProdSunat', producto.codProdSunat)
     formik.setFieldValue('descripcion', producto.descripcion)
     formik.setFieldValue('unidad', producto.unidad)
-    
   }
 
-
-  useEffect(()=>{
+  useEffect(() => {
     filterFav()
-  },[])
+  }, [])
 
   return (
     <>
-    <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Productos favoritos" />
+      <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Productos favoritos" />
       <Box component={'form'} onSubmit={formik.handleSubmit}>
         <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
-          <StyledNewButton fullWidth variant="contained" 
+          <StyledNewButton fullWidth variant="contained"
             onClick={() => {
               handleOpenModalForm(
                 <ModalProducto initialValue={null} edit={false} onConfirm={handleConfirm} />,
@@ -150,10 +464,10 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             Crear Item
           </StyledNewButton>
 
-          <StyledSearchButton fullWidth variant="contained" 
+          <StyledSearchButton fullWidth variant="contained"
             onClick={() => {
               handleOpenModalForm(
-                <SearchProducto onCheck={handleCheckProduct} />,
+                <SearchProducto onCheck={handleConfirm} />,
                 'Buscar producto'
               )
             }}
@@ -173,6 +487,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             onBlur={formik.handleBlur}
             helperText={formik.touched.codigo && formik.errors.codigo}
             error={formik.touched.codigo && Boolean(formik.errors.codigo)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
 
           <TextField
@@ -197,16 +512,17 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             fullWidth
             name="codProdSunat"
             label="Codigo de producto SUNAT"
-            value={formik.values.codProdSunat}
+            value={formik.values.codProdSunat||''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.codProdSunat && formik.errors.codProdSunat}
             error={
               formik.touched.codProdSunat && Boolean(formik.errors.codProdSunat)
             }
+            inputProps={{ style: { textTransform: "uppercase" } }}
           />
 
-          <TextField
+          {/* <TextField
             margin="normal"
             size="small"
             fullWidth
@@ -217,7 +533,24 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             onBlur={formik.handleBlur}
             helperText={formik.touched.unidad && formik.errors.unidad}
             error={formik.touched.unidad && Boolean(formik.errors.unidad)}
-          />
+          /> */}
+          <FormControl fullWidth size="small" margin="normal" sx={{ mb: 2 }}>
+            <InputLabel>Unidad de medida</InputLabel>
+            <Select
+              label="Unidad de medida"
+              name="unidad"
+              value={formik.values.unidad}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.unidad && Boolean(formik.errors.unidad)}
+            >
+              {_UNIDAD_MEDIDA.map((uni) => (
+                <MenuItem key={uni.id} value={uni.codigo}>
+                  {uni.descripcion}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
 
 
@@ -234,6 +567,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
           error={
             formik.touched.descripcion && Boolean(formik.errors.descripcion)
           }
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
 
         <Button

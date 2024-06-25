@@ -133,6 +133,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
             onBlur={formik.handleBlur}
             onChange={formik.handleChange}
             name="tipoDoc"
+            readOnly={true}
           >
             <MenuItem value={"1"}>DNI</MenuItem>
             <MenuItem value={"6"}>RUC</MenuItem>
@@ -151,6 +152,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           helperText={formik.touched.nroDoc && formik.errors.nroDoc}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
+          InputProps={{ readOnly: true}}
         />
         {/* <ButtonSearch type={formik.values.tipoDoc} valor={formik.values.nroDoc} onSearch={handleSearch}/> */}
         {/* </Stack> */}
@@ -166,6 +168,8 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           error={formik.touched.nombres && Boolean(formik.errors.nombres)}
           helperText={formik.touched.nombres && formik.errors.nombres}
           onBlur={formik.handleBlur}
+          inputProps={{ style: { textTransform: "uppercase" } }}
+          InputProps={{ readOnly: true}}
         />
         <TextField
           margin="normal"
@@ -178,6 +182,8 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           error={formik.touched.apellidos && Boolean(formik.errors.apellidos)}
           helperText={formik.touched.apellidos && formik.errors.apellidos}
           onBlur={formik.handleBlur}
+          inputProps={{ style: { textTransform: "uppercase" } }}
+          InputProps={{ readOnly: true}}
         />
         <TextField
           margin="normal"
@@ -190,6 +196,8 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           error={formik.touched.licencia && Boolean(formik.errors.licencia)}
           helperText={formik.touched.licencia && formik.errors.licencia}
           onBlur={formik.handleBlur}
+          inputProps={{ style: { textTransform: "uppercase" } }}
+          InputProps={{ readOnly: true}}
         />
       </Box>
       <Stack direction="row" spacing={2} sx={{my:1}}>

@@ -11,8 +11,9 @@ import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
-import { conductor } from '../types/conductor.interface';
-import ModalConductor from '../components/Conductor';
+
+import { vehiculo } from '../types/vehiculo.interface';
+import ModalVehiculo from '../components/Vehiculo';
 
 
 type ModalsProps = {
@@ -21,7 +22,7 @@ type ModalsProps = {
   title: string;
 };
 
-const Conductores = () => {
+const Vehiculos = () => {
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -59,27 +60,27 @@ const Conductores = () => {
   // const [edit, setEdit] = useState<boolean>(false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/conductor', {
+  const fetcher = () => clienteAxios('/api/vehiculos', {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
 
-  const { data,  isLoading } = useSWR('/api/conductor', fetcher);
+  const { data,  isLoading } = useSWR('/api/vehiculos', fetcher);
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:conductor) => {
+  data?.data?.data.forEach((fil:vehiculo) => {
     rows.push(
       <TableRow
         key={fil.id}
       >
         <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.nroDoc}</TableCell>
-        <TableCell align="left">{fil.apellidos} {fil.nombres}</TableCell>
-        <TableCell align="left">{fil.tipodocumento}</TableCell>
+        <TableCell align="left">{fil.placa}</TableCell>
+        <TableCell align="left">{fil.nombreCorto}</TableCell>
+        <TableCell align="left">{fil.nroCirculacion}</TableCell>
         <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditConductor(fil)} ><EditIcon /></Fab></TableCell>
@@ -89,12 +90,12 @@ const Conductores = () => {
 
 
 
-  const handleEditConductor = (conductor:conductor) => {
+  const handleEditConductor = (vehiculo:vehiculo) => {
     // setEdit(false);
     // const selectedPunto = data.data.data.find(item => item.id === id);
     handleOpenModalForm(
-      <ModalConductor initialValue={conductor} edit={true} onConfirm={handleConfirm} />,
-      'Editar conductor'
+      <ModalVehiculo initialValue={vehiculo} edit={true} onConfirm={handleConfirm} />,
+      'Editar Vehiculo'
     )
   }
 
@@ -110,8 +111,8 @@ const Conductores = () => {
           color='primary'
           onClick={() => {
             handleOpenModalForm(
-              <ModalConductor initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
-              'Nuevo conductor'
+              <ModalVehiculo initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
+              'Nuevo Vehiculo'
             )
           }}
           variant='outlined'>
@@ -124,9 +125,9 @@ const Conductores = () => {
           <TableHead>
             <TableRow>
               <TableCell width={'5%'}>Id</TableCell>
-              <TableCell width={'10%'} align="left">Nro.Doc.</TableCell>
-              <TableCell width={'50%'} align="left">Apellidos y nombres</TableCell>
-              <TableCell width={'5%'} align="left">Tipo.Doc.</TableCell>
+              <TableCell width={'10%'} align="left">Placa</TableCell>
+              <TableCell width={'20%'} align="left">Nombre corto</TableCell>
+              <TableCell width={'30%'} align="left">Nro. Circulación</TableCell>
               <TableCell width={'10%'} align="left">Fav?</TableCell>
               <TableCell width={'10%'} align="left">Propio?</TableCell>
               <TableCell width={'10%'} align="left">Editar</TableCell>
@@ -175,4 +176,4 @@ const Conductores = () => {
   )
 }
 
-export default Conductores
+export default Vehiculos

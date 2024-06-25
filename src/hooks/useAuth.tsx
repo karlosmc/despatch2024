@@ -104,7 +104,7 @@ export const useAuth = ({middleware , url}:authInterface) =>{
     //   console.log('no entro')
     // }
 
-    if(middleware === 'auth' && url==='/guiaremision' && user){
+    if(middleware === 'auth' && url==='/gre/guiaremision' && user){
       navigate(url);
     }
 

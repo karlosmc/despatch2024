@@ -187,7 +187,7 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
   },[])
   return (
     <>
-    <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Puntos de ubicación favoritos" />
+    <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Choferes favoritos" />
       <Box component='form' action="" onSubmit={formik.handleSubmit} >
         <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
           <StyledNewButton fullWidth variant="contained" 

@@ -173,6 +173,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
 
 
   const { ubigeos } = useAuxiliares()
+  // console.log(ubigeos)
 
   useEffect(() => {
     if (ubigeos.length > 0) {
@@ -211,6 +212,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
               </AnimatedInputAdornment>
             ),
           }}
+          
         />
         <TextField
           margin="normal"
@@ -226,6 +228,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
           onBlur={formik.handleBlur}
           helperText={formik.touched.direccion && formik.errors.direccion}
           error={formik.touched.direccion && Boolean(formik.errors.direccion)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
         <TextField
           margin="normal"
@@ -266,6 +269,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
           onBlur={formik.handleBlur}
           helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
           error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
         <Autocomplete
           size='small'

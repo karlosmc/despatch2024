@@ -73,6 +73,7 @@ export interface Client {
 
 
 export interface Detail {
+    id?:number;
     codigo:       string;
     descripcion:  string;
     unidad:       string;

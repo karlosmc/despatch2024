@@ -96,7 +96,7 @@ export const useAuxiliares = () => {
 
 const getUbigeos = async():Promise<Ubigeos[]|null> =>{
   const token = localStorage.getItem('AUTH_TOKEN');
-  const { data, statusText, } = await clienteAxios('/api/ubigeos',
+  const { data, statusText } = await clienteAxios('/api/ubigeos',
     {
       headers: {
         Authorization: `Bearer ${token}`

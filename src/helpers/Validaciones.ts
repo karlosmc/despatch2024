@@ -9,5 +9,4 @@ export default function rucValido(ruc) {
   for (var suma = -(ruc%10<2), i = 0; i<11; i++, ruc = ruc/10|0)
       suma += (ruc % 10) * (i % 7 + (i/7|0) + 1);
   return suma % 11 === 0;
-  
 }
