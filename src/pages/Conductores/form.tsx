@@ -86,11 +86,11 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
 
   useEffect(() => {
     if(conductor){
-      formik.setFieldValue('tipoDoc', conductor.tipoDoc)
-      formik.setFieldValue('nroDoc', conductor.nroDoc)
-      formik.setFieldValue('nombres', conductor.nombres)
-      formik.setFieldValue('apellidos', conductor.apellidos)
-      formik.setFieldValue('licencia', conductor.licencia)
+      formik.setFieldValue('tipoDoc', conductor.tipoDoc.toUpperCase())
+      formik.setFieldValue('nroDoc', conductor.nroDoc.toUpperCase())
+      formik.setFieldValue('nombres', conductor.nombres.toUpperCase())
+      formik.setFieldValue('apellidos', conductor.apellidos.toUpperCase())
+      formik.setFieldValue('licencia', conductor.licencia.toUpperCase())
     }
   }, [conductor])
   
@@ -163,7 +163,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           fullWidth
           name="nombres"
           label="Nombres"
-          value={formik.values.nombres}
+          value={formik.values.nombres.toUpperCase()}
           onChange={formik.handleChange}
           error={formik.touched.nombres && Boolean(formik.errors.nombres)}
           helperText={formik.touched.nombres && formik.errors.nombres}
@@ -177,7 +177,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           fullWidth
           name="apellidos"
           label="Apellidos"
-          value={formik.values.apellidos}
+          value={formik.values.apellidos.toUpperCase()}
           onChange={formik.handleChange}
           error={formik.touched.apellidos && Boolean(formik.errors.apellidos)}
           helperText={formik.touched.apellidos && formik.errors.apellidos}
@@ -191,7 +191,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           fullWidth
           name="licencia"
           label="Nro. Licencia"
-          value={formik.values.licencia}
+          value={formik.values.licencia.toUpperCase()}
           onChange={formik.handleChange}
           error={formik.touched.licencia && Boolean(formik.errors.licencia)}
           helperText={formik.touched.licencia && formik.errors.licencia}

@@ -250,6 +250,7 @@ export const AeropuertoSchema = yup.object().shape({
 
 export const SecundariosSchema = yup.object().shape({
   // placa:yup.string().trim().required('Vehiculo: Debe escribir una placa'),
+  id:yup.number().notRequired(),
   placa:yup.string().trim().notRequired(),
   nroCirculacion:yup.string().notRequired(),
   codEmisor:yup.string().notRequired(),
@@ -260,7 +261,7 @@ export const SecundariosSchema = yup.object().shape({
 export const VehiculoSchema = yup.object().shape({
   // placa:yup.string().trim().required('Vehiculo: Debe escribir una placa'),
   id:yup.number().notRequired(),
-  placa:yup.string().trim().required('Debe escribir una placa'),
+  placa:yup.string().trim(),
   nroCirculacion:yup.string().notRequired(),
   codEmisor:yup.string().notRequired(),
   nroAutorizacion:yup.string().notRequired(),
@@ -350,14 +351,13 @@ export const DatosGeneralesSchema= yup.object().shape({
   .string()
   .trim()
   .required(
-    "Doc. Principal: Debe elegir  o escribir una Serie para el documento"
+    "Datos Generales: Debe elegir una Serie para el documento"
   ),
   correlativo: yup
-    .number().typeError('Solo debe contener números')
-    .positive('Debe contener números positivos')
-    .required("Doc. Principal: Debe escribir un correlativo")
-    .default(999),  
-  fechaEmision: yup.string().required("Doc. Principal: Debe elegir una fecha de emisión del comprobante"),
+    .number()
+    .positive('Datos Generales: El número de documento debe ser mayor a 0')
+    , 
+  fechaEmision: yup.string().required("Datos Generales: Debe elegir una fecha de emisión del comprobante"),
 });
 
 export const TransportistaSchema = yup.object().shape({

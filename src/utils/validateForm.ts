@@ -251,9 +251,12 @@ export const ConductorSchema = yup.object().shape({
     then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
     otherwise:(schema)=>schema.nullable()
   })
-
-  
 })
+
+// export const PuntoEmisionSchema = yup.object().shape({
+//   id:yup.number().notRequired()
+
+// })
 
 
 

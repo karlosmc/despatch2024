@@ -26,10 +26,14 @@ import {
   Box,
   Button,
   Container,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Modal,
   Paper,
+  Select,
   SxProps,
 
   Theme,
@@ -72,11 +76,14 @@ import VehiculosSecundarios from "../DatosVehiculos/secundarios";
 import ObservacionesTextField from "../Observaciones";
 
 import useAuthToken from "../../hooks/useAuthToken";
+import clienteAxios from "../../config/axios";
+import { useAuth } from "../../hooks/useAuth";
+import { puntoEmision } from "../../types/puntoemision.interface";
 
 // import { useAuth } from "../../hooks/useAuth";
 
 const VehiculoValues: EnvioVehiculo = {
-  placa: "V0Z331",
+  placa: "",
   codEmisor: "",
   nroAutorizacion: "",
   nroCirculacion: "",
@@ -84,8 +91,8 @@ const VehiculoValues: EnvioVehiculo = {
 };
 
 const EnvioValues: Envio = {
-  codTraslado: "02",
-  desTraslado: "COMPRA",
+  codTraslado: "",
+  desTraslado: "",
   fecTraslado: dayjs().format("YYYY-MM-DD"),
   indicadores: [],
   indTransbordo: "",
@@ -97,16 +104,16 @@ const EnvioValues: Envio = {
   // sustentoPeso:''
 };
 
-const DestinatarioDefaultValues: Client = {
-  numDoc: "20119207640",
-  rznSocial: "Estación de Energías el Centenario S.A.C",
-  tipoDoc: "6",
-}
+// const DestinatarioDefaultValues: Client = {
+//   numDoc: "20119207640",
+//   rznSocial: "Estación de Energías el Centenario S.A.C",
+//   tipoDoc: "6",
+// }
 
 const DatosGeneralesValues: DatosGenerales = {
-  correlativo: "9",
+  correlativo: "0",
   fechaEmision: dayjs().format("YYYY-MM-DD"),
-  serie: "T002",
+  serie: "",
   tipoDoc: "09",
   version: "2.0",
 };
@@ -127,27 +134,19 @@ const initialValues: GuiaRemision = {
   addDocs: [
 
   ],
-  details: [
-    {
-      codigo: "PRO0001",
-      codProdSunat: "15101505",
-      descripcion: "PRODUCTO 1",
-      cantidad: 10,
-      unidad: "NIU",
-    },
-  ],
+  details: [],
   choferes: [],
   vehiculo: VehiculoValues,
 
   partida: {
-    id:0,
+    id: 0,
     codLocal: "0000",
     direccion: "",
     ruc: "",
     ubigeo: "",
   },
   llegada: {
-    id:0,
+    id: 0,
     codLocal: "0000",
     direccion: "",
     ruc: "",
@@ -192,6 +191,37 @@ const GuiaRemisionMain = () => {
 
   const [detalles, setDetalles] = useState<Detail[]>(initialValues.details);
 
+  const token = localStorage.getItem('AUTH_TOKEN');
+
+  const [puntosEmision, setPuntosEmision] = useState<puntoEmision[]>([]);
+
+  const [puntoEmisionSelected, setPuntoEmisionSelected] = useState<number>(0)
+
+
+  const { user } = useAuth({ middleware: '', url: '' });
+
+
+  const getPuntosEmision = async () => {
+    try {
+
+      const { data, status } = await clienteAxios(`/api/usuario/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      // console.log(data)
+      if (status === 200) {
+        setPuntosEmision(data)
+
+      }
+      // console.log(data)
+
+
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
 
   const onHandlePreview = () => {
     setAccion('pdf');
@@ -242,6 +272,7 @@ const GuiaRemisionMain = () => {
       details: values.details,
 
     }
+    console.log(doc)
 
     const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
     responsePdf.then(pdf => {
@@ -271,7 +302,7 @@ const GuiaRemisionMain = () => {
     onSubmit: async (values) => {
 
 
-      console.log(values)
+      // console.log(values)
       const fechaEmision = values.datosGenerales.fechaEmision;
       const fecTraslado = values.envio.fecTraslado;
 
@@ -283,6 +314,13 @@ const GuiaRemisionMain = () => {
         // console.log(parseFecTraslado, parseFechaEmision)
         if (parseFecTraslado < parseFechaEmision) {
           getError('Datos de Envío: La fecha de traslado debe ser mayor a la fecha de Emisión de la Guía')
+          return;
+        }
+      }
+
+      if (!values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && values.transportista.numDoc===''){
+        if(values.vehiculo.placa===''){
+          getError('Debe escribir una Placa');
           return;
         }
       }
@@ -316,7 +354,6 @@ const GuiaRemisionMain = () => {
           },
           addDocs: values.addDocs,
           details: values.details,
-
         }
 
         // console.log(doc)
@@ -362,12 +399,13 @@ const GuiaRemisionMain = () => {
             })
             .then(send => sendApi(send, '/SendDespatch'))
             .then(resSend => {
+              console.log(resSend)
               if (resSend.exito) {
                 const consult = {
                   "access_token": token,
                   "EndPointUrl": `${data.urlconsult}${resSend.numTicket}`
                 }
-                // console.log(consult);
+                
                 return consult;
               }
             })
@@ -379,7 +417,7 @@ const GuiaRemisionMain = () => {
                 return;
               }
               getSuccess(JSON.stringify(resConsult.CdrResponse));
-              console.log(resConsult)
+              // console.log(resConsult)
             });
         }
 
@@ -391,8 +429,6 @@ const GuiaRemisionMain = () => {
 
     },
   });
-
-
 
   useEffect(() => {
     if (!formik.isSubmitting) return;
@@ -558,18 +594,11 @@ const GuiaRemisionMain = () => {
   }, [detalles]);
 
   useEffect(() => {
-    if (formik.values.envio.codTraslado === '02' || formik.values.envio.codTraslado === '04') {
-      formik.setFieldValue('destinatario', DestinatarioDefaultValues)
-      if (formik.values.envio.codTraslado === '02') {
-        getWarning('Proveedor: Registro Opcional. Si desea registre el proveedor dónde realizó la compra')
-      }
-    } else {
-      formik.setFieldValue('destinatario', {
-        numDoc: "",
-        rznSocial: "",
-        tipoDoc: "6",
-      })
+
+    if (formik.values.envio.codTraslado === '02') {
+      getWarning('Proveedor: Registro Opcional. Si desea registre el proveedor dónde realizó la compra')
     }
+
   }, [formik.values.envio.codTraslado])
 
   const handleConfirmListaChoferes = (choferes: EnvioChoferes[]): void => {
@@ -577,6 +606,10 @@ const GuiaRemisionMain = () => {
     formik.setFieldValue("choferes", choferes);
     setModalsForms({ ...modalsForm, open: false });
   };
+
+  const onHandleChangePuntoEmision = (e: React.ChangeEvent<HTMLInputElement>)=>{
+      setPuntoEmisionSelected(parseInt(e.target.value));
+  }
 
   const [expanded, setExpanded] = React.useState<string | false>('panel1');
 
@@ -593,13 +626,44 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
+  useEffect(() => {
+    if(user){
+      getPuntosEmision()
+    }
+  }, [user])
+
+
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
 
       <Container maxWidth="md" sx={{ mt: 5 }}>
         <Typography textAlign={'center'} variant="h4" my={3}>GUIA DE REMISIÓN ELECTRÓNICA</Typography>
-        <form onSubmit={formik.handleSubmit}>
+        <Box px={2} mb={4}>
+          <FormControl fullWidth size="small">
+            <InputLabel id="">
+              Puntos de emisión del usuario
+            </InputLabel>
+            <Select
+              fullWidth
+              labelId=""
+              label="Puntos de emisión del usuario"
+              onChange={onHandleChangePuntoEmision}
+              value={puntoEmisionSelected}
+              name="puntoemision"
+            >
+              <MenuItem value={0}>...Elija un punto de emision...</MenuItem>
+              {
+                puntosEmision?.map(pe=>(
+                  <MenuItem key={pe.id} value={pe.id}>{pe.nombre}</MenuItem>
+                ))
+              }
+
+            </Select>
+            
+          </FormControl>
+        </Box>
+        <Box component={'form'} onSubmit={formik.handleSubmit}>
           <Grid
             container
             justifyContent="space-between"
@@ -626,6 +690,7 @@ const GuiaRemisionMain = () => {
                 <DatosGeneralesForm
                   onChange={onHandleDatosGeneralesChange}
                   datosGeneralesValues={formik.values.datosGenerales}
+                  puntoEmision={puntoEmisionSelected}
                 />
               </AccordionDetails>
             </Accordion>
@@ -693,7 +758,7 @@ const GuiaRemisionMain = () => {
                               initialValue={formik.values.destinatario}
                               // initialValue={formik.values.envio.codTraslado === '02' ? DestinatarioDefaultValues : formik.values.destinatario}
                               onChange={handleDestinatarioChange}
-                              tipo={formik.values.envio.codTraslado === '02' ? 'default' : ''}
+                              tipo={formik.values.envio.codTraslado === '02' || formik.values.envio.codTraslado === '04' ? 'default' : ''}
                             />,
                             "Destinatario"
                           )
@@ -983,6 +1048,7 @@ const GuiaRemisionMain = () => {
                           color="default"
                           size="large"
                           aria-label="add an alarm"
+                          disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && formik.values.envio.modTraslado === '02'}
                           sx={BoxShadoWButton}
                           onClick={(_e) =>
                             handleOpenModalForm(
@@ -1010,7 +1076,7 @@ const GuiaRemisionMain = () => {
                           aria-label="add an alarm"
                           sx={{ ...BoxShadoWButton }}
                           size="large"
-                          disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') || formik.values.envio.modTraslado==='02'}
+                          disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') || formik.values.envio.modTraslado === '02'}
                           onClick={(_e) =>
                             handleOpenModalForm(
                               <DatosTransportista
@@ -1142,7 +1208,7 @@ const GuiaRemisionMain = () => {
               Submit
             </Button>
           </Box>
-        </form>
+        </Box>
         <DialogComponentCustom
           closeButton={
             <Button

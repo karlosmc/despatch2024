@@ -2,17 +2,28 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField, FormHelperText, Box } from '@mui/material'
 import { useFormik } from 'formik';
 import { DatosGenerales } from '../../types/guias/guiaremision.interface';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { DatosGeneralesSchema } from '../../utils/validateGuiaRemision';
+import clienteAxios from '../../config/axios';
+import { numeracion } from '../../types/numeracion.interface';
+
 
 
 
 interface DatosGeneralesFormProps {
   onChange: (datosGenerales: DatosGenerales) => void;
+  puntoEmision:number;
   datosGeneralesValues: DatosGenerales;
 }
 
-const DatosGeneralesForm = ({ onChange, datosGeneralesValues }: DatosGeneralesFormProps) => {
+const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision }: DatosGeneralesFormProps) => {
+
+  // console.log(puntosEmision)
+  const token = localStorage.getItem('AUTH_TOKEN');
+
+  const [numeracion, setNumeracion] = useState<numeracion[]>([])
+
+
 
   const formik = useFormik({
     initialValues: datosGeneralesValues,
@@ -24,6 +35,56 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues }: DatosGeneralesFo
     // console.log(formik.values);
     onChange(formik.values);
   }, [formik.values]);
+
+  const getSeries = async () => {
+    try {
+
+      const { data, status } = await clienteAxios(`/api/numeracion/actualbypunto?id_puntoemision=${puntoEmision}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      // console.log(data)
+      if (status === 200) {
+        setNumeracion(data?.data)
+        // console.log(data)
+
+      }
+      // console.log(data)
+
+
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  useEffect(()=>{
+    if(puntoEmision){
+      getSeries()
+      formik.setFieldValue('serie','');
+      formik.setFieldValue('correlativo',0)
+    }
+    
+  },[puntoEmision])
+
+  useEffect(()=>{
+    if(formik.values.serie!==''){
+      const correlativo = numeracion.find(it=> it.serie===formik.values.serie);
+
+      if(correlativo){
+
+        
+        
+        formik.setFieldValue('correlativo',correlativo.numeroActual+1)
+      }
+      else{
+        formik.setFieldValue('correlativo',0)
+      }
+    }
+  },[formik.values.serie])
+
 
   return (
     <Box
@@ -66,10 +127,14 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues }: DatosGeneralesFo
           onBlur={formik.handleBlur}
           name="serie"
         >
-          {/* <MenuItem value={serie}>{serie}</MenuItem> */}
           <MenuItem value={""}>...Debe Elegir una serie...</MenuItem>
-          <MenuItem value={"T002"}>T002</MenuItem>
-          <MenuItem value={"T003"}>T003</MenuItem>
+          {
+            numeracion?.map(num=>(
+              <MenuItem value={num.serie} key={num.id}>{num.serie}</MenuItem>
+            ))
+
+          }
+          
         </Select>
         <FormHelperText>{formik.touched.serie && formik.errors.serie}</FormHelperText>
       </FormControl>
