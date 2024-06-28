@@ -23,6 +23,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   Box,
   Button,
   Container,
@@ -35,6 +36,8 @@ import {
   Paper,
   Select,
   SxProps,
+
+  TextField,
 
   Theme,
   Typography,
@@ -79,6 +82,7 @@ import useAuthToken from "../../hooks/useAuthToken";
 import clienteAxios from "../../config/axios";
 import { useAuth } from "../../hooks/useAuth";
 import { puntoEmision } from "../../types/puntoemision.interface";
+import { ParamsInterface } from "../../types/params.interface";
 
 // import { useAuth } from "../../hooks/useAuth";
 
@@ -178,6 +182,8 @@ const GuiaRemisionMain = () => {
     title: "",
   });
 
+  const [message, setMessage] = useState<string>('')
+
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -185,7 +191,6 @@ const GuiaRemisionMain = () => {
   const [base64Pdf, setBase64Pdf] = useState<string>('')
 
   const [accion, setAccion] = useState<string>('form')
-
 
   const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>(initialValues.addDocs);
 
@@ -196,6 +201,19 @@ const GuiaRemisionMain = () => {
   const [puntosEmision, setPuntosEmision] = useState<puntoEmision[]>([]);
 
   const [puntoEmisionSelected, setPuntoEmisionSelected] = useState<number>(0)
+
+  const [params, setParams] = useState<ParamsInterface>(null)
+
+  const [ticket, setTicket] = useState<string>('')
+
+  const [est, setEst] = useState<number>(null)
+
+  const [idDespatch, setIdDespatch] = useState<number>(null);
+
+  const [consultToken, setConsultToken] = useState<string>('')
+
+
+  const [hashQr, setHashQr] = useState<string>('');
 
 
   const { user } = useAuth({ middleware: '', url: '' });
@@ -238,6 +256,9 @@ const GuiaRemisionMain = () => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
+
+
+
   // const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
 
 
@@ -247,14 +268,13 @@ const GuiaRemisionMain = () => {
   // console.log(API_GUIAS)
 
   const previewPDF = (values: GuiaRemision) => {
-
-
     const doc = {
       fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
       correlativo: values.datosGenerales.correlativo,
       serie: values.datosGenerales.serie,
       tipoDoc: values.datosGenerales.tipoDoc,
       version: values.datosGenerales.version,
+      observacion: values.observacion,
       destinatario: values.destinatario,
       tercero: values.tercero.numDoc !== '' ? values.tercero : null,
       comprador: null,
@@ -272,18 +292,21 @@ const GuiaRemisionMain = () => {
       details: values.details,
 
     }
-    console.log(doc)
+    // console.log(doc)
 
-    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
+    // console.log(JSON.stringify(doc));
+
+    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch", 'Generando un preview del PDF');
+
     responsePdf.then(pdf => {
       setBase64Pdf(pdf.response.TramaPdf)
       handleOpen()
     });
   }
 
-  const sendApi = async (param: any, api: string) => {
+  const sendApi = async (param: any, api: string, process: string) => {
     const url = `${API_GUIAS}${api}`;
-
+    setTimeoutMessage(process)
     const options = {
       method: "post",
       headers: {
@@ -295,14 +318,67 @@ const GuiaRemisionMain = () => {
     return resp.json();
   };
 
+
+  const consultarToken = () => {
+    const urlconsult = params.urlconsult;
+    const consult = {
+      "access_token": consultToken,
+      "EndPointUrl": `${urlconsult}${ticket}`
+    }
+    sendApi(consult, '/ConsultaGuia', 'Consultando Ticket')
+      .then(resConsult => {
+        console.log(resConsult)
+        if (resConsult.error && resConsult.indCdrGenerado === "1") {
+          getError(resConsult.error.desError);
+          updateEstadoElectronico({
+            'estado': 'C',
+            // 'descripcion':'Documento consultado con Exito',
+            'rutaCdr': `C:/laragon/www/apiguias/CDR/`,
+            'descripcion': resConsult.error.desError,
+            'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
+            'codigoSunat': resConsult.error.numError,
+            'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
+            'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
+          }, est);
+          return;
+        }
+
+        if (!resConsult.CdrResponse) {
+          updateEstadoElectronico({
+            'estado': 'C',
+            // 'descripcion':'Documento consultado con Exito',
+            'rutaCdr': `C:/laragon/www/apiguias/CDR/`,
+            'descripcion': 'PENDIENTE DE CONSULTA',
+            'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
+          }, est);
+          getWarning('Si ha generado el token y el ticket de consulta, presiona CONSULTAR');
+          return;
+        }
+
+        updateEstadoElectronico({
+          'estado': 'C',
+          // 'descripcion':'Documento consultado con Exito',
+          'rutaCdr': `C:/laragon/www/apiguias/CDR/`,
+          'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
+          'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
+          'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
+          'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
+        }, est);
+
+        setHashQr(resConsult.CdrResponse.hashQr)
+        getSuccess(resConsult.CdrResponse.Descripcion);
+        // console.log(resConsult)
+      });
+
+
+  }
+
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: GuiaRemisionSchema,
     enableReinitialize: false,
     onSubmit: async (values) => {
 
-
-      // console.log(values)
       const fechaEmision = values.datosGenerales.fechaEmision;
       const fecTraslado = values.envio.fecTraslado;
 
@@ -311,15 +387,14 @@ const GuiaRemisionMain = () => {
         const parseFechaEmision = new Date(fechaEmision)
         const parseFecTraslado = new Date(fecTraslado)
 
-        // console.log(parseFecTraslado, parseFechaEmision)
         if (parseFecTraslado < parseFechaEmision) {
           getError('Datos de Envío: La fecha de traslado debe ser mayor a la fecha de Emisión de la Guía')
           return;
         }
       }
 
-      if (!values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && values.transportista.numDoc===''){
-        if(values.vehiculo.placa===''){
+      if (!values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && values.transportista.numDoc === '') {
+        if (values.vehiculo.placa === '') {
           getError('Debe escribir una Placa');
           return;
         }
@@ -330,105 +405,301 @@ const GuiaRemisionMain = () => {
         return;
       }
 
-      const token = await getToken()
-      if (token) {
-        const doc = {
-          // ...values.datosGenerales,
-          fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
-          correlativo: values.datosGenerales.correlativo,
-          serie: values.datosGenerales.serie,
-          tipoDoc: values.datosGenerales.tipoDoc,
-          version: values.datosGenerales.version,
-          destinatario: values.destinatario,
-          tercero: values.tercero.numDoc !== '' ? values.tercero : null,
-          comprador: null,
-          envio: {
-            ...values.envio,
-            partida: values.partida,
-            llegada: values.llegada,
-            vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
-            aeropuerto: null,
-            puerto: null,
-            choferes: values.choferes,
-            transportista: values.transportista.numDoc !== '' ? values.transportista : null
-          },
-          addDocs: values.addDocs,
-          details: values.details,
-        }
+      const doc = {
+        // ...values.datosGenerales,
+        fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
+        correlativo: values.datosGenerales.correlativo,
+        serie: values.datosGenerales.serie,
+        tipoDoc: values.datosGenerales.tipoDoc,
+        version: values.datosGenerales.version,
+        observacion: values.observacion,
+        destinatario: values.destinatario,
+        tercero: values.tercero.numDoc !== '' ? values.tercero : null,
+        comprador: null,
+        envio: {
+          ...values.envio,
+          partida: values.partida,
+          llegada: values.llegada,
+          vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
+          aeropuerto: null,
+          puerto: null,
+          choferes: values.choferes,
+          transportista: values.transportista.numDoc !== '' ? values.transportista : null
+        },
+        addDocs: values.addDocs,
+        details: values.details,
+      }
 
-        // console.log(doc)
+      const token_sunat = await getToken()
+      if (token_sunat) {
 
-        const data = await getSunatParams();
+        if (idDespatch) {
+          const respuesta = await updateGuia(doc);
+          if (!respuesta.exito) {
+            getError(respuesta.message);
+            return;
+          }
+          procesoElectronico(doc, respuesta.electronico,token_sunat)
 
-        if (data) {
-          const x = Promise.resolve();
-          x
-            .then((_x) => sendApi({ doc }, "/GeneraXmlDespatch"))
-            .then((res) => {
-              const { response } = res;
-              if (data.certificado === '') {
-                getError('NO HAY UN TOKEN GENERADO');
-                return;
-              }
-              // console.log(response);
-              if (response.Exito) {
-                const sign = {
-                  'CertificadoDigital': data.certificado,
-                  'PasswordCertificado': data.clavecertificado,
-                  'TramaXmlSinFirma': res.response.TramaXmlSinFirma
-                }
-                return sign
-              }
-            })
-            .then(sign => sendApi(sign, '/FirmarXml'))
-            .then(resSign => {
-
-              const { response } = resSign;
-              if (response.Exito) {
-                const request = {
-                  'Ruc': '',
-                  'EndPointUrl': data.urlsend,
-                  'TramaXmlFirmado': response.TramaXmlFirmado,
-                  'TipoDocumento': values.datosGenerales.tipoDoc,
-                  'IdDocumento': values.datosGenerales.serie + '-' + values.datosGenerales.correlativo,
-                  'token': token
-                }
-                // console.log('request',request);
-                return request
-              }
-            })
-            .then(send => sendApi(send, '/SendDespatch'))
-            .then(resSend => {
-              console.log(resSend)
-              if (resSend.exito) {
-                const consult = {
-                  "access_token": token,
-                  "EndPointUrl": `${data.urlconsult}${resSend.numTicket}`
-                }
-                
-                return consult;
-              }
-            })
-            .then(consult => sendApi(consult, '/ConsultaGuia'))
-            .then(resConsult => {
-
-              if (resConsult.error) {
-                getError(resConsult.error.desError);
-                return;
-              }
-              getSuccess(JSON.stringify(resConsult.CdrResponse));
-              // console.log(resConsult)
-            });
+        } else {
+          const respuesta = await storeGuia(doc);
+          setIdDespatch(respuesta.despatch.id)
+          setEst(respuesta.electronico)
+          if (!respuesta.exito) {
+            getError(respuesta.message);
+            return;
+          }
+          procesoElectronico(doc, respuesta.electronico,token_sunat)
         }
 
       } else {
         console.log('error al obtener el token')
       }
-
-
-
     },
   });
+
+
+  const procesoElectronico = (doc, estadoElectronico,token_sunat) => {
+    if (params) {
+      const x = Promise.resolve();
+      x
+        .then((_x) => sendApi({ doc }, "/GeneraXmlDespatch", 'Generando XML ...'))
+        .then((res) => {
+          const { response } = res;
+          if (params.certificado === '') {
+            getError('NO HAY UN TOKEN GENERADO');
+            return;
+          }
+          // console.log(response);
+          if (response.Exito) {
+
+            updateEstadoElectronico({
+              'estado': 'G',
+              'descripcion': 'Documento Generado con Exito',
+              'rutaXml': `C:/laragon/www/apiguias/XML/`
+            }, estadoElectronico);
+
+            const sign = {
+              'CertificadoDigital': params.certificado,
+              'PasswordCertificado': params.clavecertificado,
+              'TramaXmlSinFirma': res.response.TramaXmlSinFirma
+            }
+            return sign
+          }
+        })
+        .then(sign => sendApi(sign, '/FirmarXml', 'Firmando XML...'))
+        .then(resSign => {
+
+          const { response } = resSign;
+          if (response.Exito) {
+
+            updateEstadoElectronico({
+              'estado': 'F',
+              'descripcion': 'Documento Firmado con Exito',
+              'hash': response.ResumenFirma
+            }, estadoElectronico);
+
+            const request = {
+              'Ruc': '',
+              'EndPointUrl': params.urlsend,
+              'TramaXmlFirmado': response.TramaXmlFirmado,
+              'TipoDocumento': doc.tipoDoc,
+              'IdDocumento': doc.serie + '-' + doc.correlativo,
+              'token': token_sunat
+            }
+
+            console.log('request',request);
+            return request
+          }
+        })
+        .then(send => sendApi(send, '/SendDespatch', 'Enviando Guiá electrónica'))
+        .then(resSend => {
+          console.log(resSend)
+          if (resSend.exito) {
+            setConsultToken(token_sunat)
+            setTicket(resSend.numTicket)
+            updateEstadoElectronico({
+              'estado': 'S',
+              'descripcion': 'Documento enviado con Exito',
+              'token': token_sunat,
+              'ticket': resSend.numTicket
+            }, estadoElectronico);
+            const consult = {
+              "access_token": token_sunat,
+              "EndPointUrl": `${params.urlconsult}${resSend.numTicket}`
+            }
+            return consult;
+          }
+        })
+        .then(consult => sendApi(consult, '/ConsultaGuia', 'Consultando Ticket'))
+        .then(resConsult => {
+          console.log(resConsult)
+          if (resConsult.error) {
+            getError(resConsult.error.desError);
+            updateEstadoElectronico({
+              'estado': 'C',
+              // 'descripcion':'Documento consultado con Exito',
+              'rutaCdr': `C:/laragon/www/apiguias/CDR/`,
+              'descripcion': resConsult.error.desError,
+              'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
+              'codigoSunat': resConsult.error.numError,
+              'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
+              'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
+            }, estadoElectronico);
+            return;
+          }
+          if (!resConsult.CdrResponse) {
+            updateEstadoElectronico({
+              'estado': 'C',
+              // 'descripcion':'Documento consultado con Exito',
+              'rutaCdr': `C:/laragon/www/apiguias/CDR/`,
+              'descripcion': 'PENDIENTE DE CONSULTA',
+              'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
+            }, estadoElectronico);
+
+            getWarning('Si ha generado el token y el ticket de consulta, presiona CONSULTAR');
+            return;
+          }
+          updateEstadoElectronico({
+            'estado': 'C',
+            // 'descripcion':'Documento consultado con Exito',
+            'rutaCdr': `C:/laragon/www/apiguias/CDR/`,
+            'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
+            'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
+            'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
+            'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
+          }, estadoElectronico);
+
+          setHashQr(resConsult.CdrResponse.hashQr)
+          getSuccess(resConsult.CdrResponse.Descripcion);
+        });
+    }
+  }
+
+  const storeGuia = async (values:any) => {
+    try {
+
+      // console.log(values)
+      // const doc = {
+      //   // ...values.datosGenerales,
+      //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
+      //   correlativo: values.datosGenerales.correlativo,
+      //   serie: values.datosGenerales.serie,
+      //   tipoDoc: values.datosGenerales.tipoDoc,
+      //   version: values.datosGenerales.version,
+      //   observacion: values.observacion,
+      //   destinatario: values.destinatario,
+      //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
+      //   comprador: null,
+      //   envio: {
+      //     ...values.envio,
+      //     partida: values.partida,
+      //     llegada: values.llegada,
+      //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
+      //     aeropuerto: null,
+      //     puerto: null,
+      //     choferes: values.choferes,
+      //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
+      //   },
+      //   addDocs: values.addDocs,
+      //   details: values.details,
+      // }
+
+      const { data, status } = await clienteAxios.post(`/api/despatches/`, { ...values }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      // console.log(data)
+      if (status === 200) {
+        return data;
+      } else {
+        return null;
+      }
+      // console.log(data)
+
+
+    }
+    catch (error) {
+      console.log(error)
+      return null;
+    }
+  }
+
+
+  const updateGuia = async (values:any) => {
+    try {
+
+      // console.log(values)
+      // const doc = {
+      //   // ...values.datosGenerales,
+      //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
+      //   correlativo: values.datosGenerales.correlativo,
+      //   serie: values.datosGenerales.serie,
+      //   tipoDoc: values.datosGenerales.tipoDoc,
+      //   version: values.datosGenerales.version,
+      //   observacion: values.observacion,
+      //   destinatario: values.destinatario,
+      //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
+      //   comprador: null,
+      //   envio: {
+      //     ...values.envio,
+      //     partida: values.partida,
+      //     llegada: values.llegada,
+      //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
+      //     aeropuerto: null,
+      //     puerto: null,
+      //     choferes: values.choferes,
+      //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
+      //   },
+      //   addDocs: values.addDocs,
+      //   details: values.details,
+      // }
+
+      const { data, status } = await clienteAxios.put(`/api/despatches/${idDespatch}`, { ...values }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      // console.log(data)
+      if (status === 200) {
+        return data;
+      } else {
+        return null;
+      }
+      // console.log(data)
+
+
+    }
+    catch (error) {
+      console.log(error)
+      return null;
+    }
+  }
+
+
+  const updateEstadoElectronico = async (values: any, id: number) => {
+
+    try {
+      const { data, status } = await clienteAxios.put(`/api/estadoelectronico/${id}`, {
+
+        ...values
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log(data)
+
+      // console.log(data)
+      if (status === 200) {
+
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     if (!formik.isSubmitting) return;
@@ -452,6 +723,32 @@ const GuiaRemisionMain = () => {
       }
     }
   }, [formik]);
+
+
+  useEffect(() => {
+
+    if (hashQr !== '') {
+
+      setTimeout(() => {
+        window.open(hashQr, '_blank');
+      }, 5000);
+
+      setTimeout(() =>
+        setHashQr('')
+        , 2000)
+    }
+
+  }, [hashQr])
+
+
+  const getParams = async () => {
+    const data = await getSunatParams();
+    setParams(data)
+  }
+
+  useEffect(() => {
+    getParams()
+  }, [])
 
   /* ESTILOS */
 
@@ -607,8 +904,8 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const onHandleChangePuntoEmision = (e: React.ChangeEvent<HTMLInputElement>)=>{
-      setPuntoEmisionSelected(parseInt(e.target.value));
+  const onHandleChangePuntoEmision = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPuntoEmisionSelected(parseInt(e.target.value));
   }
 
   const [expanded, setExpanded] = React.useState<string | false>('panel1');
@@ -626,8 +923,15 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
+  const setTimeoutMessage = (mensaje: string) => {
+    setMessage(mensaje)
+    setTimeout(() => {
+      setMessage('')
+    }, 2000);
+  }
+
   useEffect(() => {
-    if(user){
+    if (user) {
       getPuntosEmision()
     }
   }, [user])
@@ -636,9 +940,11 @@ const GuiaRemisionMain = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-
       <Container maxWidth="md" sx={{ mt: 5 }}>
         <Typography textAlign={'center'} variant="h4" my={3}>GUIA DE REMISIÓN ELECTRÓNICA</Typography>
+        <Box width={'100%'} position={'fixed'} zIndex={99999999} style={{ marginBottom: "1.5rem" }} px={4} >
+          {message !== "" ? <Alert variant="filled" sx={{ color: 'white' }} severity="success">{message}</Alert> : ""}
+        </Box>
         <Box px={2} mb={4}>
           <FormControl fullWidth size="small">
             <InputLabel id="">
@@ -654,13 +960,13 @@ const GuiaRemisionMain = () => {
             >
               <MenuItem value={0}>...Elija un punto de emision...</MenuItem>
               {
-                puntosEmision?.map(pe=>(
+                puntosEmision?.map(pe => (
                   <MenuItem key={pe.id} value={pe.id}>{pe.nombre}</MenuItem>
                 ))
               }
 
             </Select>
-            
+
           </FormControl>
         </Box>
         <Box component={'form'} onSubmit={formik.handleSubmit}>
@@ -1186,6 +1492,33 @@ const GuiaRemisionMain = () => {
             >
               Observaciones
             </Button>
+
+            <Box sx={{ width: '100%' }} columnGap={2} display={"flex"} flexDirection={'row'} mt={2} alignItems={'baseline'}>
+              <TextField
+                margin="normal"
+                size="small"
+                variant="outlined"
+                fullWidth
+                label='Token'
+                name="token"
+                value={consultToken}
+                InputProps={{ readOnly: true }}
+              />
+              <TextField
+                margin="normal"
+                size="small"
+                variant="outlined"
+                fullWidth
+                label='Ticket'
+                name="ticket"
+                value={ticket}
+                InputProps={{ readOnly: true }}
+              />
+              <Button onClick={consultarToken} fullWidth size="small" variant="contained" color="error" sx={{ height: 40 }}>
+                Consultar
+              </Button>
+
+            </Box>
 
 
 

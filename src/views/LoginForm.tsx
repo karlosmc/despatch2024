@@ -116,8 +116,6 @@ const LoginForm = () => {
             ),
           }}
         />
-
-
         <TextField
           label="Contraseña"
           type="password"
@@ -139,7 +137,6 @@ const LoginForm = () => {
             ),
           }}
         />
-
         <FormControl style={{ minWidth: "100%" }}>
           <InputLabel id="">Empresa</InputLabel>
           <Select
@@ -154,14 +151,13 @@ const LoginForm = () => {
             required
           >
             <MenuItem value={""}>Seleccione la empresa</MenuItem>
-            <MenuItem value={"1"}>Agropecuaria e Industrias Fafio S.A.</MenuItem>
-            <MenuItem value={"2"}>Estación de energías el centenario S.A.C.</MenuItem>
+            <MenuItem value={"1"}>Estación de energías el centenario S.A.C.</MenuItem>
+            <MenuItem value={"2"}>Agropecuaria e Industrias Fafio S.A.</MenuItem>
           </Select>
           <FormHelperText>
             Seleccione la empresa dónde labora
           </FormHelperText>
         </FormControl>
-
         <Button
           variant="contained"
           color="error"

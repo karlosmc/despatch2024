@@ -252,7 +252,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
           label={ formik.values.tipo==='81'? `Código de SCOP`:'Número de comprobante'}
           fullWidth
           name="nro"
-          value={formik.values.nro}
+          value={formik.values.nro.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.nro && formik.errors.nro}

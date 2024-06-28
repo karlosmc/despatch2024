@@ -57,6 +57,7 @@ const StyledSearchButton = styled(Button)(({ }) => ({
 }))
 
 const ClientValues: Client = {
+  id:0,
   numDoc: "",
   rznSocial: "",
   tipoDoc: "1",
@@ -133,6 +134,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
 
   const handleSetFavorite = (item: ChipInterface): void => {
     const persona = dataFilter.find(it => it.id === item.id);
+    formik.setFieldValue('id', persona.id)
     formik.setFieldValue('tipoDoc', persona.tipoDoc)
     formik.setFieldValue('numDoc', persona.numDoc)
     formik.setFieldValue('rznSocial', persona.rznSocial)
@@ -149,14 +151,15 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
         // console.log(dataFilter)
         const defaultPersona = dataFilter.find(it => Number(it.isCompany) === 1);
         // console.log(defaultPersona)
+        formik.setFieldValue('id', defaultPersona.id)
         formik.setFieldValue('tipoDoc', defaultPersona.tipoDoc)
         formik.setFieldValue('numDoc', defaultPersona.numDoc)
         formik.setFieldValue('rznSocial', defaultPersona.rznSocial)
       }
-    } else {
-      formik.setFieldValue('tipoDoc', '')
-      formik.setFieldValue('numDoc', '')
-      formik.setFieldValue('rznSocial', '')
+    // } else {
+    //   formik.setFieldValue('tipoDoc', '')
+    //   formik.setFieldValue('numDoc', '')
+    //   formik.setFieldValue('rznSocial', '')
     }
 
   }, [tipo, dataFilter])

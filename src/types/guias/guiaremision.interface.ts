@@ -59,7 +59,7 @@ export interface AddDoc {
 
 
 export interface Client {
-    
+    id?:number;
     tipoDoc:   string;
     numDoc:    string;
     rznSocial: string;

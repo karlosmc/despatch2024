@@ -100,9 +100,9 @@ const DatosDireccion = ({
   schema,
   codTraslado
 }: DireccionFormProps) => {
-  if (codTraslado !== '04') {
-    initialValue.codLocal = '0000'
-  }
+  // if (codTraslado !== '04') {
+  //   initialValue.codLocal = '0000'
+  // }
   const formik = useFormik({
     initialValues: initialValue,
     validationSchema: schema || PartidaSchema,

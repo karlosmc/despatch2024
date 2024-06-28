@@ -86,6 +86,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
 
   useEffect(() => {
     if(conductor){
+      formik.setFieldValue('id', conductor.id)
       formik.setFieldValue('tipoDoc', conductor.tipoDoc.toUpperCase())
       formik.setFieldValue('nroDoc', conductor.nroDoc.toUpperCase())
       formik.setFieldValue('nombres', conductor.nombres.toUpperCase())
