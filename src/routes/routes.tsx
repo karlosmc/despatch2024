@@ -25,6 +25,7 @@ import Transportistas from "../views/Transportista";
 import SunatParameters from "../views/SunatParameters";
 import Grelayout from "../layouts/GreLayout";
 import Vehiculos from "../views/Vehiculos";
+import Guias from "../views/Guias";
 // import LoginForm from "../pages/login";
 
 export const router = createBrowserRouter([
@@ -89,6 +90,10 @@ export const router = createBrowserRouter([
       {
         path:'/admin/vehiculos',
         element:<Vehiculos/>
+      },
+      {
+        path:'/admin/guias',
+        element:<Guias/>
       },
       
     ]

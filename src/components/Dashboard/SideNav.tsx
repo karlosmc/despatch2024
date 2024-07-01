@@ -87,6 +87,10 @@ const SideNav = ({ sidebarCollapsed }: AppHeaderInterface) => {
           <Typography variant='body2'>Vehiculos</Typography>
         </MyMenu>
 
+        <MyMenu active={location.pathname==='/admin/guias'} component={<Link to="/admin/guias"/>} icon={<SourceOutlined />}>
+          <Typography variant='body2'>Panel Guias</Typography>
+        </MyMenu>
+
         <MyMenu active={location.pathname==='/gre/guiaremision'} component={<a href="/gre/guiaremision"  target='_blank'rel='noopener noreferrer'/> } icon={<SourceOutlined />}>
           <Typography variant='body2'>Guias otra pestaña</Typography>
         </MyMenu>
