@@ -26,7 +26,14 @@ import SunatParameters from "../views/SunatParameters";
 import Grelayout from "../layouts/GreLayout";
 import Vehiculos from "../views/Vehiculos";
 import Guias from "../views/Guias";
+import GuiaRemisionEdicion from "../pages/GuiaRemision/edicionMode";
+
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { ThemeContextProvider, useThemeContext } from '../context/themeProvider';
 // import LoginForm from "../pages/login";
+
+
+
 
 export const router = createBrowserRouter([
   {
@@ -105,72 +112,13 @@ export const router = createBrowserRouter([
       {
       path:'/gre/guiaremision',
       element:<GuiaRemisionMain/>
-      }
+      },
     ]
+  },
+  {
+    path:'/guiaedicion/:id',
+    element:<GuiaRemisionEdicion/>
   }
  
 ]);
-
-
-
-// export const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <AdminLayout />,
-//     children:[
-//       {
-//         index:true,
-//         element:<Inicio/>
-//       }
-//     ]
-//   },
-//   {
-//     path:'/auth',
-//     element:<AuthLayout/>,
-//     children:[
-//       {
-//         path:'/auth/login',
-//         element:<LoginForm/>
-//       },
-//       {
-//         path:'/auth/registro',
-//         element:<RegisterForm />
-//       }
-//     ]
-//   },
-//   {
-//     path:'/admin',
-//     element:<AdminLayout/>,
-//     children:[
-//         {
-//           index:true,
-//           element:<Dashboard/>
-//         },
-//         {
-//           path:'/admin/guias',
-//           element:<Guias/>
-//         }
-//     ]
-//   },
-
-//   {
-//     path: "/despatch",
-//     element: <DespatchPage />,
-//   },
-//   {
-//     path:'/admin',
-//     element:<AdminLayout/>,
-//     // children:[
-//     //     {
-//     //       index:true,
-//     //       element:<Ordenes/>
-//     //     },
-//     //     {
-//     //       path:'/admin/productos',
-//     //       element:<Productos/>
-//     //     }
-//     // ]
-//   }
- 
-// ]);
 

@@ -90,6 +90,7 @@ const SearchPuntos = ({ onCheck }: SearchProductoProps) => {
         <TableCell align="left">{fil.codLocal}</TableCell>
         <TableCell align="left">{fil.direccion}</TableCell>
         <TableCell align="left">{fil.fullubigeo}</TableCell>
+        <TableCell align="left">{fil.rznSocial}</TableCell>
         
         <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
@@ -116,7 +117,9 @@ const SearchPuntos = ({ onCheck }: SearchProductoProps) => {
             <MenuItem value={'ubigeo'}>UBIGEO</MenuItem>
             <MenuItem value={'direccion'}>Dirección</MenuItem>
             <MenuItem value={'fullubigeo'}>Ubigeo completo</MenuItem>
+            <MenuItem value={'fullubigeo'}>Rzn.Social</MenuItem>
             <MenuItem value={'nombreCorto'}>Nombre corto</MenuItem>
+            <MenuItem value={'rznSocial'}>Nombre corto</MenuItem>
             
           </Select>
         </FormControl>
@@ -147,6 +150,7 @@ const SearchPuntos = ({ onCheck }: SearchProductoProps) => {
               <TableCell width={'5%'} align="left">Cod. Local</TableCell>
               <TableCell width={'40%'} align="left">Dirección</TableCell>
               <TableCell width={'20%'} align="left">Ubigeo</TableCell>
+              <TableCell width={'20%'} align="left">Rzn.Social</TableCell>
               <TableCell width={'10%'} align="left">Fav?</TableCell>
               <TableCell width={'10%'} align="left">Propio?</TableCell>
               <TableCell width={'10%'} align="left">Seleccionar</TableCell>

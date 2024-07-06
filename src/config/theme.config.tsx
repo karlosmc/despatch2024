@@ -33,36 +33,32 @@ export enum themePalette  {
 
 let theme = createTheme({
 
-    palette:{
-        mode:'dark',
-        background:{
-            default:themePalette.BG
-        },
-        primary:{
-            main:themePalette.dark_primary,
-            light:themePalette.light_primary
-        },
-        secondary:{
-            main:themePalette.dark_secondary,
-            light:themePalette.dark_secondary_light
-            // dark:themePalette.dark_dark
-        },
-        info:{
-            main:themePalette.dark_info
-        },
-        // error:{
-        //     main:themePalette.dark_error
-        // },
-        success:{
-            main:themePalette.dark_success,
-            contrastText:'#fff'
-        },
-        warning:{
-            main:themePalette.dark_warning
-        },
+    // palette:{
+    //     mode:'light',
         
-     
-    },
+    //     primary:{
+    //         main:themePalette.dark_primary,
+    //         light:themePalette.light_primary
+    //     },
+    //     secondary:{
+    //         main:themePalette.dark_secondary,
+    //         light:themePalette.dark_secondary_light
+    //         // dark:themePalette.dark_dark
+    //     },
+    //     info:{
+    //         main:themePalette.dark_info
+    //     },
+    //     // error:{
+    //     //     main:themePalette.dark_error
+    //     // },
+    //     success:{
+    //         main:themePalette.dark_success,
+    //         contrastText:'#fff'
+    //     },
+    //     warning:{
+    //         main:themePalette.dark_warning
+    //     },
+    // },
     typography:{
         fontFamily:themePalette.FONT_GLOBAL,
       

@@ -23,8 +23,7 @@ export interface GuiaRemision {
     choferes:EnvioChoferes[],
     partida:Direccion,
     llegada:Direccion,
-    observacion:string,
-    
+    observacion:string,   
 }
 
 export interface Transportista extends Client {
@@ -143,6 +142,7 @@ export interface Direccion {
     direccion: string;
     codLocal:  string;
     ruc:       string;
+    rznSocial?:string;
 }
 
 export interface EnvioTransportista extends Client {

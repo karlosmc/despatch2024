@@ -1,5 +1,5 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import {  useState } from 'react'
+import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
@@ -11,6 +11,7 @@ import { useNotification } from '../../context/notification.context';
 
 
 import { SunatParams } from '../../types/sunatparameters.interface';
+
 
 
 
@@ -28,6 +29,8 @@ const SunatInitialValues: SunatParams = {
   urlconsult: '',
   urlsend: '',
   username: '',
+  nombre: '',
+  activo: false,
 
 }
 
@@ -49,6 +52,8 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
       setFile(event.target.files[0]);
     }
   };
+
+  const [activo, setActivo] = useState<boolean>(initialValue?.activo||false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
@@ -75,13 +80,15 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
       formData.append('clavecertificado', values.clavecertificado)
       formData.append('env', values.env)
       formData.append('urlsend', values.urlsend)
+      formData.append('nombre', values.nombre)
+      formData.append('activo', String(values.activo?1:0))
 
       const { data, status } = await clienteAxios.post('/api/sunat', formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type':'multipart/form-data'
-          }
-        })
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       //  console.log(data)
       if (status === 200) {
         onConfirm(data.sunat);
@@ -96,9 +103,13 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
     }
   }
 
+  useEffect(() => {
+    formik.setFieldValue('activo', activo)
+  }, [activo])
+
   const updateSunat = async (values: SunatParams) => {
 
-    
+
     try {
 
       const formData = new FormData();
@@ -116,11 +127,13 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
       formData.append('clavecertificado', values.clavecertificado)
       formData.append('env', values.env)
       formData.append('urlsend', values.urlsend)
+      formData.append('nombre', values.nombre)
+      formData.append('activo', String(values.activo?1:0))
 
-      const { data, status } = await clienteAxios.post(`/api/sunat/${values.id}?_method=PUT`, formData , {
+      const { data, status } = await clienteAxios.post(`/api/sunat/${values.id}?_method=PUT`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type':'multipart/form-data'
+          'Content-Type': 'multipart/form-data'
         }
       })
 
@@ -157,6 +170,27 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
 
       <Box component={'form'} onSubmit={formik.handleSubmit}>
 
+
+        <Box textAlign={'center'}>
+          <Button onClick={() => setActivo(!activo)} variant={!activo ? 'outlined' : 'contained'} color='success' sx={{ display: 'inline-block', my: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>
+            {!activo ? 'DESACTIVADO' : 'ACTIVO'}
+          </Button>
+        </Box>
+
+        <TextField
+          margin="normal"
+          size="small"
+          fullWidth
+          name="nombre"
+          type="text"
+          label="Nombre de parametro"
+          sx={{ my: 1.5 }}
+          value={formik.values.nombre}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          helperText={formik.touched.nombre && formik.errors.nombre}
+          error={formik.touched.nombre && Boolean(formik.errors.nombre)}
+        />
         <Box
           display={"grid"}
           gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }}

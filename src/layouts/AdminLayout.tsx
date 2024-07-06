@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import AppHeader from '../components/Dashboard/AppHeader'
 import SideNav from '../components/Dashboard/SideNav'
-import { Box, SxProps, Theme } from '@mui/material'
+import { Box, CssBaseline, SxProps, Theme, ThemeProvider } from '@mui/material'
 import { Outlet } from 'react-router'
 import { useAuth } from '../hooks/useAuth'
+import { useThemeContext } from '../context/themeProvider'
 // import Inicio from '../views/Inicio'
 
 
@@ -12,23 +13,20 @@ const AdminLayout = () => {
   // const { isLoading } = useAuth({ middleware: 'auth', url: '' });
   useAuth({ middleware: 'auth', url: '' });
 
-
-
-
-  const [collapsed, setCollapsed] = useState<boolean>(false)
+  const { theme } = useThemeContext();
+  const [toggle, setToggle] = useState<boolean>(false)
   return (
-    <>
 
-      <AppHeader sidebarCollapsed={collapsed} setSidebarCollapsed={setCollapsed} />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppHeader toggle={toggle} setToggle={setToggle} />
       <Box sx={container}>
-        <SideNav sidebarCollapsed={collapsed} />
+        <SideNav toggle={toggle} setToggle={setToggle} />
         <Box component='main' sx={{ top: 100, ...mainSection }}>
           <Outlet />
         </Box>
       </Box>
-
-
-    </>
+    </ThemeProvider>
 
   )
 }

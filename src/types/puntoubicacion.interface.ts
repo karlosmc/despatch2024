@@ -6,4 +6,5 @@ export interface puntoUbicacion extends Direccion{
   isCompany?:boolean,
   nombreCorto?:string,
   fullubigeo?:string,
+  rznSocial?:string,
 }

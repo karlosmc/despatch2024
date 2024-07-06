@@ -33,7 +33,6 @@ const SunatParameters = () => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-
   const handleConfirm = (): void => {
     handleCloseModalForm()
   }

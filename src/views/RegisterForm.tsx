@@ -215,7 +215,7 @@ const RegisterForm = () => {
         </Button>
       </Box>
       <Box component={'div'} textAlign={'left'} mt={2} fontSize={12}>
-          <Link style={{color:'white'}} to="/auth/login">
+          <Link style={{color:'black'}} to="/auth/login">
             Ya tienes una cuenta? Ingresa aquí
           </Link>
       </Box>

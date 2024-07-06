@@ -156,7 +156,8 @@ export const PartidaSchema =yup.object().shape({
   ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
   direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
   codLocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
-  ruc:yup.string()
+  ruc:yup.string(),
+  rznSocial:yup.string()
 })
 
 
@@ -167,6 +168,7 @@ export const PuntosSchema =yup.object().shape({
   ruc:yup.string(),
   fav:yup.boolean(),
   isCompany:yup.boolean(),
+  rznSocial:yup.string(),
   nombreCorto:yup.string()
   .when("fav", {
     is: true, // alternatively: (val) => val == true
@@ -237,7 +239,8 @@ export const LlegadaSchema = yup.object().shape({
   ubigeo:yup.string().trim().required('Punto de llegada: Debe Elegir un ubigeo'),
   direccion:yup.string().trim().required('Punto de llegada: Debe escribir una dirección'),
   codLocal:yup.string().required('Punto de llegada: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de llegada: Solo debe escribir números").min(4,'Punto de llegada: Debe tener exactamente 4 digitos').max(4,'Punto de llegada: Debe tener exactamente 4 digitos'),
-  ruc:yup.string()
+  ruc:yup.string(),
+  rznSocial:yup.string(),
 })
 
 export const PuertoSchema = yup.object().shape({

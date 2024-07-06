@@ -10,6 +10,7 @@ import {
   EnvioTransportista,
   EnvioVehiculo,
   GuiaRemision,
+  Transportista,
 } from "../../types/guias/guiaremision.interface";
 import dayjs from "dayjs";
 import { useNotification } from "../../context/notification.context";
@@ -83,8 +84,9 @@ import clienteAxios from "../../config/axios";
 import { useAuth } from "../../hooks/useAuth";
 import { puntoEmision } from "../../types/puntoemision.interface";
 import { ParamsInterface } from "../../types/params.interface";
-import { useConfirm } from "material-ui-confirm";
-
+import { useParams } from "react-router";
+import DatosGeneralesFormEdicion from "../DatosGeneralesForm/edicion";
+import EnvioFormEdicion from "../DatosEnvioForm/edicion";
 
 // import { useAuth } from "../../hooks/useAuth";
 
@@ -124,20 +126,19 @@ const DatosGeneralesValues: DatosGenerales = {
   version: "2.0",
 };
 
-const initialValues: GuiaRemision = {
+const initialValuesPreloaded: GuiaRemision = {
   datosGenerales: DatosGeneralesValues,
   destinatario: {
-    id:0,
     numDoc: "",
     rznSocial: "",
     tipoDoc: "6",
   },
   tercero: {
-    id:0,
     numDoc: "",
     rznSocial: "",
     tipoDoc: "6",
   },
+  // envio: null,
   envio: EnvioValues,
   addDocs: [
 
@@ -152,7 +153,6 @@ const initialValues: GuiaRemision = {
     direccion: "",
     ruc: "",
     ubigeo: "",
-    rznSocial:'',
   },
   llegada: {
     id: 0,
@@ -160,7 +160,6 @@ const initialValues: GuiaRemision = {
     direccion: "",
     ruc: "",
     ubigeo: "",
-    rznSocial:''
   },
   transportista: {
     id: 0,
@@ -178,7 +177,9 @@ type ModalsProps = {
   title: string;
 };
 
-const GuiaRemisionMain = () => {
+const GuiaRemisionEdicion = () => {
+
+  const { id } = useParams();
 
   const { getError, getSuccess, getWarning } = useNotification();
 
@@ -195,6 +196,8 @@ const GuiaRemisionMain = () => {
   const handleClose = () => setOpen(false);
 
   const [base64Pdf, setBase64Pdf] = useState<string>('')
+
+  const [initialValues, setInitialValues] = useState<GuiaRemision>(initialValuesPreloaded)
 
   const [accion, setAccion] = useState<string>('form')
 
@@ -226,6 +229,12 @@ const GuiaRemisionMain = () => {
 
   const { user } = useAuth({ middleware: '', url: '' });
 
+
+  useEffect(() => {
+    if (id) {
+      editGuia(id)
+    }
+  }, [id])
 
   const getPuntosEmision = async () => {
     try {
@@ -263,7 +272,6 @@ const GuiaRemisionMain = () => {
     // Cierra el modal en la posición especificada
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
-
 
   // const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
 
@@ -328,13 +336,11 @@ const GuiaRemisionMain = () => {
   const consultarToken = () => {
     const numeroDocumento = `${params.ruc}-${formik.values.datosGenerales.tipoDoc}-${formik.values.datosGenerales.serie}-${formik.values.datosGenerales.correlativo}`;
     const urlconsult = params.urlconsult;
-
     const consult = {
       "access_token": consultToken,
       "EndPointUrl": `${urlconsult}${ticket}`,
       numeroDocumento
     }
-
     sendApi(consult, '/ConsultaGuia', 'Consultando Ticket')
       .then(resConsult => {
         // console.log(resConsult)
@@ -368,7 +374,7 @@ const GuiaRemisionMain = () => {
         }
 
         updateEstadoElectronico({
-          'estado': 'F',
+          'estado': 'C',
           // 'descripcion':'Documento consultado con Exito',
           'rutaCdr': `/CDR/${numeroDocumento}.zip`,
           'rutaPdf': `/PDF/${numeroDocumento}.pdf`,
@@ -376,14 +382,14 @@ const GuiaRemisionMain = () => {
           'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
           'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
           'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-          'codigoSunat':resConsult.codRespuesta ? resConsult.codRespuesta : ''
+          'codigoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
 
         }, est);
 
         setHashQr(resConsult.CdrResponse.hashQr)
         getSuccess(resConsult.CdrResponse.Descripcion);
 
-        if(resConsult.codRespuesta==="0"){
+        if (resConsult.codRespuesta === "0") {
           setRefresh(true)
         }
         // console.log(resConsult)
@@ -395,7 +401,7 @@ const GuiaRemisionMain = () => {
   const formik = useFormik({
     initialValues: initialValues,
     validationSchema: GuiaRemisionSchema,
-    enableReinitialize: false,
+    enableReinitialize: true,
     onSubmit: async (values) => {
 
       const fechaEmision = values.datosGenerales.fechaEmision;
@@ -560,7 +566,7 @@ const GuiaRemisionMain = () => {
           // console.log(resConsult)
           if (resConsult.error) {
             getError(resConsult.error.desError);
-            // console.log(resConsult)
+            console.log(resConsult)
             updateEstadoElectronico({
               'estado': 'C',
               // 'descripcion':'Documento consultado con Exito',
@@ -591,7 +597,7 @@ const GuiaRemisionMain = () => {
             return;
           }
           updateEstadoElectronico({
-            'estado': 'F',
+            'estado': 'C',
             // 'descripcion':'Documento consultado con Exito',
             'rutaCdr': `/CDR/${numeroDocumento}.zip`,
             'rutaPdf': `/CDR/${numeroDocumento}.pdf`,
@@ -599,46 +605,138 @@ const GuiaRemisionMain = () => {
             'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
             'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
             'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-            'codigoSunat':resConsult.codRespuesta ? resConsult.codRespuesta : ''
+            'codigoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
           }, estadoElectronico);
 
           setHashQr(resConsult.CdrResponse.hashQr)
           getSuccess(resConsult.CdrResponse.Descripcion);
-          if(resConsult.codRespuesta==="0"){
+          if (resConsult.codRespuesta === "0") {
             setRefresh(true)
           }
         });
     }
   }
 
+  const editGuia = async (id: string) => {
+    try {
+      const { data, status } = await clienteAxios(`/api/despatches/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      // console.log(data)
+      if (status === 200) {
+        // return data;
+        formatedEditGuia(data)
+      } else {
+        return null;
+      }
+      // console.log(data)
+
+
+    }
+    catch (error) {
+      console.log(error)
+      return null;
+    }
+  }
+
+  const formatedEditGuia = (data: any) => {
+
+    const { data: guiaEditada } = data;
+
+    const DATOSGENERALES: DatosGenerales = {
+      correlativo: guiaEditada.correlativo,
+      serie: guiaEditada.serie,
+      tipoDoc: '09',
+      fechaEmision: guiaEditada.fechaEmision,
+      version: guiaEditada.version,
+    }
+    const ENVIO: Envio = {
+      // ...guiaEditada.envio,
+      // indicadores: guiaEditada.envio.indicadores.map(indi => indi.indicador),
+      codTraslado:guiaEditada.envio.codTraslado,
+      desTraslado:guiaEditada.envio.desTraslado,
+      fecTraslado:guiaEditada.envio.fecTraslado,
+      indicadores:guiaEditada.envio.indicadores.map(indi=> indi.indicador),
+      modTraslado:guiaEditada.envio.modTraslado,
+      numBultos:guiaEditada.envio.numBultos,
+      pesoTotal:guiaEditada.envio.pesoTotal,
+      undPesoTotal:guiaEditada.envio.undPesoTotal,
+      indTransbordo:guiaEditada.envio.indTransbordo,
+      pesoItems:guiaEditada.envio.pesoItems,
+      sustentoPeso:guiaEditada.envio.sustentoPeso,
+
+    }
+   
+
+    const DESTINATARIO: Client = guiaEditada.destinatario;
+    const TERCERO: Client = guiaEditada.tercero ? guiaEditada.tercero : {
+      numDoc: "",
+      rznSocial: "",
+      tipoDoc: "6",
+    };
+
+    const TRANSPORTISTA: Transportista = guiaEditada.envio.transportista ? guiaEditada.envio.transportista : {
+      id: 0,
+      nroMtc: "",
+      numDoc: "",
+      rznSocial: "",
+      tipoDoc: "6",
+    };
+
+
+    const ADICIONALES: AddDoc[] = guiaEditada.addDocs;
+    const DETAILS: Detail[] = guiaEditada.details;
+
+    const CHOFERES: EnvioChoferes[] = guiaEditada.envio.choferes;
+
+    let vehiculos = guiaEditada.envio.vehiculo?.length > 0 ? guiaEditada.envio.vehiculo?.find(ve => ve.tipo === 'P') : null;
+    // console.log(vehiculos)
+
+    if (vehiculos) {
+      let secundarios = guiaEditada.envio.vehiculo?.filter(ve => ve.tipo === 'S') && [];
+      vehiculos.secundarios = secundarios;
+    }
+
+    const VEHICULOS: EnvioVehiculo = vehiculos ? vehiculos : { placa: '', codEmisor: '', id: 0, nroAutorizacion: '', nroCirculacion: '', secundarios: [] };
+
+    const PARTIDA: Direccion = guiaEditada.envio.partida;
+    const LLEGADA: Direccion = guiaEditada.envio.llegada;
+
+    const guiarestaurada: GuiaRemision = {
+      choferes: CHOFERES,
+      datosGenerales: DATOSGENERALES,
+      destinatario: DESTINATARIO,
+      envio: ENVIO,
+      llegada: LLEGADA,
+      observacion: guiaEditada.observacion,
+      partida: PARTIDA,
+      vehiculo: VEHICULOS,
+      addDocs: ADICIONALES,
+      comprador: null,
+      details: DETAILS,
+      tercero: TERCERO,
+      transportista: TRANSPORTISTA,
+      
+    }
+    // console.log(guiarestaurada)
+    setInitialValues(guiarestaurada)
+  }
+
+  useEffect(()=>{
+
+    if(id){
+      if(initialValues){
+        // console.log('entro')
+        formik.setValues(initialValues)
+      }
+    }
+
+  },[initialValues])
+
   const storeGuia = async (values: any) => {
     try {
-
-      // console.log(values)
-      // const doc = {
-      //   // ...values.datosGenerales,
-      //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
-      //   correlativo: values.datosGenerales.correlativo,
-      //   serie: values.datosGenerales.serie,
-      //   tipoDoc: values.datosGenerales.tipoDoc,
-      //   version: values.datosGenerales.version,
-      //   observacion: values.observacion,
-      //   destinatario: values.destinatario,
-      //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
-      //   comprador: null,
-      //   envio: {
-      //     ...values.envio,
-      //     partida: values.partida,
-      //     llegada: values.llegada,
-      //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
-      //     aeropuerto: null,
-      //     puerto: null,
-      //     choferes: values.choferes,
-      //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
-      //   },
-      //   addDocs: values.addDocs,
-      //   details: values.details,
-      // }
 
       const { data, status } = await clienteAxios.post(`/api/despatches/`, { ...values }, {
         headers: {
@@ -664,33 +762,6 @@ const GuiaRemisionMain = () => {
 
   const updateGuia = async (values: any) => {
     try {
-
-      // console.log(values)
-      // const doc = {
-      //   // ...values.datosGenerales,
-      //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
-      //   correlativo: values.datosGenerales.correlativo,
-      //   serie: values.datosGenerales.serie,
-      //   tipoDoc: values.datosGenerales.tipoDoc,
-      //   version: values.datosGenerales.version,
-      //   observacion: values.observacion,
-      //   destinatario: values.destinatario,
-      //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
-      //   comprador: null,
-      //   envio: {
-      //     ...values.envio,
-      //     partida: values.partida,
-      //     llegada: values.llegada,
-      //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
-      //     aeropuerto: null,
-      //     puerto: null,
-      //     choferes: values.choferes,
-      //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
-      //   },
-      //   addDocs: values.addDocs,
-      //   details: values.details,
-      // }
-
       const { data, status } = await clienteAxios.put(`/api/despatches/${idDespatch}`, { ...values }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -711,6 +782,7 @@ const GuiaRemisionMain = () => {
       return null;
     }
   }
+
 
   const updateEstadoElectronico = async (values: any, id: number) => {
 
@@ -774,13 +846,13 @@ const GuiaRemisionMain = () => {
 
   }, [hashQr])
 
-  useEffect(()=>{
-    if(refresh){
+  useEffect(() => {
+    if (refresh) {
       setTimeout(() => {
         window.location.href = window.location.href;
       }, 6000);
     }
-  },[refresh])
+  }, [refresh])
 
 
   const getParams = async () => {
@@ -791,53 +863,6 @@ const GuiaRemisionMain = () => {
   useEffect(() => {
     getParams()
   }, [])
-
-  const  confirm = useConfirm();
-  const SearchConductorByNrodoc = async (nrodoc:string) => {
-    try {
-
-      const { data, status } = await clienteAxios(`/api/conductor/buscar?nroDoc=${nrodoc}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        // setIsLoading(false)
-        // setDataFilter(data?.data)
-        // console.log(data.data)
-        if(data?.data.length>0){
-
-          confirm({ title:'Chofer encontrado!!',confirmationText:'Asignar',cancellationText:'Cancelar', description: `El usuario tiene un Chofer asignado {${nrodoc}}, ¿Desea asignarlo como Chofer Principal?` })
-          .then(() => {
-            const choferes:EnvioChoferes[]=[{
-              apellidos:data.data[0].apellidos,
-              licencia:data.data[0].licencia,
-              nombres:data.data[0].nombres,
-              nroDoc:data.data[0].nroDoc,
-              tipoDoc:data.data[0].tipoDoc,
-              tipo:'Principal',
-              id:data.data[0].id,
-          }]
-          formik.setFieldValue("choferes", choferes);
-          })
-          .catch(() => console.log("Operación cancelada"));
-        }
-        // console.log(data)
-      }
-    }
-    catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(()=>{
-
-    if(user){
-      SearchConductorByNrodoc(user.documento);
-    }
-
-  },[user])
-
 
   /* ESTILOS */
 
@@ -993,9 +1018,6 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const onHandleChangePuntoEmision = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPuntoEmisionSelected(parseInt(e.target.value));
-  }
 
   const [expanded, setExpanded] = React.useState<string | false>('panel1');
 
@@ -1027,6 +1049,8 @@ const GuiaRemisionMain = () => {
 
 
 
+
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Container maxWidth="md" sx={{ mt: 5 }}>
@@ -1039,30 +1063,7 @@ const GuiaRemisionMain = () => {
         }} px={4} textAlign={'center'} >
           {message !== "" ? <Alert variant="filled" sx={{ color: 'white' }} severity="success">{message}</Alert> : ""}
         </Box>
-        <Box px={2} mb={4}>
-          <FormControl fullWidth size="small">
-            <InputLabel id="">
-              Puntos de emisión del usuario
-            </InputLabel>
-            <Select
-              fullWidth
-              labelId=""
-              label="Puntos de emisión del usuario"
-              onChange={onHandleChangePuntoEmision}
-              value={puntoEmisionSelected}
-              name="puntoemision"
-            >
-              <MenuItem value={0}>...Elija un punto de emision...</MenuItem>
-              {
-                puntosEmision?.map(pe => (
-                  <MenuItem key={pe.id} value={pe.id}>{pe.nombre}</MenuItem>
-                ))
-              }
-
-            </Select>
-
-          </FormControl>
-        </Box>
+        
         <Box component={'form'} onSubmit={formik.handleSubmit}>
           <Grid
             container
@@ -1087,10 +1088,10 @@ const GuiaRemisionMain = () => {
                 <FolderSharedIcon />
               </AccordionSummary>
               <AccordionDetails>
-                <DatosGeneralesForm
+                <DatosGeneralesFormEdicion
                   onChange={onHandleDatosGeneralesChange}
                   datosGeneralesValues={formik.values.datosGenerales}
-                  puntoEmision={puntoEmisionSelected}
+                  puntoEmision={null}
                 />
               </AccordionDetails>
             </Accordion>
@@ -1116,9 +1117,9 @@ const GuiaRemisionMain = () => {
               <AccordionDetails>
 
                 <Grid item container xs={12}>
-                  <EnvioForm
+                  <EnvioFormEdicion
                     onChange={handleEnvioChange}
-                    EnvioValues={EnvioValues}
+                    EnvioValues={formik.values.envio}
                   />
                 </Grid>
               </AccordionDetails>
@@ -1670,4 +1671,4 @@ const GuiaRemisionMain = () => {
   );
 };
 
-export default GuiaRemisionMain;
+export default GuiaRemisionEdicion;

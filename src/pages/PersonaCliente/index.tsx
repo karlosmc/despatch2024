@@ -73,6 +73,7 @@ interface ClienteFormProps {
 
 
 const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps) => {
+  // console.log(initialValue)
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -111,6 +112,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
   const formik = useFormik({
     initialValues: initialValue,
     validationSchema: schema || DestinatarioSchema,
+    enableReinitialize:true,
     onSubmit: (values) => {
       onChange(values);
     },

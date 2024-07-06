@@ -11,6 +11,8 @@ const TOKEN_EXPIRY_KEY = 'token_sunat_expiry';
 
 const useAuthToken = () => {
   const [token, setToken] = useState<string | null>(localStorage.getItem(TOKEN_KEY));
+  // const [entorno, setEntorno] = useState<string>('')
+  
 
   const saveToken = (newToken: string, expiryTime: number) => {
 
@@ -68,7 +70,12 @@ const useAuthToken = () => {
 
   const getSunatParams = async (): Promise<ParamsInterface | null> => {
 
-    return await fetchSunatParameters()
+    const params = await fetchSunatParameters();
+
+    // setEntorno(params.tipo)
+
+
+    return params
   }
 
 
@@ -92,6 +99,7 @@ const fetchSunatParameters = async (): Promise<ParamsInterface | null> => {
       }
     }
   )
+  // console.log(data)
   if (statusText === "OK") {
     // console.log(data)
     return data.data;

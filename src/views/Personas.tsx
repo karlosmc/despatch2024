@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Theme, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import clienteAxios from '../config/axios';
@@ -29,6 +29,17 @@ const Personas = () => {
     title: "",
   });
 
+  const theme = useTheme()
+
+  const colorStyles = theme.palette['primary'];
+
+  const customTableHeader: SxProps<Theme> = {
+    backgroundColor: colorStyles.dark,
+  }
+
+
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -38,11 +49,9 @@ const Personas = () => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-
   const handleConfirm = (): void => {
     handleCloseModalForm()
   }
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
@@ -55,7 +64,6 @@ const Personas = () => {
     setPage(0);
   };
 
-
   // const [edit, setEdit] = useState<boolean>(false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
@@ -67,6 +75,13 @@ const Personas = () => {
 
   const { data,  isLoading } = useSWR('/api/clientes', fetcher);
 
+  const TableCellStyles = {
+    // padding: '8px',
+    fontSize: !isMobile?'0.875rem':'0.60rem', // Adjust font size here
+
+
+  }
+
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
@@ -76,13 +91,13 @@ const Personas = () => {
       <TableRow
         key={fil.id}
       >
-        <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.numDoc}</TableCell>
-        <TableCell align="left">{fil.rznSocial}</TableCell>
-        <TableCell align="left">{fil.tipodocumento}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
-        <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
-        <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditPersona(fil)} ><EditIcon /></Fab></TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.id}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.numDoc}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.rznSocial}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.tipodocumento}</TableCell>
+        {!isMobile && <TableCell sx={TableCellStyles} align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>}
+        {!isMobile && <TableCell sx={TableCellStyles} align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>}
+        <TableCell sx={TableCellStyles} align="left"><Fab color='primary' size='small' onClick={() => handleEditPersona(fil)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
   })
@@ -102,8 +117,8 @@ const Personas = () => {
 
   return (
     <Container>
-      <Box my={3} display='flex' component='div' justifyContent='space-between'>
-        <Typography>
+      <Box my={3} display='flex' component='div' justifyContent='space-between' flexDirection={{sm:'row',xs:'column'}}>
+        <Typography variant='h5' textAlign={{sm:'left',xs:'center'}} mb={{sm:0,xs:1}}>
           Personas
         </Typography>
         <Button
@@ -121,15 +136,15 @@ const Personas = () => {
 
       <TableContainer component={Paper} >
         <Table aria-label="simple table" size='small'>
-          <TableHead>
+          <TableHead sx={customTableHeader}>
             <TableRow>
-              <TableCell width={'5%'}>Id</TableCell>
-              <TableCell width={'10%'} align="left">Nro.Doc.</TableCell>
-              <TableCell width={'50%'} align="left">Razón Social</TableCell>
-              <TableCell width={'5%'} align="left">Tipo.Doc.</TableCell>
-              <TableCell width={'10%'} align="left">Fav?</TableCell>
-              <TableCell width={'10%'} align="left">Propio?</TableCell>
-              <TableCell width={'10%'} align="left">Editar</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'5%'}>Id</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Nro.Doc.</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'50%'} align="left">Razón Social</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'5%'} align="left">Tipo.Doc.</TableCell>
+              {!isMobile && <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Fav?</TableCell>}
+              {!isMobile && <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Propio?</TableCell>}
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Editar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -12,5 +12,7 @@ export interface SunatParams {
   env:string;
   urlsend:string;
   urlconsult:string;
+  nombre?:string;
+  activo?:boolean;
   
 }

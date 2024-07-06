@@ -81,7 +81,7 @@ const PuntoUbicacion = () => {
         <TableCell align="left">{fil.codLocal}</TableCell>
         <TableCell align="left">{fil.direccion}</TableCell>
         <TableCell align="left">{fil.fullubigeo}</TableCell>
-        
+        <TableCell align="left">{fil.rznSocial}</TableCell>
         <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditPunto(fil.id)} ><EditIcon /></Fab></TableCell>
@@ -130,6 +130,7 @@ const PuntoUbicacion = () => {
               <TableCell width={'5%'} align="left">Cod. Local</TableCell>
               <TableCell width={'40%'} align="left">Dirección</TableCell>
               <TableCell width={'30%'} align="left">Ubigeo</TableCell>
+              <TableCell width={'20%'} align="left">Rzn.Social</TableCell>
               <TableCell width={'5%'} align="left">Fav?</TableCell>
               <TableCell width={'10%'} align="left">Propio?</TableCell>
               <TableCell width={'10%'} align="left">Editar</TableCell>

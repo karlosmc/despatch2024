@@ -15,7 +15,7 @@ interface ChipFavoritosProps<T extends ChipInterface>  {
 }
 
 const chipStyle={
-  height: "30px",
+  height: "50px",
   margin: 1,
   py: 1,
   width: 100,
@@ -25,16 +25,13 @@ const chipStyle={
     textAlign: "center",
     fontWeight: "bold",
   },
-   
-  // background:'#56edf8c7',
-  // '&:hover':{
-  //   background:'#0eacb8c6',
-  // }
+
 }
 
 const ChipFavoritos = <T extends ChipInterface>({isLoading,items,onPick,title,activo=false}: ChipFavoritosProps<T>) => {
   
   const [chipSelected, setChipSelected] = useState(null)
+  
   const handleSetFavorite=(favorito:ChipInterface)=>{
     setChipSelected(favorito.id)
     onPick(favorito)

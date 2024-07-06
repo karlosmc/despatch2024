@@ -102,13 +102,12 @@ interface VehiculoFormProps {
 const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => {
 
   // console.log(initialValue)
+
+  // console.log(initialValue)
   const { getError } = useNotification()
 
   const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
   const [isCompany, setIsCompany] = useState<boolean>(initialValue?.isCompany || false);
-
-
-
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
@@ -138,11 +137,7 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
       // console.log(error)
 
       getError(error?.response?.data?.message)
-
-
     }
-
-
 
   }
 
@@ -200,11 +195,11 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
     <>
 
       <Box component={'form'} onSubmit={formik.handleSubmit}>
-        <Box 
-         display={"grid"}
-         gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }}
-         columnGap={1}
-         >
+        <Box
+          display={"grid"}
+          gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }}
+          columnGap={1}
+        >
           <TextField
             margin="normal"
             size="small"
@@ -213,7 +208,7 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
             type="text"
             label="Placa"
             disabled={Boolean(edit)}
-            value={formik.values.placa}
+            value={formik.values.placa.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched?.placa && formik.errors?.placa}
@@ -227,7 +222,7 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
             name="nroCirculacion"
             type="text"
             label="Nro. Circulación"
-            
+
 
             value={formik.values?.nroCirculacion}
             onChange={formik.handleChange}
@@ -236,11 +231,11 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
             error={formik.touched.nroCirculacion && Boolean(formik.errors.nroCirculacion)}
             inputProps={{ style: { textTransform: "uppercase" } }}
           />
-          
+
           <FormControl fullWidth size="small" margin="normal">
             <InputLabel>Emisores autorizados (opcional)</InputLabel>
             <Select
-              
+
               value={formik.values.codEmisor}
               name="codEmisor"
               label="Emisores autorizados (Opcional)"
@@ -253,22 +248,36 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
               ))}
             </Select>
           </FormControl>
-
           <TextField
             margin="normal"
             size="small"
             fullWidth
-            name="nombreCorto"
+            name="nroAutorizacion"
             type="text"
-            label="Nombre corto de la persona"
-            value={formik.values?.nombreCorto}
+            label="Nro. Autorizacion"
+            value={formik.values?.nroAutorizacion.toUpperCase()||''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
-            error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+            helperText={formik.touched.nroAutorizacion && formik.errors.nroAutorizacion}
+            error={formik.touched.nroAutorizacion && Boolean(formik.errors.nroAutorizacion)}
             inputProps={{ style: { textTransform: "uppercase" } }}
           />
+
         </Box>
+        <TextField
+          margin="normal"
+          size="small"
+          fullWidth
+          name="nombreCorto"
+          type="text"
+          label="Nombre corto del vehiculo"
+          value={formik.values?.nombreCorto}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
+          error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
+        />
 
         <Box textAlign={'center'}>
           <Button onClick={() => setFav(!fav)} variant={!fav ? 'outlined' : 'contained'} color='warning' sx={{ display: 'inline-block', mt: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>

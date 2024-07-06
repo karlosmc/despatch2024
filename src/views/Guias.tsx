@@ -1,10 +1,11 @@
+
 import {
   Box,
   Button,
   CircularProgress,
   Container,
   Fab,
-  
+
   Modal,
   Paper,
   Table,
@@ -16,13 +17,18 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 import clienteAxios from "../config/axios";
 
-import EditIcon from "@mui/icons-material/Edit";
+// import EditIcon from "@mui/icons-material/Edit";
 import LinkIcon from "@mui/icons-material/Link";
 import QrCodeIcon from "@mui/icons-material/QrCode";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import FolderSpecialIcon from '@mui/icons-material/FolderSpecial';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 
 import FindInPageIcon from "@mui/icons-material/FindInPage";
 import { DialogComponentCustom } from "../components";
@@ -31,6 +37,12 @@ import QRCode from "qrcode.react";
 
 import ModalConductor from "../components/Conductor";
 import { panelguia } from "../types/panelguia.interface";
+
+import { useNotification } from "../context/notification.context";
+import { ParamsInterface } from "../types/params.interface";
+import useAuthToken from "../hooks/useAuthToken";
+// import { GuiaRemision } from "../types/guias/guiaremision.interface";
+// import { Link } from "react-router-dom";
 
 type ModalsProps = {
   open: boolean;
@@ -50,12 +62,54 @@ const style = {
   p: 4,
 };
 
+const stylePdf = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 1200,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+const BoxShadowButton = {
+  cursor: 'pointer',
+  boxShadow: "0 0 10px #949494",
+  backgroundColor: 'transparent',
+  // borderRadius: '100%',
+  "&:hover": {
+    animation: "animatedButton 1.5s ease-in-out",
+    backgroundColor: 'transparent',
+    boxShadow: "0 0 10px #949494",
+  },
+  "@keyframes animatedButton": {
+    "0%": {
+      transform: "scale(1)",
+    },
+    "50%": {
+      transform: "scale(1.2)",
+    },
+    "100%": {
+      transform: "scale(1)",
+    },
+  },
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'
+};
+
 const Guias = () => {
+  const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
     form: null,
     title: "",
   });
+
+  const { getError, getSuccess,getWarning } = useNotification()
+  const { getToken, getSunatParams } = useAuthToken()
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -65,7 +119,7 @@ const Guias = () => {
     setModalsForms({ open: true, form, title });
   };
 
-  const qrRef = useRef<HTMLDivElement |null >(null);
+  const qrRef = useRef<HTMLDivElement | null>(null);
 
   const [hashQr, setHashQr] = useState<string>("");
 
@@ -74,12 +128,19 @@ const Guias = () => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-  const handleConfirm = (): void => {
-    handleCloseModalForm();
-  };
+  // const handleConfirm = (): void => {
+  //   handleCloseModalForm();
+  // };
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+  const [params, setParams] = useState<ParamsInterface>(null)
+
+  const [base64Pdf, setBase64Pdf] = useState<string>('')
+
+  const [openPdf, setOpenPdf] = useState(false);
+  const handleOpenPdf = () => setOpenPdf(true);
+  const handleClosePdf = () => setOpenPdf(false);
 
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -108,6 +169,242 @@ const Guias = () => {
 
   const rows = [];
 
+  const sendApi = async (param: any, api: string,) => {
+    const url = `${API_GUIAS}${api}`;
+
+    const options = {
+      method: "post",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(param),
+    };
+    const resp = await fetch(url, options);
+    return resp.json();
+  };
+
+  const previewPDF = (values: any) => {
+    // console.log(values)
+
+    // console.log(values.envio.indicadores)
+// console.log(values.envio.vehiculo)
+
+    let vehiculos = values.envio.vehiculo?.length > 0 ? values.envio.vehiculo?.find(ve => ve.tipo === 'P') : null;
+    let secundarios = values.envio.vehiculo?.length > 0 ? values.envio.vehiculo?.filter(ve => ve.tipo === 'S') : [];
+    
+
+    if (vehiculos) {
+      // console.log(values.envio.vehiculo)
+      // let secundarios = values.envio.vehiculo.filter(ve => ve.tipo === 'S') && [];
+      // console.log(secundarios)
+      vehiculos.secundarios = secundarios;
+    }
+
+    const doc = {
+      ...values,
+      tipoDoc: '09',
+      envio: {
+        ...values.envio,
+        indicadores: values.envio.indicadores.map(indi => indi.indicador),
+        vehiculo: vehiculos
+      }
+
+    }
+    // console.log(doc)
+
+    // const doc = {
+    //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
+    //   correlativo: values.datosGenerales.correlativo,
+    //   serie: values.datosGenerales.serie,
+    //   tipoDoc: values.datosGenerales.tipoDoc,
+    //   version: values.datosGenerales.version,
+    //   observacion: values.observacion,
+    //   destinatario: values.destinatario,
+    //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
+    //   comprador: null,
+    //   envio: {
+    //     ...values.envio,
+    //     partida: values.partida,
+    //     llegada: values.llegada,
+    //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
+    //     aeropuerto: null,
+    //     puerto: null,
+    //     choferes: values.choferes,
+    //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
+    //   },
+    //   addDocs: values.addDocs,
+    //   details: values.details,
+    // }
+    // console.log(doc)
+
+    // console.log(JSON.stringify(doc));
+
+    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
+
+    responsePdf.then(pdf => {
+      setBase64Pdf(pdf.response.TramaPdf)
+      handleOpenPdf()
+    });
+  }
+
+  const HandleDowloadFile = async (file: string) => {
+
+
+    const fileUrl = `${API_GUIAS}${file}`;
+    if (fileUrl) {
+      // const response = await fetch(fileUrl, { method: 'HEAD' });
+      // if (!response.ok) {
+      //   getError('Archivo no existe, consulte con el ADMINISTRADOR');
+      //   return;
+      // }
+      const partUrl = fileUrl.split('/');
+      // console.log(partUrl)
+      if (partUrl.length > 1) {
+        const fileName = partUrl[partUrl.length - 1];
+        // console.log(fileName)
+        if (fileName.includes('.')) {
+          const link = document.createElement('a');
+          link.href = fileUrl;
+          link.setAttribute('download', fileName);
+          link.target = "_blank";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+        else {
+          getError('Archivo no existe, consulte con el ADMINISTRADOR');
+        }
+      } else {
+        getError('Archivo no existe, consulte con el ADMINISTRADOR');
+
+      }
+    } else {
+      getError('Archivo no existe, consulte con el ADMINISTRADOR');
+    }
+
+  }
+
+
+  const getParams = async () => {
+    const data = await getSunatParams();
+    setParams(data)
+  }
+
+
+  useEffect(() => {
+    getParams()
+  }, [])
+
+  const HandleConsult = async (fil:panelguia) => {
+
+    if(fil.estado==="0"){
+      getSuccess('El Comprobante ya tiene respuesta, no puede volver a consultar');
+      return;
+    }
+    const numeroDocumento = `${params.ruc}-09-${fil.serie}-${fil.numero}`;
+    const urlconsult = params.urlconsult;
+
+    const token_sunat = await getToken()
+    if (token_sunat) {
+      const consult = {
+        "access_token": token_sunat,
+        "EndPointUrl": `${urlconsult}${fil.ticket}`,
+        numeroDocumento
+      }
+
+      sendApi(consult, '/ConsultaGuia')
+        .then(resConsult => {
+          // console.log(resConsult)
+          if (resConsult.error && resConsult.indCdrGenerado === "1") {
+            getError(resConsult.error.desError);
+            updateEstadoElectronico({
+              'estado': 'C',
+              // 'descripcion':'Documento consultado con Exito',
+              'rutaCdr': `/CDR/`,
+              'rutaPdf': `/PDF/`,
+              'descripcion': resConsult.error.desError,
+              'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
+              'codigoSunat': resConsult.error.numError,
+              'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
+              'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
+            }, fil.id);
+            return;
+          }
+
+          if (!resConsult.CdrResponse) {
+            updateEstadoElectronico({
+              'estado': 'C',
+              // 'descripcion':'Documento consultado con Exito',
+              'rutaCdr': `/CDR/`,
+              'rutaPdf': `/PDF/`,
+              'descripcion': 'PENDIENTE DE CONSULTA',
+              'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
+            }, fil.id);
+            getWarning('Si ha generado el token y el ticket de consulta, Consulte otra vez');
+            return;
+          }
+
+          updateEstadoElectronico({
+            'estado': 'F',
+            // 'descripcion':'Documento consultado con Exito',
+            'rutaCdr': `/CDR/${numeroDocumento}.zip`,
+            'rutaPdf': `/PDF/${numeroDocumento}.pdf`,
+            'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
+            'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
+            'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
+            'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
+            'codigoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
+          }, fil.id);
+          // setHashQr(resConsult.CdrResponse.hashQr)
+          getSuccess(resConsult.CdrResponse.Descripcion);
+
+          // if(resConsult.codRespuesta==="0"){
+          //   setRefresh(true)
+          // }
+          // console.log(resConsult)
+        });
+
+    }
+
+  }
+
+  const updateEstadoElectronico = async (values: any, id: number) => {
+
+    try {
+      const { data, status } = await clienteAxios.put(`/api/estadoelectronico/${id}`, {
+
+        ...values
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log(data)
+
+      // console.log(data)
+      if (status === 200) {
+
+      }
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
+
+  const HandlePdfCompany = (id: number) => {
+    clienteAxios(`/api/despatches/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(response => {
+      const { status, data } = response;
+      if (status || status === 200) {
+        previewPDF(data?.data);
+      }
+
+    })
+  }
+
   data?.data?.data.forEach((fil: panelguia) => {
     rows.push(
       <TableRow key={fil.id}>
@@ -118,6 +415,43 @@ const Guias = () => {
         <TableCell align="left">{fil.codigoSunat}</TableCell>
         <TableCell align="left">{fil.descripcion}</TableCell>
         <TableCell align="left">{fil.estado}</TableCell>
+        <TableCell align="left">
+          <Fab
+            size="small"
+            onClick={() => HandlePdfCompany(fil.id_despatch)}
+            sx={{ ...BoxShadowButton }}
+          >
+            <VisibilityIcon color="error" fontSize="small" />
+          </Fab>
+        </TableCell>
+        <TableCell align="left">
+          <Fab
+            size="small"
+            onClick={() => HandleDowloadFile(fil.rutaXml)}
+            sx={{ ...BoxShadowButton }}
+          >
+            <AttachFileIcon color="primary" />
+          </Fab>
+        </TableCell>
+        <TableCell align="left">
+          <Fab
+            size="small"
+            onClick={() => HandleDowloadFile(fil.rutaPdf)}
+            sx={{ ...BoxShadowButton }}
+          >
+            <PictureAsPdfIcon color="error" />
+          </Fab>
+        </TableCell>
+        <TableCell align="left">
+          <Fab
+            size="small"
+            onClick={() => HandleDowloadFile(fil.rutaCdr)}
+            sx={{ ...BoxShadowButton }}
+          >
+            <FolderSpecialIcon color="success" />
+          </Fab>
+
+        </TableCell>
         <TableCell align="left">
           <Fab
             color="secondary"
@@ -139,14 +473,16 @@ const Guias = () => {
 
         <TableCell align="left">
           <Box display={"flex"} flexDirection={"row"}>
-            <Fab
-              color="primary"
-              size="small"
-              onClick={() => handleEditGuia(fil)}
-            >
-              <EditIcon />
-            </Fab>
-            <Fab color="warning" size="small">
+            {/* <Link to={`/guiaedicion/${fil.id_despatch}`}>
+              <Fab
+                color="primary"
+                size="small"
+                // onClick={() => handleEditGuia(fil)}
+              >
+                <EditIcon />
+              </Fab>
+            </Link> */}
+            <Fab color="warning" size="small" onClick={()=>HandleConsult(fil)}>
               <FindInPageIcon />
             </Fab>
           </Box>
@@ -155,14 +491,14 @@ const Guias = () => {
     );
   });
 
-  const handleEditGuia = (guia: panelguia) => {
-    // setEdit(false);
-    // const selectedPunto = data.data.data.find(item => item.id === id);
-    // handleOpenModalForm(
-    //   <ModalConductor initialValue={conductor} edit={true} onConfirm={handleConfirm} />,
-    //   'Editar conductor'
-    // )
-  };
+  // const handleEditGuia = (guia: panelguia) => {
+  //   // setEdit(false);
+  //   // const selectedPunto = data.data.data.find(item => item.id === id);
+  //   // handleOpenModalForm(
+  //   //   <ModalConductor initialValue={conductor} edit={true} onConfirm={handleConfirm} />,
+  //   //   'Editar conductor'
+  //   // )
+  // };
 
   const handleImageQr = (qr: any) => {
     if (qr) {
@@ -217,32 +553,46 @@ const Guias = () => {
         <Table aria-label="simple table" size="small">
           <TableHead>
             <TableRow>
-              <TableCell width={"5%"}>Id</TableCell>
+              <TableCell width={"1%"}>Id</TableCell>
               <TableCell width={"5%"} align="left">
                 Serie
               </TableCell>
               <TableCell width={"5%"} align="left">
-                Numero
+                Num
               </TableCell>
-              <TableCell width={"10%"} align="left">
+              <TableCell width={"13%"} align="left">
                 Fecha
               </TableCell>
               <TableCell width={"5%"} align="left">
                 C.Sunat
               </TableCell>
-              <TableCell width={"50%"} align="left">
+              <TableCell width={"30%"} align="left">
                 Descripcion
               </TableCell>
               <TableCell width={"10%"} align="left">
-                Estado
+                Est
               </TableCell>
-              <TableCell width={"5%"} align="left">
-                QR-Url
+              <TableCell width={"5%"} align="center">
+                PDF
               </TableCell>
-              <TableCell width={"5%"} align="left">
-                QR-Imagen
+
+              <TableCell width={"5%"} align="center">
+                XML
               </TableCell>
-              <TableCell width={"10%"} align="left">
+              <TableCell width={"5%"} align="center">
+                PDFS
+              </TableCell>
+              <TableCell width={"5%"} align="center">
+                CDR
+              </TableCell>
+
+              <TableCell width={"5%"} align="center">
+                Url
+              </TableCell>
+              <TableCell width={"5%"} align="center">
+                QR
+              </TableCell>
+              <TableCell width={"10%"} align="center">
                 @
               </TableCell>
             </TableRow>
@@ -314,11 +664,25 @@ const Guias = () => {
           >
             <QRCode value={hashQr} size={256} />
           </Box>
-          <Button onClick={downloadQRCode} sx={{mt:2}} fullWidth variant="contained" color="success">
+          <Button onClick={downloadQRCode} sx={{ mt: 2 }} fullWidth variant="contained" color="success">
 
             Descargar QR
 
           </Button>
+        </Box>
+      </Modal>
+      <Modal
+        open={openPdf}
+        onClose={handleClosePdf}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+
+      >
+        <Box sx={stylePdf}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Visor de Pdf
+          </Typography>
+          <Box sx={{ width: '100%', height: '70vh' }} component={'embed'} src={`data:application/pdf;base64,${base64Pdf}`} />
         </Box>
       </Modal>
     </Container>

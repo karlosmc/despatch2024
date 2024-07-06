@@ -12,5 +12,7 @@ export interface ParamsInterface {
   clavecertificado:string;
   tipo:string;
   urlsend:string;
-  urlconsult:string
+  urlconsult:string;
+  ruc?:string;
+  folder?:string;
 }

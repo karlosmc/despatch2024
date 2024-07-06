@@ -172,7 +172,7 @@ const LoginForm = () => {
       </Box>
       
       <Box component={'div'} textAlign={'left'} mt={2} fontSize={12}>
-          <Link style={{color:'white'}} to="/auth/registro">
+          <Link style={{color:'black'}} to="/auth/registro">
             No tienes cuenta? crea una facilmente
           </Link>
       </Box>

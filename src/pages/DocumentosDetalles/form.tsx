@@ -488,6 +488,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             helperText={formik.touched.codigo && formik.errors.codigo}
             error={formik.touched.codigo && Boolean(formik.errors.codigo)}
             inputProps={{ style: { textTransform: "uppercase" } }}
+            InputProps={{readOnly:formik.values.id<=1?false:true}}
           />
 
           <TextField
@@ -503,6 +504,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             onBlur={formik.handleBlur}
             helperText={formik.touched.cantidad && formik.errors.cantidad}
             error={formik.touched.cantidad && Boolean(formik.errors.cantidad)}
+
           />
         </Box>
         <Box display={{ xs: 'block', md: 'flex' }} columnGap={2}>
@@ -520,6 +522,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
               formik.touched.codProdSunat && Boolean(formik.errors.codProdSunat)
             }
             inputProps={{ style: { textTransform: "uppercase" } }}
+            InputProps={{readOnly:formik.values.id<=1?false:true}}
           />
 
           {/* <TextField
@@ -543,6 +546,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               error={formik.touched.unidad && Boolean(formik.errors.unidad)}
+              readOnly={formik.values.id<=1?false:true}
             >
               {_UNIDAD_MEDIDA.map((uni) => (
                 <MenuItem key={uni.id} value={uni.codigo}>
@@ -568,6 +572,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             formik.touched.descripcion && Boolean(formik.errors.descripcion)
           }
           inputProps={{ style: { textTransform: "uppercase" } }}
+          InputProps={{readOnly:formik.values.id<=1?false:true}}
         />
 
         <Button

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 // import App from "./App.tsx";
 import "./index.css";
-import { ThemeConfig } from "./config/theme.config.tsx";
+// import { ThemeConfig } from "./config/theme.config.tsx";
 // import { DialogProvider } from "./context/dialog.context.tsx";
 import { NotificationProvider } from "./context/notification.context.tsx";
 // import { ParamsProvider } from "./context/params.context.tsx";
@@ -13,6 +13,12 @@ import { router } from "./routes/routes.tsx";
 
 import { AuxiliarProvider } from "./context/AuxiliarProvider.tsx";
 import { DialogProvider } from "./context/dialog.context.tsx";
+import { ThemeConfig } from "./config/theme.config.tsx";
+import { ThemeContextProvider } from "./context/themeProvider.tsx";
+// import { ThemeConfig } from "./context/themeProvider.tsx";
+import { ConfirmProvider } from "material-ui-confirm";
+
+
 
 // dotenv.config();
 
@@ -20,21 +26,24 @@ import { DialogProvider } from "./context/dialog.context.tsx";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ThemeConfig>
-      
+    <ThemeContextProvider>
+      <ThemeConfig>
         <NotificationProvider>
           <DialogProvider>
             {/* <ParamsProvider> */}
             {/* <TokenProvider> */}
             <AuxiliarProvider>
-              <RouterProvider router={router} />
+              <ConfirmProvider>
+                <RouterProvider router={router} />
+              </ConfirmProvider>
             </AuxiliarProvider>
             {/* <App /> */}
             {/* </TokenProvider> */}
             {/* </ParamsProvider> */}
           </DialogProvider>
         </NotificationProvider>
-      
-    </ThemeConfig>
+
+      </ThemeConfig>
+    </ThemeContextProvider>
   </React.StrictMode>
 );

@@ -298,7 +298,7 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
           fullWidth
           name="placa"
           label="Placa de vehiculo"
-          value={formik.values.placa}
+          value={formik.values.placa.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.placa && formik.errors.placa}
@@ -334,7 +334,7 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
           fullWidth
           name="nroAutorizacion"
           label="Nro. Autorización (opcional)"
-          value={formik.values.nroAutorizacion}
+          value={formik.values.nroAutorizacion.toUpperCase()||''}
           onChange={formik.handleChange}
         />
       </Box>

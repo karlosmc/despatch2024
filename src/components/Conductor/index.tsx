@@ -205,7 +205,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
           label="Nombres"
           sx={{ my: 1.5 }}
 
-          value={formik.values?.nombres}
+          value={formik.values?.nombres.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched?.nombres && formik.errors?.nombres}
@@ -221,7 +221,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
           label="Apellidos"
           sx={{ my: 1.5 }}
 
-          value={formik.values?.apellidos}
+          value={formik.values?.apellidos.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.apellidos && formik.errors.apellidos}
@@ -240,7 +240,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
             label="Nro. Licencia"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.licencia}
+            value={formik.values?.licencia.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.licencia && formik.errors.licencia}
@@ -256,8 +256,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
             type="text"
             label="Nombre corto de la persona"
             sx={{ my: 1.5 }}
-
-            value={formik.values?.nombreCorto}
+            value={formik.values?.nombreCorto.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}

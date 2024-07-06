@@ -1,5 +1,5 @@
-import { Autocomplete, Box, Button, InputAdornment,  TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
-import  {  useEffect, useState } from 'react'
+import { Autocomplete, Box, Button, InputAdornment, TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
+import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
@@ -10,6 +10,9 @@ import { PuntosSchema } from '../../utils/validateGuiaRemision';
 import InfoIcon from '@mui/icons-material/Info';
 import { Ubigeos } from '../../types/ubigeos.interface';
 import { useAuxiliares } from '../../context/AuxiliarProvider';
+import { searchPersona } from '../../types/persona.interface';
+import { useNotification } from '../../context/notification.context';
+import ButtonSearch from '../ButtonSearch';
 
 
 
@@ -21,6 +24,7 @@ const PuntoInicialValues: puntoUbicacion = {
   ruc: '',
   ubigeo: '230101',
   nombreCorto: '',
+  rznSocial: '',
   id: 0
 }
 
@@ -34,6 +38,8 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
 
   const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
   const [isCompany, setIsCompany] = useState<boolean>(initialValue?.isCompany || false);
+
+  const { getError } = useNotification()
 
   const [inputValue, setInputValue] = useState('');
   const [_selectedUbigeo, setSelectedUbigeo] = useState<string | null>(null);
@@ -52,15 +58,16 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
         direccion: values.direccion,
         fav: values.fav,
         isCompany: values.isCompany,
+        rznSocial: values.rznSocial,
         ruc: values.ruc,
         nombreCorto: values.nombreCorto,
-        codLocal:values.codLocal
+        codLocal: values.codLocal
       }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(data)
+      // console.log(data)
       if (status === 200) {
         onConfirm(data.punto);
       }
@@ -82,7 +89,8 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
         isCompany: values.isCompany,
         ruc: values.ruc,
         nombreCorto: values.nombreCorto,
-        codLocal:values.codLocal
+        rznSocial: values.rznSocial,
+        codLocal: values.codLocal
       }, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -143,9 +151,9 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
     validationSchema: PuntosSchema,
     onSubmit: (values) => {
 
-      if(edit){
+      if (edit) {
         updatePuntos(values)
-      }else{
+      } else {
         storePuntos(values)
       }
 
@@ -161,6 +169,19 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
       setSelectedUbigeo(null);
       formik.setFieldValue('ubigeo', '')
     }
+  }
+
+  const handleSearch = (searchPerson: searchPersona): void => {
+
+    if (!searchPerson) {
+      getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
+      return;
+    }
+    if (searchPerson.status === 'error') {
+      getError(searchPerson.message)
+      return;
+    }
+    formik.setFieldValue('rznSocial', searchPerson.persona.nombreRazonSocial)
   }
 
   useEffect(() => {
@@ -212,7 +233,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
               </AnimatedInputAdornment>
             ),
           }}
-          
+
         />
         <TextField
           margin="normal"
@@ -230,29 +251,50 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
           error={formik.touched.direccion && Boolean(formik.errors.direccion)}
           inputProps={{ style: { textTransform: "uppercase" } }}
         />
+
+
+        <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="ruc"
+            type="text"
+            label="R.U.C. (solo valido para RUC de 11 caracteres)"
+            sx={{ my: 1.5 }}
+
+            value={formik.values.ruc}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.ruc && formik.errors.ruc}
+            error={formik.touched.ruc && Boolean(formik.errors.ruc)}
+            InputProps={{
+              endAdornment: (
+                <AnimatedInputAdornment position="end">
+                  <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
+                    <InfoIcon color="action" />
+                  </LightTooltip>
+                </AnimatedInputAdornment>
+              ),
+            }}
+          />
+          <ButtonSearch type={'6'} valor={formik.values.ruc} onSearch={handleSearch} />
+        </Box>
         <TextField
           margin="normal"
           size="small"
           fullWidth
-          name="ruc"
+          name="rznSocial"
           type="text"
-          label="R.U.C. (solo valido para RUC de 11 caracteres)"
+          label="Razón Social (Opcional)"
           sx={{ my: 1.5 }}
 
-          value={formik.values.ruc}
+          value={formik.values.rznSocial}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          helperText={formik.touched.ruc && formik.errors.ruc}
-          error={formik.touched.ruc && Boolean(formik.errors.ruc)}
-          InputProps={{
-            endAdornment: (
-              <AnimatedInputAdornment position="end">
-                <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
-                  <InfoIcon color="action" />
-                </LightTooltip>
-              </AnimatedInputAdornment>
-            ),
-          }}
+          helperText={formik.touched.rznSocial && formik.errors.rznSocial}
+          error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
 
         <TextField
@@ -286,7 +328,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
               {...params}
               label="Selecciona un Ubigeo"
               variant="outlined"
-              // onChange={(event) => setInputValue(event.target.value)}
+            // onChange={(event) => setInputValue(event.target.value)}
             />
           )}
           inputValue={inputValue}

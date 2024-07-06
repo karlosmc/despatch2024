@@ -17,6 +17,9 @@ import clienteAxios from "../../config/axios";
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { ChipInterface } from "../../types/general.interface";
 import { useAuxiliares } from "../../context/AuxiliarProvider";
+import ButtonSearch from "../../components/ButtonSearch";
+import { searchPersona } from "../../types/persona.interface";
+import { useNotification } from "../../context/notification.context";
 
 
 interface DireccionFormProps {
@@ -31,6 +34,7 @@ const DireccionValues: Direccion = {
   direccion: "",
   ruc: "",
   ubigeo: "",
+  rznSocial: "",
 };
 
 
@@ -116,6 +120,8 @@ const DatosDireccion = ({
 
   const [value, setValue] = useState<Ubigeos | null>(null);
 
+  const { getError } = useNotification()
+
   // const token = localStorage.getItem('AUTH_TOKEN');
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
@@ -130,7 +136,7 @@ const DatosDireccion = ({
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
-  const filterFav = async (tipo:string) => {
+  const filterFav = async (tipo: string) => {
     try {
 
       const { data, status } = await clienteAxios(`/api/puntos/buscar?${tipo}=1`, {
@@ -151,17 +157,17 @@ const DatosDireccion = ({
   // const correlativo = parseInt(dataUser.sercor.correlativo)+1
 
 
-  const {ubigeos} = useAuxiliares();
+  const { ubigeos } = useAuxiliares();
 
-  useEffect(()=>{
-    if(codTraslado==='04'){
+  useEffect(() => {
+    if (codTraslado === '04') {
       filterFav('isCompany')
     }
-    else{
+    else {
       filterFav('fav')
     }
 
-  },[codTraslado])
+  }, [codTraslado])
 
   /* establecer valores dando click a los valores por defecto */
 
@@ -189,9 +195,23 @@ const DatosDireccion = ({
     handleCloseModalForm()
   }
 
+  const handleSearch = (searchPerson: searchPersona): void => {
+
+    if (!searchPerson) {
+      getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
+      return;
+    }
+    if (searchPerson.status === 'error') {
+      getError(searchPerson.message)
+      return;
+    }
+    formik.setFieldValue('rznSocial', searchPerson.persona.nombreRazonSocial)
+  }
+
   const handleSetFavorite = (item: ChipInterface): void => {
     const punto = dataFilter.find(it => it.id === item.id);
     formik.setFieldValue('id', punto.id)
+    formik.setFieldValue('rznSocial', punto.rznSocial?punto.rznSocial:'')
     formik.setFieldValue('ubigeo', punto.ubigeo)
     formik.setFieldValue('direccion', punto.direccion)
     formik.setFieldValue('codLocal', punto.codLocal)
@@ -267,7 +287,9 @@ const DatosDireccion = ({
                 </LightTooltip>
               </AnimatedInputAdornment>
             ),
+            readOnly: formik.values.id <= 1 ? false : true
           }}
+
         />
         <TextField
           margin="normal"
@@ -284,30 +306,51 @@ const DatosDireccion = ({
           helperText={formik.touched.direccion && formik.errors.direccion}
           error={formik.touched.direccion && Boolean(formik.errors.direccion)}
           inputProps={{ style: { textTransform: "uppercase" } }}
+          InputProps={{ readOnly: formik.values.id <= 1 ? false : true }}
         />
+        <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="ruc"
+            type="text"
+            label="R.U.C. (solo valido para RUC de 11 caracteres)"
+            sx={{ my: 1.5 }}
+
+            value={formik.values.ruc}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.ruc && formik.errors.ruc}
+            error={formik.touched.ruc && Boolean(formik.errors.ruc)}
+            InputProps={{
+              endAdornment: (
+                <AnimatedInputAdornment position="end">
+                  <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
+                    <InfoIcon color="action" />
+                  </LightTooltip>
+                </AnimatedInputAdornment>
+              ),
+              readOnly: formik.values.id <= 1 ? false : true
+            }}
+          />
+          <ButtonSearch type={'6'} valor={formik.values.ruc} onSearch={handleSearch} />
+        </Box>
         <TextField
           margin="normal"
           size="small"
           fullWidth
-          name="ruc"
+          name="rznSocial"
           type="text"
-          label="R.U.C. (solo valido para RUC de 11 caracteres)"
+          label="Razón Social (Opcional)"
           sx={{ my: 1.5 }}
 
-          value={formik.values.ruc}
+          value={formik.values.rznSocial}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          helperText={formik.touched.ruc && formik.errors.ruc}
-          error={formik.touched.ruc && Boolean(formik.errors.ruc)}
-          InputProps={{
-            endAdornment: (
-              <AnimatedInputAdornment position="end">
-                <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
-                  <InfoIcon color="action" />
-                </LightTooltip>
-              </AnimatedInputAdornment>
-            ),
-          }}
+          helperText={formik.touched.rznSocial && formik.errors.rznSocial}
+          error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
+          inputProps={{ style: { textTransform: "uppercase" } }}
         />
         <Autocomplete
           size='small'
@@ -333,6 +376,7 @@ const DatosDireccion = ({
           inputValue={inputValue}
           onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
           onChange={onChangeUbigeo}
+          readOnly={formik.values.id <= 1 ? false : true}
         />
 
         <Stack direction="row" spacing={2} mt={1}>
