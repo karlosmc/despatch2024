@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { Stack, Button, TableCell, TableRow, Box, Table, TableBody, TableHead } from "@mui/material";
+import { Stack, Button, TableCell, TableRow, Box, Table, TableBody, TableHead, TableContainer, Paper, Typography } from "@mui/material";
 import DatosVehiculo from ".";
 import { EnvioVehiculo } from "../../types/guias/guiaremision.interface";
 import { useNotification } from "../../context/notification.context";
@@ -112,7 +112,8 @@ const VehiculosSecundarios = ({ vehiculos, onConfirm }: Props) => {
         />
 
       </Box>
-      <Box>
+      <Typography sx={{mt:1}} textAlign={'center'}>Lista de choferes</Typography>
+      <TableContainer component={Paper} sx={{mb:2}} >
         <Table aria-label="simple table" size='small' sx={{ my: 2, border: '1px solid grey' }}>
           <TableHead sx={{ background: 'grey' }}>
             <TableRow>
@@ -128,7 +129,7 @@ const VehiculosSecundarios = ({ vehiculos, onConfirm }: Props) => {
             {renderList()}
           </TableBody>
         </Table>
-      </Box>
+      </TableContainer>
       <Stack direction="row" spacing={2}>
         <Button fullWidth variant="contained" color="success" onClick={onSubmit}>
           Completar

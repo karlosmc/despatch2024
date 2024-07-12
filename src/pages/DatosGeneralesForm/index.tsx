@@ -1,7 +1,7 @@
 
 import { FormControl, InputLabel, MenuItem, Select, TextField, FormHelperText, Box } from '@mui/material'
 import { useFormik } from 'formik';
-import { DatosGenerales } from '../../types/guias/guiaremision.interface';
+import { DatosGenerales, EnvioVehiculo } from '../../types/guias/guiaremision.interface';
 import { useEffect, useState } from 'react';
 import { DatosGeneralesSchema } from '../../utils/validateGuiaRemision';
 import clienteAxios from '../../config/axios';
@@ -14,16 +14,15 @@ interface DatosGeneralesFormProps {
   onChange: (datosGenerales: DatosGenerales) => void;
   puntoEmision:number;
   datosGeneralesValues: DatosGenerales;
+  onSelectSerie: (vehiculo:EnvioVehiculo)=>void;
 }
 
-const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision }: DatosGeneralesFormProps) => {
+const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision,onSelectSerie }: DatosGeneralesFormProps) => {
 
   // console.log(puntosEmision)
   const token = localStorage.getItem('AUTH_TOKEN');
 
   const [numeracion, setNumeracion] = useState<numeracion[]>([])
-
-
 
   const formik = useFormik({
     initialValues: datosGeneralesValues,
@@ -35,6 +34,8 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision }: Dat
     // console.log(formik.values);
     onChange(formik.values);
   }, [formik.values]);
+
+
 
   const getSeries = async () => {
     try {
@@ -78,6 +79,16 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision }: Dat
         
         
         formik.setFieldValue('correlativo',correlativo.numeroActual+1)
+
+        if(!correlativo.primario){
+          onSelectSerie({placa:'',codEmisor:'',id:0,nroAutorizacion:'',nroCirculacion:'',secundarios:[]})
+          return
+        }
+        const Vehiculo:EnvioVehiculo={
+          ...correlativo.primario,
+          secundarios:correlativo.secundario
+        }
+        onSelectSerie(Vehiculo)
       }
       else{
         formik.setFieldValue('correlativo',0)

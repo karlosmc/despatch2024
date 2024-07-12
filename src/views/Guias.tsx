@@ -401,7 +401,6 @@ const Guias = () => {
       if (status || status === 200) {
         previewPDF(data?.data);
       }
-
     })
   }
 

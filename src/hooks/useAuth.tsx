@@ -108,6 +108,11 @@ export const useAuth = ({middleware , url}:authInterface) =>{
       navigate(url);
     }
 
+    if(middleware === 'auth' && user && user.perfil==='operador'){
+      
+      navigate('/gre/guiaremision');
+    }
+
     if(middleware === 'auth' && error){
       navigate('/auth/login');
     }

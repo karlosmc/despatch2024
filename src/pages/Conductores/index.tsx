@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 
-import { Stack, Button, Box, Table, TableBody, TableCell, TableHead, TableRow, Typography,  styled } from "@mui/material";
+import { Stack, Button, Box, Table, TableBody, TableCell, TableHead, TableRow, Typography, styled, Paper, TableContainer } from "@mui/material";
 import { useFormik } from "formik";
 
 import * as Yup from "yup";
@@ -42,7 +42,7 @@ type ModalsProps = {
 };
 
 
-const StyledNewButton = styled(Button)(({})=>({
+const StyledNewButton = styled(Button)(({ }) => ({
   backgroundColor: '#375A7F',
   color: 'white',
   '&:hover': {
@@ -50,7 +50,7 @@ const StyledNewButton = styled(Button)(({})=>({
   }
 }))
 
-const StyledSearchButton = styled(Button)(({})=>({
+const StyledSearchButton = styled(Button)(({ }) => ({
   backgroundColor: '#00BC8C',
   color: 'white',
   '&:hover': {
@@ -62,7 +62,7 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
   // const [chofer, setChofer] = useState<EnvioChoferes>(ChoferValues);
 
 
-  
+
   const [listaChoferes, setListaChoferes] = useState<EnvioChoferes[]>(choferes);
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -93,7 +93,7 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
-  const filterFav = async (tipo:string) => {
+  const filterFav = async (tipo: string) => {
     try {
 
       const { data, status } = await clienteAxios(`/api/conductor/buscar?${tipo}=1`, {
@@ -186,44 +186,44 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
   };
 
 
-  useEffect(()=>{
-      filterFav('fav')
+  useEffect(() => {
+    filterFav('fav')
 
-  },[])
+  }, [])
   return (
     <>
-    <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Choferes favoritos" />
+      <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Choferes favoritos" />
       <Box component='form' action="" onSubmit={formik.handleSubmit} >
         <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
-          <StyledNewButton fullWidth variant="contained" 
-          onClick={() => {
-            handleOpenModalForm(
-              <ModalConductor initialValue={null} edit={false} onConfirm={handleConfirm} />,
-              'Crear Conductor'
-            )
-          }}
+          <StyledNewButton fullWidth variant="contained"
+            onClick={() => {
+              handleOpenModalForm(
+                <ModalConductor initialValue={null} edit={false} onConfirm={handleConfirm} />,
+                'Crear Conductor'
+              )
+            }}
           >
             Crear
           </StyledNewButton>
 
           <StyledSearchButton fullWidth variant="contained" color="warning"
-          onClick={() => {
-            handleOpenModalForm(
-              <SearchConductor onCheck={handleConfirm} />,
-              'Buscar Conductor'
-            )
-          }}
+            onClick={() => {
+              handleOpenModalForm(
+                <SearchConductor onCheck={handleConfirm} />,
+                'Buscar Conductor'
+              )
+            }}
           >
             Buscar
           </StyledSearchButton>
         </Box>
         <ConductorForm initialValue={ChoferValues} conductor={driver} onChange={handleNewChofer} />
-        <Typography textAlign={'center'}>Lista de choferes</Typography>
-        <Box>
-          <Table aria-label="simple table" size='small' sx={{ my: 2, border: '1px solid grey' }}>
+        <Typography sx={{mt:1}} textAlign={'center'}>Lista de choferes</Typography>
+        <TableContainer component={Paper} sx={{mb:2}} >
+          <Table aria-label="simple table" size='small' sx={{  border: '1px solid grey' }}>
             <TableHead sx={{ background: 'grey' }}>
               <TableRow>
-              <TableCell width={'5%'} align="left">Id</TableCell>
+                <TableCell width={'5%'} align="left">Id</TableCell>
                 <TableCell width={'20%'} align="left">T.Conductor</TableCell>
                 <TableCell width={'10%'} align="left">Tip.Doc.</TableCell>
                 <TableCell width={'10%'} align="left">Nro.Doc.</TableCell>
@@ -235,7 +235,8 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
               {renderList()}
             </TableBody>
           </Table>
-        </Box>
+        </TableContainer>
+
         <Stack direction="row" spacing={2}>
           <Button fullWidth variant="contained" color="success"
             // onClick={handleSubmit}

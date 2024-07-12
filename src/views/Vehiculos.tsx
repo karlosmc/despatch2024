@@ -83,14 +83,14 @@ const Vehiculos = () => {
         <TableCell align="left">{fil.nroCirculacion}</TableCell>
         <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
-        <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditConductor(fil)} ><EditIcon /></Fab></TableCell>
+        <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditVehiculo(fil)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
   })
 
 
 
-  const handleEditConductor = (vehiculo:vehiculo) => {
+  const handleEditVehiculo = (vehiculo:vehiculo) => {
     // setEdit(false);
     // const selectedPunto = data.data.data.find(item => item.id === id);
     handleOpenModalForm(
@@ -105,7 +105,7 @@ const Vehiculos = () => {
     <Container>
       <Box my={3} display='flex' component='div' justifyContent='space-between'>
         <Typography>
-          Conductores
+          Vehiculos
         </Typography>
         <Button
           color='primary'
@@ -116,7 +116,7 @@ const Vehiculos = () => {
             )
           }}
           variant='outlined'>
-          Agregar Conductor
+          Agregar Vehiculo
         </Button>
       </Box>
 
