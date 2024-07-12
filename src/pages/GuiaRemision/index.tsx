@@ -24,8 +24,10 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   Container,
   Dialog,
   DialogActions,
@@ -54,6 +56,7 @@ import PinDropIcon from "@mui/icons-material/PinDrop";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import CommuteIcon from "@mui/icons-material/Commute";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import CloseIcon from '@mui/icons-material/Close';
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
@@ -61,6 +64,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import BadgeIcon from '@mui/icons-material/Badge';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 // import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
@@ -89,6 +93,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { puntoEmision } from "../../types/puntoemision.interface";
 import { ParamsInterface } from "../../types/params.interface";
 import AppHeader from "../../components/Dashboard/AppHeader";
+import axios from "axios";
 
 
 
@@ -190,12 +195,15 @@ const GuiaRemisionMain = () => {
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
   const { getError, getSuccess, getWarning } = useNotification();
+  const [backdropOpen, setBackdropOpen] = useState(false);
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
     form: null,
     title: "",
   });
+
+  const [aceptada, setAceptada] = useState<boolean>(false)
 
   const [message, setMessage] = useState<string>('')
 
@@ -204,6 +212,8 @@ const GuiaRemisionMain = () => {
   const handleClose = () => setOpen(false);
 
   const [openConfirmChofer, setOpenConfirmChofer] = useState<boolean>(false)
+
+  const [procesoCompleto, setProcesoCompleto] = useState<boolean>(true)
 
   const [openConfirmVehiculo, setOpenConfirmVehiculo] = useState<boolean>(false)
 
@@ -217,7 +227,7 @@ const GuiaRemisionMain = () => {
 
   const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>(initialValues.addDocs);
 
-  const [refresh, setRefresh] = useState<boolean>(false)
+  // const [refresh, setRefresh] = useState<boolean>(false)
 
   const [detalles, setDetalles] = useState<Detail[]>(initialValues.details);
 
@@ -330,7 +340,7 @@ const GuiaRemisionMain = () => {
 
     // console.log(JSON.stringify(doc));
 
-    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch", 'Generando un preview del PDF');
+    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch", '');
 
     responsePdf.then(pdf => {
       setBase64Pdf(pdf.response.TramaPdf)
@@ -384,6 +394,7 @@ const GuiaRemisionMain = () => {
             'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
             'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
           }, est);
+          setProcesoCompleto(false)
           return;
         }
 
@@ -398,6 +409,7 @@ const GuiaRemisionMain = () => {
           }, est);
           getWarning('Si ha generado el token y el ticket de consulta, presiona CONSULTAR');
           return;
+          setProcesoCompleto(false)
         }
 
         updateEstadoElectronico({
@@ -415,11 +427,12 @@ const GuiaRemisionMain = () => {
 
         setHashQr(resConsult.CdrResponse.hashQr)
         getSuccess(resConsult.CdrResponse.Descripcion);
+        setProcesoCompleto(false)
 
         if (resConsult.codRespuesta === "0") {
 
-          HandlePdfCompany(idDespatch)
-          setRefresh(true)
+          // HandlePdfCompany(idDespatch)
+          // setRefresh(true)
         }
         // console.log(resConsult)
       });
@@ -436,7 +449,7 @@ const GuiaRemisionMain = () => {
       // const fechaEmision = values.datosGenerales.fechaEmision;
       // const fecTraslado = values.envio.fecTraslado;
 
-      const {  observacion, destinatario, tercero, envio, addDocs, details , vehiculo, choferes, transportista,partida,llegada} = values;
+      const { observacion, destinatario, tercero, envio, addDocs, details, vehiculo, choferes, transportista, partida, llegada } = values;
 
       const { fechaEmision, correlativo, serie, tipoDoc, version } = values.datosGenerales;
       const { fecTraslado, indicadores } = envio;
@@ -492,13 +505,16 @@ const GuiaRemisionMain = () => {
       const token_sunat = await getToken()
       if (token_sunat) {
 
+        setProcesoCompleto(true)
+        setBackdropOpen(true)
+
         if (idDespatch) {
           const respuesta = await updateGuia(doc);
           if (!respuesta.exito) {
             getError(respuesta.message);
             return;
           }
-          procesoElectronico(doc, respuesta.electronico, token_sunat, idDespatch)
+          procesoElectronico(doc, respuesta.electronico, token_sunat)
 
         } else {
           const respuesta = await storeGuia(doc);
@@ -508,7 +524,7 @@ const GuiaRemisionMain = () => {
             getError(respuesta.message);
             return;
           }
-          procesoElectronico(doc, respuesta.electronico, token_sunat, respuesta.despatch.id)
+          procesoElectronico(doc, respuesta.electronico, token_sunat)
         }
 
       } else {
@@ -560,7 +576,7 @@ const GuiaRemisionMain = () => {
     }
 
 
-    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch", 'Generando PDF empresa');
+    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch", '');
 
     responsePdf.then(pdf => {
       setBase64Pdf(pdf.response.TramaPdf)
@@ -580,140 +596,146 @@ const GuiaRemisionMain = () => {
     });
   }
 
-  const procesoElectronico = (doc, estadoElectronico, token_sunat, despacho) => {
-    if (params) {
-      const numeroDocumento = `${params.ruc}-${doc.tipoDoc}-${doc.serie}-${doc.correlativo}`;
-      const x = Promise.resolve();
-      x
-        .then((_x) => sendApi({ doc }, "/GeneraXmlDespatch", 'Generando XML ...'))
-        .then((res) => {
-          const { response } = res;
-          if (params.certificado === '') {
-            getError('NO HAY UN TOKEN GENERADO');
-            return;
-          }
-          // console.log(response);
-          if (response.Exito) {
-
-
-            updateEstadoElectronico({
-              'estado': 'G',
-              'descripcion': 'Documento Generado con Exito',
-              'rutaXml': `/XML/${numeroDocumento}.xml`
-            }, estadoElectronico);
-
-            const sign = {
-              'CertificadoDigital': params.certificado,
-              'PasswordCertificado': params.clavecertificado,
-              'TramaXmlSinFirma': res.response.TramaXmlSinFirma,
-              numeroDocumento
-
-            }
-            return sign
-          }
-        })
-        .then(sign => sendApi(sign, '/FirmarXml', 'Firmando XML...'))
-        .then(resSign => {
-
-          const { response } = resSign;
-          if (response.Exito) {
-
-            updateEstadoElectronico({
-              'estado': 'F',
-              'descripcion': 'Documento Firmado con Exito',
-              'hash': response.ResumenFirma
-            }, estadoElectronico);
-
-            const request = {
-              'Ruc': '',
-              'EndPointUrl': params.urlsend,
-              'TramaXmlFirmado': response.TramaXmlFirmado,
-              'TipoDocumento': doc.tipoDoc,
-              'IdDocumento': doc.serie + '-' + doc.correlativo,
-              'token': token_sunat
-            }
-
-            // console.log('request',request);
-            return request
-          }
-        })
-        .then(send => sendApi(send, '/SendDespatch', 'Enviando Guiá electrónica'))
-        .then(resSend => {
-          // console.log(resSend)
-          if (resSend.exito) {
-            setConsultToken(token_sunat)
-            setTicket(resSend.numTicket)
-            updateEstadoElectronico({
-              'estado': 'S',
-              'descripcion': 'Documento enviado con Exito',
-              'token': token_sunat,
-              'ticket': resSend.numTicket
-            }, estadoElectronico);
-            const consult = {
-              "access_token": token_sunat,
-              "EndPointUrl": `${params.urlconsult}${resSend.numTicket}`,
-              numeroDocumento
-            }
-            return consult;
-          }
-        })
-        .then(consult => sendApi(consult, '/ConsultaGuia', 'Consultando Ticket'))
-        .then(resConsult => {
-          // console.log(resConsult)
-          if (resConsult.error) {
-            getError(resConsult.error.desError);
-            // console.log(resConsult)
-            updateEstadoElectronico({
-              'estado': 'C',
-              // 'descripcion':'Documento consultado con Exito',
-              // 'rutaCdr': `C:/laragon/www/apiguias/CDR/`,
-              'rutaCdr': `/CDR/`,
-              'rutaPdf': `/PDF/`,
-              'descripcion': resConsult.error.desError,
-              // 'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
-              'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-              'codigoSunat': resConsult.error.numError,
-              'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
-              'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
-            }, estadoElectronico);
-            return;
-          }
-          if (!resConsult.CdrResponse) {
-
-            updateEstadoElectronico({
-              'estado': 'C',
-              // 'descripcion':'Documento consultado con Exito',
-              'rutaCdr': `/CDR/`,
-              'rutaPdf': `/PDF/`,
-              'descripcion': 'PENDIENTE DE CONSULTA',
-              'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
-            }, estadoElectronico);
-
-            getWarning('Si ha generado el token y el ticket de consulta, presiona CONSULTAR');
-            return;
-          }
-          updateEstadoElectronico({
-            'estado': 'F',
-            // 'descripcion':'Documento consultado con Exito',
-            'rutaCdr': `/CDR/${numeroDocumento}.zip`,
-            'rutaPdf': `/CDR/${numeroDocumento}.pdf`,
-            'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
-            'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
-            'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
-            'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-            'codigoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
-          }, estadoElectronico);
-
-          setHashQr(resConsult.CdrResponse.hashQr)
-          getSuccess(resConsult.CdrResponse.Descripcion);
-          if (resConsult.codRespuesta === "0") {
-            HandlePdfCompany(despacho)
-            setRefresh(true)
-          }
-        });
-    }
+  const handleBackdropPDfEmpresaClick = () => {
+    HandlePdfCompany(idDespatch)
   }
 
+
+  const [loadingPdf, setLoadingPdf] = useState(false);
+
+  const handleBackdropPDfSunatClick = async () => {
+    setLoadingPdf(true);
+    try {
+      const response = await axios.get('https://e-factura.sunat.gob.pe/v1/contribuyente/gre/comprobantes/descargaqr?hashqr=jNMQfx+wgqSxczqDe4SlHskqSTID3PdKjQzkoRtlthPyL7fQS57FJatUY+XowvZSvTsFtZ/DrcTX0rEak2M86+9CAwX6Fk177abLLPRihrA=', {
+        responseType: 'blob',
+        timeout: 20000,
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'SUNAT_Hashqr.pdf'; // You can change the file name here
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.error('Download canceled', error.message);
+      } else {
+        console.error('Error downloading the file', error);
+        getError('Error al descargar el documento')
+      }
+    } finally {
+      setLoadingPdf(false);
+    }
+  };
+
+  const procesoElectronico = async (doc, estadoElectronico, token_sunat) => {
+    if (!params) return;
+    const numeroDocumento = `${params.ruc}-${doc.tipoDoc}-${doc.serie}-${doc.correlativo}`;
+    try {
+      const xmlRes = await sendApi({ doc }, "/GeneraXmlDespatch", 'Generando XML ...');
+      if (!params.certificado) {
+        getError('NO HAY UN TOKEN GENERADO');
+        return;
+      }
+
+      if (xmlRes.response.Exito) {
+        await updateEstadoElectronico({
+          estado: 'G',
+          descripcion: 'Documento Generado con Exito',
+          rutaXml: `/XML/${numeroDocumento}.xml`
+        }, estadoElectronico);
+
+        const sign = {
+          CertificadoDigital: params.certificado,
+          PasswordCertificado: params.clavecertificado,
+          TramaXmlSinFirma: xmlRes.response.TramaXmlSinFirma,
+          numeroDocumento
+        };
+
+        const signRes = await sendApi(sign, '/FirmarXml', 'Firmando XML...');
+        if (signRes.response.Exito) {
+          await updateEstadoElectronico({
+            estado: 'F',
+            descripcion: 'Documento Firmado con Exito',
+            hash: signRes.response.ResumenFirma
+          }, estadoElectronico);
+
+          const sendReq = {
+            Ruc: '',
+            EndPointUrl: params.urlsend,
+            TramaXmlFirmado: signRes.response.TramaXmlFirmado,
+            TipoDocumento: doc.tipoDoc,
+            IdDocumento: `${doc.serie}-${doc.correlativo}`,
+            token: token_sunat
+          };
+
+          const sendRes = await sendApi(sendReq, '/SendDespatch', 'Enviando Guiá electrónica');
+          if (sendRes.exito) {
+            setConsultToken(token_sunat);
+            setTicket(sendRes.numTicket);
+            await updateEstadoElectronico({
+              estado: 'S',
+              descripcion: 'Documento enviado con Exito',
+              token_sunat,
+              ticket: sendRes.numTicket
+            }, estadoElectronico);
+
+            const consultReq = {
+              access_token: token_sunat,
+              EndPointUrl: `${params.urlconsult}${sendRes.numTicket}`,
+              numeroDocumento
+            };
+
+            const consultRes = await sendApi(consultReq, '/ConsultaGuia', 'Consultando Ticket');
+            if (consultRes.error) {
+              getError(consultRes.error.desError);
+              await updateEstadoElectronico({
+                estado: 'C',
+                descripcion: consultRes.error.desError,
+                estadoSunat: consultRes.codRespuesta || '',
+                codigoSunat: consultRes.error.numError,
+                cdrbase64: consultRes.arcCdr || '',
+                hashQr: consultRes.CdrResponse?.hashQr || ''
+              }, estadoElectronico);
+
+              // setBackdropOpen(false)
+              setProcesoCompleto(false)
+              return;
+            }
+
+            const descripcion = consultRes.CdrResponse?.Descripcion || 'PENDIENTE DE CONSULTA';
+            const estadoSunat = consultRes.codRespuesta || '';
+            await updateEstadoElectronico({
+              estado: 'F',
+              rutaCdr: `/CDR/${numeroDocumento}.zip`,
+              rutaPdf: `/CDR/${numeroDocumento}.pdf`,
+              cdrbase64: consultRes.arcCdr || '',
+              hashQr: consultRes.CdrResponse?.hashQr || '',
+              descripcion,
+              estadoSunat
+            }, estadoElectronico);
+
+            setProcesoCompleto(false)
+
+            setHashQr(consultRes.CdrResponse?.hashQr);
+            getSuccess(descripcion);
+
+            if (consultRes.codRespuesta === "0") {
+              setAceptada(true)
+              // HandlePdfCompany(despacho);
+
+              // setRefresh(true);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const storeGuia = async (values: any) => {
     try {
 
@@ -862,28 +884,25 @@ const GuiaRemisionMain = () => {
   }, [formik]);
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (hashQr !== '') {
+  //   if (hashQr !== '') {
 
-      setTimeout(() => {
-        window.open(hashQr, '_blank');
-      }, 3000);
+  //     setTimeout(() => {
+  //       window.open(hashQr, '_blank');
+  //     }, 3000);
 
-      setTimeout(() =>
-        setHashQr('')
-        , 2000)
-    }
+  //     setTimeout(() =>
+  //       setHashQr('')
+  //       , 2000)
+  //   }
 
-  }, [hashQr])
+  // }, [hashQr])
 
-  useEffect(() => {
-    if (refresh) {
-      setTimeout(() => {
-        window.location.href = window.location.href;
-      }, 10000);
-    }
-  }, [refresh])
+
+  const ActualizarPagina = ()=>{
+      window.location.href = window.location.href;
+  }
 
 
   const getParams = async () => {
@@ -1126,9 +1145,9 @@ const GuiaRemisionMain = () => {
 
   const setTimeoutMessage = (mensaje: string) => {
     setMessage(mensaje)
-    setTimeout(() => {
-      setMessage('')
-    }, 2000);
+    // setTimeout(() => {
+    //   setMessage('')
+    // }, 2000);
   }
 
   useEffect(() => {
@@ -1144,14 +1163,7 @@ const GuiaRemisionMain = () => {
       <AppHeader toggle={toggle} setToggle={setToggle} />
       <Container maxWidth="md" sx={{ mt: 5 }}>
         <Typography textAlign={'center'} variant="h4" my={3}>GUIA DE REMISIÓN ELECTRÓNICA</Typography>
-        <Box width={'50%'} position={'fixed'} zIndex={99999999} style={{
-          bottom: '50%',
-          left: '50%',
-          transform: 'translate(-50%, 50%)',
-          marginBottom: "1.5rem"
-        }} px={4} textAlign={'center'} >
-          {message !== "" ? <Alert variant="filled" sx={{ color: 'white' }} severity="success">{message}</Alert> : ""}
-        </Box>
+
         <Box px={2} mb={4}>
           <FormControl fullWidth size="small">
             <InputLabel id="">
@@ -1722,6 +1734,7 @@ const GuiaRemisionMain = () => {
                 fullWidth
                 label='Token'
                 name="token"
+                sx={{ display: 'none' }}
                 value={consultToken}
                 InputProps={{ readOnly: true }}
               />
@@ -1756,10 +1769,15 @@ const GuiaRemisionMain = () => {
               type="submit"
               variant="contained"
               color="warning"
+              disabled={aceptada}
             >
-              Submit
+              Enviar
             </Button>
           </Box>
+
+          <Button fullWidth onClick={ActualizarPagina} color="warning" variant="contained" sx={{mb:2}}>
+            Actualizar página
+          </Button>
         </Box>
         <DialogComponentCustom
           closeButton={
@@ -1830,6 +1848,98 @@ const GuiaRemisionMain = () => {
           </DialogActions>
         </Dialog>
       </Container>
+
+      <Backdrop
+        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
+        open={backdropOpen}
+      >
+        <IconButton
+          color="default"
+          sx={{
+            position: 'absolute',
+            border: '3px solid',
+            borderColor: 'inherit',
+            top: '100px'
+          }}
+          onClick={() => setBackdropOpen(false)}>
+          <CloseIcon />
+        </IconButton>
+        {procesoCompleto && <CircularProgress color="inherit" />}
+        <Box width={isMobile ? '100%' : '50%'}
+          // position={'fixed'} 
+          // zIndex={99999999} 
+          style={{
+            bottom: '50%',
+            // left: '50%',
+            // transform: 'translate(-50%, 50%)',
+            marginBottom: "1.5rem"
+          }}
+          px={4} textAlign={'center'} >
+          {message !== "" ? <Alert variant="filled" sx={{ color: 'white' }} severity="success">{message}</Alert> : ""}
+        </Box>
+
+        {aceptada &&
+
+          <Box mt={5} display={'flex'} flexDirection={'row'} gap={2} justifyContent={'space-between'}>
+            <Box
+              component={Button}
+              display={"flex"}
+              flexDirection={"column"}
+              variant="contained"
+              sx={{
+                height: 80,
+                width: 100,
+                padding: theme.spacing(2),
+                borderRadius: theme.shape.borderRadius,
+                '&:hover': {
+                  backgroundColor: theme.palette.secondary.light,
+                },
+                backgroundColor: theme.palette.secondary.main,
+                color: '#fff',
+              }}
+              onClick={handleBackdropPDfSunatClick}
+            >
+              {loadingPdf?<CircularProgress color="inherit"/>:<PictureAsPdfIcon fontSize="large"/>}
+              <Typography sx={{ fontSize: 10, fontWeight: 800 }} pt={1}>PDF SUNAT</Typography>
+            </Box>
+            <Box
+              component={Button}
+              display={"flex"}
+              flexDirection={"column"}
+              variant="contained"
+              sx={{
+                height: 80,
+                width: 100,
+                padding: theme.spacing(2),
+                borderRadius: theme.shape.borderRadius,
+                '&:hover': {
+                  backgroundColor: theme.palette.error.dark,
+                },
+                backgroundColor: theme.palette.error.main,
+                color: '#fff',
+              }}
+              onClick={handleBackdropPDfEmpresaClick}
+            >
+              <PictureAsPdfIcon fontSize="large" />
+              <Typography sx={{ fontSize: 8, fontWeight: 800 }} pt={1}>PDF EMPRESA</Typography>
+            </Box>
+          </Box>
+        }
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Visor de Pdf
+            </Typography>
+            <Box sx={{ width: '100%', height: '70vh' }} component={'embed'} src={`data:application/pdf;base64,${base64Pdf}`} />
+          </Box>
+        </Modal>
+
+      </Backdrop>
     </LocalizationProvider>
   );
 };
