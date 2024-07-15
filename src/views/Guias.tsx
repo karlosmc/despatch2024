@@ -8,6 +8,7 @@ import {
 
   Modal,
   Paper,
+  SxProps,
   Table,
   TableBody,
   TableCell,
@@ -15,7 +16,10 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Theme,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
@@ -41,6 +45,7 @@ import { panelguia } from "../types/panelguia.interface";
 import { useNotification } from "../context/notification.context";
 import { ParamsInterface } from "../types/params.interface";
 import useAuthToken from "../hooks/useAuthToken";
+import { useAuth } from "../hooks/useAuth";
 // import { GuiaRemision } from "../types/guias/guiaremision.interface";
 // import { Link } from "react-router-dom";
 
@@ -101,6 +106,19 @@ const BoxShadowButton = {
 };
 
 const Guias = () => {
+
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+
+  const theme = useTheme()
+
+  const colorStyles = theme.palette['primary'];
+
+  const customTableHeader: SxProps<Theme> = {
+    backgroundColor: colorStyles.dark,
+  }
+
+  const {user} = useAuth({middleware:'',url:''})
+  
   const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -157,7 +175,7 @@ const Guias = () => {
 
   const token = localStorage.getItem("AUTH_TOKEN");
   const fetcher = () =>
-    clienteAxios("/api/estadoelectronico", {
+    clienteAxios(`/api/estadoelectronico/${user?.perfil==='operador'?user?.id:''}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -184,10 +202,7 @@ const Guias = () => {
   };
 
   const previewPDF = (values: any) => {
-    // console.log(values)
 
-    // console.log(values.envio.indicadores)
-// console.log(values.envio.vehiculo)
 
     let vehiculos = values.envio.vehiculo?.length > 0 ? values.envio.vehiculo?.find(ve => ve.tipo === 'P') : null;
     let secundarios = values.envio.vehiculo?.length > 0 ? values.envio.vehiculo?.filter(ve => ve.tipo === 'S') : [];
@@ -210,46 +225,26 @@ const Guias = () => {
       }
 
     }
-    // console.log(doc)
-
-    // const doc = {
-    //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
-    //   correlativo: values.datosGenerales.correlativo,
-    //   serie: values.datosGenerales.serie,
-    //   tipoDoc: values.datosGenerales.tipoDoc,
-    //   version: values.datosGenerales.version,
-    //   observacion: values.observacion,
-    //   destinatario: values.destinatario,
-    //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
-    //   comprador: null,
-    //   envio: {
-    //     ...values.envio,
-    //     partida: values.partida,
-    //     llegada: values.llegada,
-    //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
-    //     aeropuerto: null,
-    //     puerto: null,
-    //     choferes: values.choferes,
-    //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
-    //   },
-    //   addDocs: values.addDocs,
-    //   details: values.details,
-    // }
-    // console.log(doc)
-
-    // console.log(JSON.stringify(doc));
-
+  
     const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch");
 
     responsePdf.then(pdf => {
       setBase64Pdf(pdf.response.TramaPdf)
-      handleOpenPdf()
+      if (isMobile) {
+        const link = document.createElement('a');
+        link.href = `data:application/pdf; base64,${pdf.response.TramaPdf}`;
+        // document.body.appendChild(link);
+        link.download = `${doc.serie}-${doc.correlativo}.pdf`
+        link.click();
+        // document.body.removeChild(link);
+      } else {
+        
+        handleOpenPdf()
+      }
     });
   }
 
   const HandleDowloadFile = async (file: string) => {
-
-
     const fileUrl = `${API_GUIAS}${file}`;
     if (fileUrl) {
       // const response = await fetch(fileUrl, { method: 'HEAD' });
@@ -299,6 +294,11 @@ const Guias = () => {
 
     if(fil.estado==="0"){
       getSuccess('El Comprobante ya tiene respuesta, no puede volver a consultar');
+      return;
+    }
+
+    if(fil.ticket===""){
+      getError('El comprobante no tiene TICKET, consulte al administrador');
       return;
     }
     const numeroDocumento = `${params.ruc}-09-${fil.serie}-${fil.numero}`;
@@ -403,18 +403,23 @@ const Guias = () => {
       }
     })
   }
+  const TableCellStyles = {
+    // padding: '8px',
+    fontSize: !isMobile?'0.875rem':'0.60rem', // Adjust font size here
+
+  }
 
   data?.data?.data.forEach((fil: panelguia) => {
     rows.push(
       <TableRow key={fil.id}>
-        <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.serie}</TableCell>
-        <TableCell align="left">{fil.numero}</TableCell>
-        <TableCell align="left">{fil.fecha}</TableCell>
-        <TableCell align="left">{fil.codigoSunat}</TableCell>
-        <TableCell align="left">{fil.descripcion}</TableCell>
-        <TableCell align="left">{fil.estado}</TableCell>
-        <TableCell align="left">
+        {!isMobile&&<TableCell sx={TableCellStyles} align="left">{fil.id}</TableCell>}
+        <TableCell sx={TableCellStyles} align="left">{fil.serie}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.numero}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.fecha}</TableCell>
+        {!isMobile&&<TableCell sx={TableCellStyles} align="left">{fil.codigoSunat}</TableCell>}
+        <TableCell sx={TableCellStyles} align="left">{fil.descripcion}</TableCell>
+        {!isMobile&&<TableCell sx={TableCellStyles} align="left">{fil.estado}</TableCell>}
+        <TableCell sx={TableCellStyles} align="left">
           <Fab
             size="small"
             onClick={() => HandlePdfCompany(fil.id_despatch)}
@@ -423,7 +428,7 @@ const Guias = () => {
             <VisibilityIcon color="error" fontSize="small" />
           </Fab>
         </TableCell>
-        <TableCell align="left">
+        {!isMobile&&<TableCell sx={TableCellStyles} align="left">
           <Fab
             size="small"
             onClick={() => HandleDowloadFile(fil.rutaXml)}
@@ -431,8 +436,8 @@ const Guias = () => {
           >
             <AttachFileIcon color="primary" />
           </Fab>
-        </TableCell>
-        <TableCell align="left">
+        </TableCell>}
+        {!isMobile&&<TableCell sx={TableCellStyles} align="left">
           <Fab
             size="small"
             onClick={() => HandleDowloadFile(fil.rutaPdf)}
@@ -440,8 +445,8 @@ const Guias = () => {
           >
             <PictureAsPdfIcon color="error" />
           </Fab>
-        </TableCell>
-        <TableCell align="left">
+        </TableCell>}
+        {!isMobile&&<TableCell sx={TableCellStyles} align="left">
           <Fab
             size="small"
             onClick={() => HandleDowloadFile(fil.rutaCdr)}
@@ -450,8 +455,8 @@ const Guias = () => {
             <FolderSpecialIcon color="success" />
           </Fab>
 
-        </TableCell>
-        <TableCell align="left">
+        </TableCell>}
+        <TableCell sx={TableCellStyles} align="left">
           <Fab
             color="secondary"
             size="small"
@@ -460,7 +465,7 @@ const Guias = () => {
             <LinkIcon />
           </Fab>
         </TableCell>
-        <TableCell align="left">
+        <TableCell sx={TableCellStyles} align="left">
           <Fab
             color="default"
             size="small"
@@ -470,7 +475,7 @@ const Guias = () => {
           </Fab>
         </TableCell>
 
-        <TableCell align="left">
+        <TableCell sx={TableCellStyles} align="left">
           <Box display={"flex"} flexDirection={"row"}>
             {/* <Link to={`/guiaedicion/${fil.id_despatch}`}>
               <Fab
@@ -498,6 +503,8 @@ const Guias = () => {
   //   //   'Editar conductor'
   //   // )
   // };
+
+
 
   const handleImageQr = (qr: any) => {
     if (qr) {
@@ -528,7 +535,7 @@ const Guias = () => {
 
   return (
     <Container>
-      <Box my={3} display="flex" component="div" justifyContent="space-between">
+      <Box my={3} display="flex" flexDirection={{sm:'row',xs:'column'}} textAlign={{sm:'left',xs:'center'}} component="div" justifyContent="space-between">
         <Typography>Estado de las Guías Electrónicas</Typography>
         <Button
           color="primary"
@@ -550,9 +557,9 @@ const Guias = () => {
 
       <TableContainer component={Paper}>
         <Table aria-label="simple table" size="small">
-          <TableHead>
+          <TableHead sx={customTableHeader}>
             <TableRow>
-              <TableCell width={"1%"}>Id</TableCell>
+              {!isMobile&& <TableCell width={"1%"}>Id</TableCell>}
               <TableCell width={"5%"} align="left">
                 Serie
               </TableCell>
@@ -562,28 +569,28 @@ const Guias = () => {
               <TableCell width={"13%"} align="left">
                 Fecha
               </TableCell>
-              <TableCell width={"5%"} align="left">
+              {!isMobile&&<TableCell width={"5%"} align="left">
                 C.Sunat
-              </TableCell>
+              </TableCell>}
               <TableCell width={"30%"} align="left">
                 Descripcion
               </TableCell>
-              <TableCell width={"10%"} align="left">
+              {!isMobile&&<TableCell width={"10%"} align="left">
                 Est
-              </TableCell>
+              </TableCell>}
               <TableCell width={"5%"} align="center">
                 PDF
               </TableCell>
 
-              <TableCell width={"5%"} align="center">
+              {!isMobile&&<TableCell width={"5%"} align="center">
                 XML
-              </TableCell>
-              <TableCell width={"5%"} align="center">
+              </TableCell>}
+              {!isMobile&&<TableCell width={"5%"} align="center">
                 PDFS
-              </TableCell>
-              <TableCell width={"5%"} align="center">
+              </TableCell>}
+              {!isMobile&&<TableCell width={"5%"} align="center">
                 CDR
-              </TableCell>
+              </TableCell>}
 
               <TableCell width={"5%"} align="center">
                 Url

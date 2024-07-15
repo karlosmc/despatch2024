@@ -92,7 +92,7 @@ import clienteAxios from "../../config/axios";
 import { useAuth } from "../../hooks/useAuth";
 import { puntoEmision } from "../../types/puntoemision.interface";
 import { ParamsInterface } from "../../types/params.interface";
-import AppHeader from "../../components/Dashboard/AppHeader";
+// import AppHeader from "../../components/Dashboard/AppHeader";
 import axios from "axios";
 
 
@@ -301,8 +301,6 @@ const GuiaRemisionMain = () => {
     setOpenConfirmVehiculo(false)
   }
 
-  const [toggle, setToggle] = useState<boolean>(false)
-
   // const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
 
 
@@ -344,13 +342,24 @@ const GuiaRemisionMain = () => {
 
     responsePdf.then(pdf => {
       setBase64Pdf(pdf.response.TramaPdf)
-      handleOpen()
+      if (isMobile) {
+        const link = document.createElement('a');
+        link.href = `data:application/pdf; base64,${pdf.response.TramaPdf}`;
+        // document.body.appendChild(link);
+        link.download = `${doc.serie}-${doc.correlativo}.pdf`
+        link.click();
+        // document.body.removeChild(link);
+
+      } else {
+        handleOpen()
+      }
+      // handleOpen()
     });
   }
 
-  const sendApi = async (param: any, api: string, process: string) => {
+  const sendApi = async (param: any, api: string, process: string, timeout:boolean=false) => {
     const url = `${API_GUIAS}${api}`;
-    setTimeoutMessage(process)
+    setTimeoutMessage(process,timeout)
     const options = {
       method: "post",
       headers: {
@@ -378,7 +387,7 @@ const GuiaRemisionMain = () => {
       numeroDocumento
     }
 
-    sendApi(consult, '/ConsultaGuia', 'Consultando Ticket')
+    sendApi(consult, '/ConsultaGuia', 'Consultando Ticket',true)
       .then(resConsult => {
         // console.log(resConsult)
         if (resConsult.error && resConsult.indCdrGenerado === "1") {
@@ -606,11 +615,12 @@ const GuiaRemisionMain = () => {
   const handleBackdropPDfSunatClick = async () => {
     setLoadingPdf(true);
     try {
-      const response = await axios.get('https://e-factura.sunat.gob.pe/v1/contribuyente/gre/comprobantes/descargaqr?hashqr=jNMQfx+wgqSxczqDe4SlHskqSTID3PdKjQzkoRtlthPyL7fQS57FJatUY+XowvZSvTsFtZ/DrcTX0rEak2M86+9CAwX6Fk177abLLPRihrA=', {
+      // const response = await axios.get('https://e-factura.sunat.gob.pe/v1/contribuyente/gre/comprobantes/descargaqr?hashqr=jNMQfx+wgqSxczqDe4SlHskqSTID3PdKjQzkoRtlthPyL7fQS57FJatUY+XowvZSvTsFtZ/DrcTX0rEak2M86+9CAwX6Fk177abLLPRihrA=', {
+      const response = await axios.get(hashQr, {
         responseType: 'blob',
         timeout: 20000,
       });
-      
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const a = document.createElement('a');
       a.href = url;
@@ -725,6 +735,7 @@ const GuiaRemisionMain = () => {
 
             if (consultRes.codRespuesta === "0") {
               setAceptada(true)
+              
               // HandlePdfCompany(despacho);
 
               // setRefresh(true);
@@ -900,8 +911,8 @@ const GuiaRemisionMain = () => {
   // }, [hashQr])
 
 
-  const ActualizarPagina = ()=>{
-      window.location.href = window.location.href;
+  const ActualizarPagina = () => {
+    window.location.href = window.location.href;
   }
 
 
@@ -1143,8 +1154,14 @@ const GuiaRemisionMain = () => {
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const setTimeoutMessage = (mensaje: string) => {
+  const setTimeoutMessage = (mensaje: string, timeout: boolean = false) => {
     setMessage(mensaje)
+
+    if (timeout) {
+      setTimeout(() => {
+        setMessage('')
+      }, 2000);
+    }
     // setTimeout(() => {
     //   setMessage('')
     // }, 2000);
@@ -1160,7 +1177,7 @@ const GuiaRemisionMain = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <AppHeader toggle={toggle} setToggle={setToggle} />
+
       <Container maxWidth="md" sx={{ mt: 5 }}>
         <Typography textAlign={'center'} variant="h4" my={3}>GUIA DE REMISIÓN ELECTRÓNICA</Typography>
 
@@ -1775,9 +1792,56 @@ const GuiaRemisionMain = () => {
             </Button>
           </Box>
 
-          <Button fullWidth onClick={ActualizarPagina} color="warning" variant="contained" sx={{mb:2}}>
+          <Button fullWidth onClick={ActualizarPagina} color="warning" variant="contained" sx={{ mb: 2 }}>
             Actualizar página
           </Button>
+          {aceptada &&
+
+            <Box my={3} display={'flex'} flexDirection={'row'} gap={2} justifyContent={'center'}>
+              <Box
+                component={Button}
+                display={"flex"}
+                flexDirection={"column"}
+                variant="contained"
+                sx={{
+                  height: 80,
+                  width: 100,
+                  padding: theme.spacing(2),
+                  borderRadius: theme.shape.borderRadius,
+                  '&:hover': {
+                    backgroundColor: theme.palette.secondary.light,
+                  },
+                  backgroundColor: theme.palette.secondary.main,
+                  color: '#fff',
+                }}
+                onClick={handleBackdropPDfSunatClick}
+              >
+                {loadingPdf ? <CircularProgress color="inherit" /> : <PictureAsPdfIcon fontSize="large" />}
+                <Typography sx={{ fontSize: 10, fontWeight: 800 }} pt={1}>PDF SUNAT</Typography>
+              </Box>
+              <Box
+                component={Button}
+                display={"flex"}
+                flexDirection={"column"}
+                variant="contained"
+                sx={{
+                  height: 80,
+                  width: 100,
+                  padding: theme.spacing(2),
+                  borderRadius: theme.shape.borderRadius,
+                  '&:hover': {
+                    backgroundColor: theme.palette.error.dark,
+                  },
+                  backgroundColor: theme.palette.error.main,
+                  color: '#fff',
+                }}
+                onClick={handleBackdropPDfEmpresaClick}
+              >
+                <PictureAsPdfIcon fontSize="large" />
+                <Typography sx={{ fontSize: 8, fontWeight: 800 }} pt={1}>PDF EMPRESA</Typography>
+              </Box>
+            </Box>
+          }
         </Box>
         <DialogComponentCustom
           closeButton={
@@ -1899,7 +1963,7 @@ const GuiaRemisionMain = () => {
               }}
               onClick={handleBackdropPDfSunatClick}
             >
-              {loadingPdf?<CircularProgress color="inherit"/>:<PictureAsPdfIcon fontSize="large"/>}
+              {loadingPdf ? <CircularProgress color="inherit" /> : <PictureAsPdfIcon fontSize="large" />}
               <Typography sx={{ fontSize: 10, fontWeight: 800 }} pt={1}>PDF SUNAT</Typography>
             </Box>
             <Box

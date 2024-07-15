@@ -102,23 +102,27 @@ export const router = createBrowserRouter([
         path:'/admin/guias',
         element:<Guias/>
       },
+      {
+        path:'/admin/guiaremision',
+        element:<GuiaRemisionMain/>
+      },
       
     ]
   },
-  {
-    path:'/gre',
-    element:<Grelayout/>,
-    children:[
-      {
-      path:'/gre/guiaremision',
-      element:<GuiaRemisionMain/>
-      },
-    ]
-  },
-  {
-    path:'/guiaedicion/:id',
-    element:<GuiaRemisionEdicion/>
-  }
+  // {
+  //   path:'/gre',
+  //   element:<Grelayout/>,
+  //   children:[
+  //     {
+  //     path:'/gre/guiaremision',
+  //     element:<GuiaRemisionMain/>
+  //     },
+  //   ]
+  // },
+  // {
+  //   path:'/guiaedicion/:id',
+  //   element:<GuiaRemisionEdicion/>
+  // }
  
 ]);
 
