@@ -14,4 +14,5 @@ export interface panelguia {
   hashQr?:string;
   token?:string;
   ticket?:string;
+  name?:string;
 }

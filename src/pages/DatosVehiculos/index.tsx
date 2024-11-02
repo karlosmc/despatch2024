@@ -198,7 +198,15 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
 
       return;
     }
-    onChange(formik.values);
+
+    const newValues:Vehiculo={
+      ...formik.values,
+      placa:formik.values.placa.toUpperCase(),
+      nroAutorizacion:formik?.values?.nroAutorizacion ||'',
+      nroCirculacion:formik?.values?.nroCirculacion ||'',
+    }
+
+    onChange(newValues);
 
     // formik.resetForm();
   };
@@ -298,11 +306,12 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
           fullWidth
           name="placa"
           label="Placa de vehiculo"
-          value={formik.values.placa.toUpperCase()}
+          value={formik.values?.placa?.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.placa && formik.errors.placa}
           error={formik.touched.placa && Boolean(formik.errors.placa)}
+          InputProps={{ readOnly: true }}
         />
         <TextField
           margin="normal"
@@ -310,8 +319,9 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
           fullWidth
           name="nroCirculacion"
           label="Nro. Circulación (Opcional)"
-          value={formik.values.nroCirculacion}
+          value={formik.values?.nroCirculacion?.toUpperCase()}
           onChange={formik.handleChange}
+          InputProps={{ readOnly: true }}
         />
         <FormControl fullWidth size="small" margin="normal">
           <InputLabel>Emisores autorizados (opcional)</InputLabel>
@@ -320,6 +330,7 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
             name="codEmisor"
             label="Emisores autorizados (Opcional)"
             onChange={formik.handleChange}
+            readOnly={true}
           >
             {EMISORES.map((emisor) => (
               <MenuItem key={emisor.Codigo} value={emisor.Abreviatura}>
@@ -334,8 +345,9 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
           fullWidth
           name="nroAutorizacion"
           label="Nro. Autorización (opcional)"
-          value={formik.values.nroAutorizacion.toUpperCase()||''}
+          value={formik.values?.nroAutorizacion?.toUpperCase()||''}
           onChange={formik.handleChange}
+          InputProps={{ readOnly: true }}
         />
       </Box>
       <Stack direction="row" spacing={2} justifyContent={'center'}>

@@ -107,10 +107,17 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
     validationSchema: TransportistaSchema,
     onSubmit: (values) => {
 
+      const newValues:transportista={
+        ...values,
+        rznSocial:values.rznSocial.toUpperCase(),
+        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
+        nroMtc:values?.nroMtc?.toUpperCase()||'',
+      }
+
       if (edit) {
-        updateTransportista(values)
+        updateTransportista(newValues)
       } else {
-        storeTransportista(values)
+        storeTransportista(newValues)
       }
 
     },
@@ -185,7 +192,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
           label="Razón Social"
           sx={{ my: 1.5 }}
           
-          value={formik.values?.rznSocial}
+          value={formik.values?.rznSocial?.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched?.rznSocial && formik.errors?.rznSocial}
@@ -204,7 +211,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
             label="Nro. MTC"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.nroMtc||''}
+            value={formik.values?.nroMtc?.toUpperCase()||''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched?.nroMtc && formik.errors?.nroMtc}
@@ -219,7 +226,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
             type="text"
             label="Nombre corto"
             sx={{ my: 1.5 }}
-            value={formik.values?.nombreCorto}
+            value={formik.values?.nombreCorto?.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}

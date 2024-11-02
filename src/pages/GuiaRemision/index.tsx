@@ -93,7 +93,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { puntoEmision } from "../../types/puntoemision.interface";
 import { ParamsInterface } from "../../types/params.interface";
 // import AppHeader from "../../components/Dashboard/AppHeader";
-import axios from "axios";
+// import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -192,6 +193,7 @@ type ModalsProps = {
 
 const GuiaRemisionMain = () => {
 
+  let navigate = useNavigate();
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
   const { getError, getSuccess, getWarning } = useNotification();
@@ -203,11 +205,15 @@ const GuiaRemisionMain = () => {
     title: "",
   });
 
+  const [pdfUrl, setPdfUrl] = useState<string>('')
+
   const [aceptada, setAceptada] = useState<boolean>(false)
 
   const [message, setMessage] = useState<string>('')
 
   const [open, setOpen] = useState(false);
+
+  const [openSunat, setOpenSunat] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -248,7 +254,7 @@ const GuiaRemisionMain = () => {
   const [consultToken, setConsultToken] = useState<string>('')
 
 
-  const [hashQr, setHashQr] = useState<string>('');
+  // const [hashQr, setHashQr] = useState<string>('');
 
 
   const { user } = useAuth({ middleware: '', url: '' });
@@ -264,6 +270,7 @@ const GuiaRemisionMain = () => {
       })
       // console.log(data)
       if (status === 200) {
+        console.log(data)
         setPuntosEmision(data)
 
       }
@@ -297,6 +304,7 @@ const GuiaRemisionMain = () => {
   }
 
   const handleConfirmVehiculoDialog = () => {
+    console.log(vehiculoFound)
     formik.setFieldValue("vehiculo", vehiculoFound);
     setOpenConfirmVehiculo(false)
   }
@@ -357,9 +365,9 @@ const GuiaRemisionMain = () => {
     });
   }
 
-  const sendApi = async (param: any, api: string, process: string, timeout:boolean=false) => {
+  const sendApi = async (param: any, api: string, process: string, timeout: boolean = false) => {
     const url = `${API_GUIAS}${api}`;
-    setTimeoutMessage(process,timeout)
+    setTimeoutMessage(process, timeout)
     const options = {
       method: "post",
       headers: {
@@ -387,7 +395,7 @@ const GuiaRemisionMain = () => {
       numeroDocumento
     }
 
-    sendApi(consult, '/ConsultaGuia', 'Consultando Ticket',true)
+    sendApi(consult, '/ConsultaGuia', 'Consultando Ticket', true)
       .then(resConsult => {
         // console.log(resConsult)
         if (resConsult.error && resConsult.indCdrGenerado === "1") {
@@ -413,12 +421,12 @@ const GuiaRemisionMain = () => {
             // 'descripcion':'Documento consultado con Exito',
             'rutaCdr': `/CDR/`,
             'rutaPdf': `/PDF/`,
-            'descripcion': 'PENDIENTE DE CONSULTA',
+            'descripcion': resConsult.codRespuesta ? resConsult.error.numError : 'PENDIENTE DE CONSULTA',
             'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
           }, est);
           getWarning('Si ha generado el token y el ticket de consulta, presiona CONSULTAR');
-          return;
           setProcesoCompleto(false)
+          return;
         }
 
         updateEstadoElectronico({
@@ -430,15 +438,18 @@ const GuiaRemisionMain = () => {
           'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
           'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
           'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-          'codigoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
-
+          'codigoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
         }, est);
 
-        setHashQr(resConsult.CdrResponse.hashQr)
+        // setHashQr(resConsult.CdrResponse.hashQr)
         getSuccess(resConsult.CdrResponse.Descripcion);
         setProcesoCompleto(false)
 
         if (resConsult.codRespuesta === "0") {
+
+          setAceptada(true)
+          const rutaPDF = `${API_GUIAS}/PDF/${numeroDocumento}.pdf`;
+          setPdfUrl(rutaPDF)
 
           // HandlePdfCompany(idDespatch)
           // setRefresh(true)
@@ -511,6 +522,9 @@ const GuiaRemisionMain = () => {
         details: details,
       }
 
+      setProcesoCompleto(true)
+      setBackdropOpen(true)
+      
       const token_sunat = await getToken()
       if (token_sunat) {
 
@@ -538,6 +552,8 @@ const GuiaRemisionMain = () => {
 
       } else {
         console.log('error al obtener el token')
+        setProcesoCompleto(false)
+        setBackdropOpen(false)
       }
     },
   });
@@ -605,40 +621,59 @@ const GuiaRemisionMain = () => {
     });
   }
 
+
+
   const handleBackdropPDfEmpresaClick = () => {
     HandlePdfCompany(idDespatch)
   }
 
 
-  const [loadingPdf, setLoadingPdf] = useState(false);
+  // const [loadingPdf, setLoadingPdf] = useState(false);
 
   const handleBackdropPDfSunatClick = async () => {
-    setLoadingPdf(true);
-    try {
-      // const response = await axios.get('https://e-factura.sunat.gob.pe/v1/contribuyente/gre/comprobantes/descargaqr?hashqr=jNMQfx+wgqSxczqDe4SlHskqSTID3PdKjQzkoRtlthPyL7fQS57FJatUY+XowvZSvTsFtZ/DrcTX0rEak2M86+9CAwX6Fk177abLLPRihrA=', {
-      const response = await axios.get(hashQr, {
-        responseType: 'blob',
-        timeout: 20000,
-      });
+    // setLoadingPdf(true);
+    // try {
+    //   // const response = await axios.get('https://e-factura.sunat.gob.pe/v1/contribuyente/gre/comprobantes/descargaqr?hashqr=jNMQfx+wgqSxczqDe4SlHskqSTID3PdKjQzkoRtlthPyL7fQS57FJatUY+XowvZSvTsFtZ/DrcTX0rEak2M86+9CAwX6Fk177abLLPRihrA=', {
+    //   const response = await axios.get(hashQr, {
+    //     responseType: 'blob',
+    //     timeout: 20000,
+    //   });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'SUNAT_Hashqr.pdf'; // You can change the file name here
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        console.error('Download canceled', error.message);
+    //   const url = window.URL.createObjectURL(new Blob([response.data]));
+    //   const a = document.createElement('a');
+    //   a.href = url;
+    //   a.download = 'SUNAT_Hashqr.pdf'; // You can change the file name here
+    //   document.body.appendChild(a);
+    //   a.click();
+    //   document.body.removeChild(a);
+    //   window.URL.revokeObjectURL(url);
+    // } catch (error) {
+    //   if (axios.isCancel(error)) {
+    //     console.error('Download canceled', error.message);
+    //   } else {
+    //     console.error('Error downloading the file', error);
+    //     getError('Error al descargar el documento')
+    //   }
+    // } finally {
+    //   setLoadingPdf(false);
+    // }
+
+    if (pdfUrl.length > 0) {
+      if (isMobile) {
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        // document.body.appendChild(link);
+        link.download = `${formik.values.datosGenerales.serie}-${formik.values.datosGenerales.correlativo}.pdf`
+        link.click();
+        // document.body.removeChild(link);
+
       } else {
-        console.error('Error downloading the file', error);
-        getError('Error al descargar el documento')
+        setOpenSunat(true)
       }
-    } finally {
-      setLoadingPdf(false);
+    } else {
+      getError('No existe el link del HashQR')
     }
+
   };
 
   const procesoElectronico = async (doc, estadoElectronico, token_sunat) => {
@@ -699,7 +734,7 @@ const GuiaRemisionMain = () => {
               numeroDocumento
             };
 
-            const consultRes = await sendApi(consultReq, '/ConsultaGuia', 'Consultando Ticket');
+            const consultRes = await sendApi(consultReq, '/ConsultaGuia', 'Consultando Ticket', true);
             if (consultRes.error) {
               getError(consultRes.error.desError);
               await updateEstadoElectronico({
@@ -717,25 +752,30 @@ const GuiaRemisionMain = () => {
             }
 
             const descripcion = consultRes.CdrResponse?.Descripcion || 'PENDIENTE DE CONSULTA';
-            const estadoSunat = consultRes.codRespuesta || '';
+            // const estadoSunat = consultRes.codRespuesta || '';
+
             await updateEstadoElectronico({
-              estado: 'F',
+              estado: descripcion === 'PENDIENTE DE CONSULTA' ? 'P' : 'F',
               rutaCdr: `/CDR/${numeroDocumento}.zip`,
-              rutaPdf: `/CDR/${numeroDocumento}.pdf`,
+              rutaPdf: `/PDF/${numeroDocumento}.pdf`,
               cdrbase64: consultRes.arcCdr || '',
               hashQr: consultRes.CdrResponse?.hashQr || '',
               descripcion,
-              estadoSunat
+              'estadoSunat': consultRes.codRespuesta ? consultRes.codRespuesta : '',
+              'codigoSunat': consultRes.codRespuesta ? consultRes.codRespuesta : '',
             }, estadoElectronico);
 
             setProcesoCompleto(false)
 
-            setHashQr(consultRes.CdrResponse?.hashQr);
+            // setHashQr(consultRes.CdrResponse?.hashQr);
             getSuccess(descripcion);
 
             if (consultRes.codRespuesta === "0") {
               setAceptada(true)
-              
+
+              const rutaPDF = `${API_GUIAS}/PDF/${numeroDocumento}.pdf`;
+              setPdfUrl(rutaPDF)
+
               // HandlePdfCompany(despacho);
 
               // setRefresh(true);
@@ -750,33 +790,8 @@ const GuiaRemisionMain = () => {
   const storeGuia = async (values: any) => {
     try {
 
-      // console.log(values)
-      // const doc = {
-      //   // ...values.datosGenerales,
-      //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
-      //   correlativo: values.datosGenerales.correlativo,
-      //   serie: values.datosGenerales.serie,
-      //   tipoDoc: values.datosGenerales.tipoDoc,
-      //   version: values.datosGenerales.version,
-      //   observacion: values.observacion,
-      //   destinatario: values.destinatario,
-      //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
-      //   comprador: null,
-      //   envio: {
-      //     ...values.envio,
-      //     partida: values.partida,
-      //     llegada: values.llegada,
-      //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
-      //     aeropuerto: null,
-      //     puerto: null,
-      //     choferes: values.choferes,
-      //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
-      //   },
-      //   addDocs: values.addDocs,
-      //   details: values.details,
-      // }
-
-      const { data, status } = await clienteAxios.post(`/api/despatches/`, { ...values }, {
+      console.log(values);
+      const { data, status } = await clienteAxios.post(`/api/despatches`, { ...values }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -910,11 +925,9 @@ const GuiaRemisionMain = () => {
 
   // }, [hashQr])
 
-
   const ActualizarPagina = () => {
-    window.location.href = window.location.href;
+    navigate('/admin/guias');
   }
-
 
   const getParams = async () => {
     const data = await getSunatParams();
@@ -991,7 +1004,9 @@ const GuiaRemisionMain = () => {
   const paperDirection: SxProps<Theme> = {
     display: "flex",
     justifyContent: "center",
-    flexWrap: "wrap",
+    alignItems: 'center',
+    // flexWrap: "wrap",
+    flexDirection: 'column',
     borderRadius: 7,
     py: 5,
     mx: 10,
@@ -1041,10 +1056,11 @@ const GuiaRemisionMain = () => {
     // formik.setFieldValue("vehiculo", vehiculo);
     // formik.setFieldValue("vehiculo", vehiculo);
 
-    setVehiculoFound(vehiculo)
-    setOpenConfirmVehiculo(true)
+    if (vehiculo.placa) {
+      setVehiculoFound(vehiculo)
+      setOpenConfirmVehiculo(true)
+    }
   };
-
 
   const handleDestinatarioChange = (cliente: Client): void => {
     formik.setFieldValue("destinatario", cliente);
@@ -1121,13 +1137,13 @@ const GuiaRemisionMain = () => {
     // }
   }, [detalles]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (formik.values.envio.codTraslado === '02') {
-      getWarning('Proveedor: Registro Opcional. Si desea registre el proveedor dónde realizó la compra')
-    }
+  //   if (formik.values.envio.codTraslado === '02') {
+  //     getWarning('Proveedor: Registro Opcional. Si desea registre el proveedor dónde realizó la compra')
+  //   }
 
-  }, [formik.values.envio.codTraslado])
+  // }, [formik.values.envio.codTraslado])
 
   const handleConfirmListaChoferes = (choferes: EnvioChoferes[]): void => {
     // console.log(choferes)
@@ -1290,7 +1306,7 @@ const GuiaRemisionMain = () => {
 
                 <Grid mb={1} container item xs={12} textAlign="center" spacing={2}>
                   <Grid item xs={6}>
-                    <Paper elevation={5} sx={paperClient}>
+                    <Paper elevation={5} sx={paperClient} style={{ flexDirection: 'column', alignItems: 'center' }}>
                       <Button
                         variant="outlined"
                         color="info"
@@ -1310,10 +1326,14 @@ const GuiaRemisionMain = () => {
                       >
                         Destinatario
                       </Button>
+                      <Box display={'flex'} flexDirection={'column'} mt={1}>
+                        <Typography sx={{ fontSize: 12 }} color={theme.palette.text.disabled} >{formik.values.destinatario?.numDoc}</Typography>
+                        <Typography sx={{ fontSize: 11 }} color={theme.palette.text.disabled} >{formik.values.destinatario?.rznSocial}</Typography>
+                      </Box>
                     </Paper>
                   </Grid>
                   <Grid item xs={6}>
-                    <Paper elevation={5} sx={paperClient}>
+                    <Paper elevation={5} sx={paperClient} style={{ flexDirection: 'column', alignItems: 'center' }}>
                       <Button
                         variant="outlined"
                         color="warning"
@@ -1333,6 +1353,10 @@ const GuiaRemisionMain = () => {
                       >
                         Proveedor
                       </Button>
+                      <Box display={'flex'} flexDirection={'column'} mt={1}>
+                        <Typography sx={{ fontSize: 12 }} color={theme.palette.text.disabled} >{formik.values.tercero?.numDoc}</Typography>
+                        <Typography sx={{ fontSize: 11 }} color={theme.palette.text.disabled} >{formik.values.tercero?.rznSocial}</Typography>
+                      </Box>
                     </Paper>
                   </Grid>
                 </Grid>
@@ -1500,9 +1524,14 @@ const GuiaRemisionMain = () => {
                         <PersonPinCircleIcon fontSize="large" />
                         <Typography>Partida</Typography>
                       </Box>
+                      <Box display={'flex'} flexDirection={'column'} alignItems={'center'} mt={1}>
+                        <Typography sx={{ fontSize: 12 }} >{formik.values.partida?.ruc}</Typography>
+                        <Typography sx={{ fontSize: 12 }} >{formik.values.partida?.rznSocial}</Typography>
+                        <Typography sx={{ fontSize: 11 }} color={theme.palette.text.disabled} >{formik.values.partida?.direccion}</Typography>
+                      </Box>
                     </Paper>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid item xs={12} sm={6} mt={{ xs: 1, sm: 0 }}>
                     <Paper elevation={5} sx={paperDirection}>
                       <Box
                         component={Button}
@@ -1533,6 +1562,11 @@ const GuiaRemisionMain = () => {
                       >
                         <PinDropIcon fontSize="large" />
                         <Typography>Llegada</Typography>
+                      </Box>
+                      <Box display={'flex'} flexDirection={'column'} mt={1}>
+                        <Typography sx={{ fontSize: 12 }} >{formik.values.llegada?.ruc}</Typography>
+                        <Typography sx={{ fontSize: 12 }} >{formik.values.llegada?.rznSocial}</Typography>
+                        <Typography sx={{ fontSize: 11 }} color={theme.palette.text.disabled} >{formik.values.llegada?.direccion}</Typography>
                       </Box>
                     </Paper>
                   </Grid>
@@ -1569,11 +1603,157 @@ const GuiaRemisionMain = () => {
                   mt={3}
                 >
                   <Grid item xs={12}>
-                    <Box
+
+                    <Grid item container justifyContent={'space-evenly'}>
+                      <Grid item sm={4} xs={6}>
+                        <Box component={"div"}>
+                          <Typography
+                            fontWeight={900}
+                            letterSpacing={3}
+                            color="secondary.dark"
+                          >
+                            Chofer
+                          </Typography>
+                          <IconButton
+                            color="default"
+                            size="large"
+                            aria-label="add an alarm"
+                            disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && formik.values.envio.modTraslado === '02'}
+                            sx={BoxShadoWButton}
+                            onClick={(_e) =>
+                              handleOpenModalForm(
+                                <Conductores
+                                  choferes={formik.values.choferes}
+                                  onConfirm={handleConfirmListaChoferes}
+                                />,
+                                "Choferes"
+                              )
+                            }
+                          >
+                            <AssignmentIndIcon fontSize="large" />
+                          </IconButton>
+
+                          {formik.values.choferes.map(cho => (
+                            <Typography key={cho.id} sx={{ fontSize: cho.tipo === 'Principal' ? 11 : 10 }} color={cho.tipo === 'Principal' ? 'warning.dark' : 'warning.light'} >{cho.tipo.substring(0, 3).toUpperCase()}: {cho.nombres} {cho.apellidos}</Typography>
+                          ))}
+
+                        </Box>
+                      </Grid>
+                      <Grid item sm={4} xs={6}>
+                        <Box component={"div"}>
+                          <Typography
+                            fontWeight={900}
+                            letterSpacing={3}
+                            color="primary"
+                          >
+                            Transportista
+                          </Typography>
+                          <IconButton
+                            color="primary"
+                            aria-label="add an alarm"
+                            sx={{ ...BoxShadoWButton }}
+                            size="large"
+                            disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') || formik.values.envio.modTraslado === '02'}
+                            onClick={(_e) =>
+                              handleOpenModalForm(
+                                <DatosTransportista
+                                  initialValue={formik.values.transportista}
+                                  onChange={handleTransportistaChange}
+                                />,
+                                "Transportista"
+                              )
+                            }
+                          >
+                            <CommuteIcon fontSize="large" />
+                          </IconButton>
+                        </Box>
+                      </Grid>
+                      <Grid item sm={4} xs={12}>
+                        <Box component={"div"}>
+                          <Typography
+                            textAlign={"center"}
+                            fontWeight={900}
+                            letterSpacing={10}
+                            color="secondary.dark"
+                          >
+                            Vehiculos
+                          </Typography>
+                          <Box
+                            component={"div"}
+                            display={{ xs: "flex" }}
+                            alignItems={"end"}
+                            justifyContent={"center"}
+                            columnGap={2}
+                          >
+                            <Box component={"div"}>
+                              <Typography
+                                fontSize={12}
+                                fontWeight={800}
+                                color="secondary.dark"
+                              >
+                                Principal
+                              </Typography>
+                              <IconButton
+                                color="default"
+                                aria-label="add an alarm"
+                                sx={BoxShadoWButton}
+                                onClick={(_e) =>
+                                  handleOpenModalForm(
+                                    <DatosVehiculo
+                                      onChange={handleVehiculoChange}
+                                      initialValue={formik.values.vehiculo}
+                                    />,
+                                    "Vehiculo"
+                                  )
+                                }
+                              >
+                                <LocalShippingIcon fontSize="large" />
+                              </IconButton>
+                            </Box>
+                            <Box component={"div"} alignSelf={"start"}>
+                              <Typography
+                                fontSize={12}
+                                fontWeight={800}
+                                color="secondary.dark"
+                              >
+                                Secundarios
+                              </Typography>
+                              <IconButton
+                                color="default"
+                                aria-label="add an alarm"
+                                disabled={
+                                  formik.values.vehiculo.placa === "" ? true : false
+                                }
+                                sx={BoxShadoWButton}
+                                onClick={(_e) =>
+                                  handleOpenModalForm(
+                                    <VehiculosSecundarios
+                                      onConfirm={handleConfirmListVehiculo}
+                                      vehiculos={formik.values.vehiculo?.secundarios}
+                                    />,
+                                    "Vehiculos secundarios"
+                                  )
+                                }
+                              >
+                                <AirportShuttleIcon fontSize="small" />
+                              </IconButton>
+                            </Box>
+                          </Box>
+                          {
+                            formik.values.vehiculo.placa !== '' &&
+                            (<Typography sx={{ fontSize: 11 }} color="warning.dark">Principal: {formik.values.vehiculo.placa}</Typography>)
+                          }
+                          {formik.values.vehiculo?.secundarios?.map(veh => (
+                            <Typography key={veh.id} sx={{ fontSize: 10 }} color={'warning.light'} >Secundario: {veh.placa}</Typography>
+                          ))}
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    {/* <Box
                       component={"div"}
                       display={"grid"}
                       gridTemplateColumns={{
-                        xs: "repeat(1fr)",
+                        xs: "repeat(2,1fr)",
                         sm: "repeat(3,1fr)",
                       }}
                       columnGap={1}
@@ -1712,11 +1892,11 @@ const GuiaRemisionMain = () => {
                           formik.values.vehiculo.placa !== '' &&
                           (<Typography sx={{ fontSize: 12 }} color="warning.dark">Principal: {formik.values.vehiculo.placa}</Typography>)
                         }
-                        {formik.values.vehiculo.secundarios.map(veh => (
+                        {formik.values.vehiculo?.secundarios?.map(veh => (
                           <Typography key={veh.id} sx={{ fontSize: 11 }} color={'warning.light'} >Secundario: {veh.placa}</Typography>
                         ))}
                       </Box>
-                    </Box>
+                    </Box> */}
                   </Grid>
                 </Grid>
               </AccordionDetails>
@@ -1737,63 +1917,63 @@ const GuiaRemisionMain = () => {
                   "Observaciones"
                 )
               }
-              sx={{ mt: 2 }}
+              sx={{ marginY: 2 }}
             // sx={{ height: 80, width: 100 }}
             >
               Observaciones
             </Button>
 
-            <Box sx={{ width: '100%' }} columnGap={2} display={"flex"} flexDirection={'row'} mt={2} alignItems={'baseline'}>
-              <TextField
-                margin="normal"
-                size="small"
-                variant="outlined"
-                fullWidth
-                label='Token'
-                name="token"
-                sx={{ display: 'none' }}
-                value={consultToken}
-                InputProps={{ readOnly: true }}
-              />
-              <TextField
-                margin="normal"
-                size="small"
-                variant="outlined"
-                fullWidth
-                label='Ticket'
-                name="ticket"
-                value={ticket}
-                InputProps={{ readOnly: true }}
-              />
-              <Button onClick={consultarToken} fullWidth size="small" variant="contained" color="error" sx={{ height: 40 }}>
-                Consultar
-              </Button>
 
-            </Box>
 
           </Grid>
-          <Box display={"flex"} justifyContent={"center"} flexDirection={'row'} columnGap={2}>
-            <Button onClick={onHandlePreview} variant="contained" sx={{ my: 4, color: "white", fontWeight: "bold" }} fullWidth>
-              Ver Pdf
-            </Button>
-            <Button
-              sx={{
-                my: 4,
-                color: "white",
-                fontWeight: "bold",
-              }}
+
+          <Button onClick={onHandlePreview} variant="contained" sx={{ my: 1, color: "white", fontWeight: "bold" }} fullWidth>
+            Vista previa de PDF
+          </Button>
+          <Button
+            sx={{
+              my: 1,
+              color: "white",
+              fontWeight: "bold",
+            }}
+            fullWidth
+            type="submit"
+            variant="contained"
+            color="warning"
+            disabled={aceptada}
+          >
+            Enviar
+          </Button>
+
+          <Box columnGap={1} display={"flex"} flexDirection={'row'} mt={1} alignItems={'baseline'} >
+            <TextField
+              margin="normal"
+              size="small"
+              variant="outlined"
               fullWidth
-              type="submit"
-              variant="contained"
-              color="warning"
-              disabled={aceptada}
-            >
-              Enviar
+              label='Token'
+              name="token"
+              sx={{ display: 'none' }}
+              value={consultToken}
+              InputProps={{ readOnly: true }}
+            />
+            <TextField
+              margin="normal"
+              size="small"
+              variant="outlined"
+              fullWidth
+              label='Ticket'
+              name="ticket"
+              value={ticket}
+              InputProps={{ readOnly: true }}
+            />
+            <Button onClick={consultarToken} fullWidth variant="contained" color="error">
+              Consultar
             </Button>
           </Box>
 
-          <Button fullWidth onClick={ActualizarPagina} color="warning" variant="contained" sx={{ mb: 2 }}>
-            Actualizar página
+          <Button size="small" fullWidth onClick={ActualizarPagina} color="inherit" variant="contained" sx={{ my: 2 }}>
+            Ir a Panel
           </Button>
           {aceptada &&
 
@@ -1816,7 +1996,7 @@ const GuiaRemisionMain = () => {
                 }}
                 onClick={handleBackdropPDfSunatClick}
               >
-                {loadingPdf ? <CircularProgress color="inherit" /> : <PictureAsPdfIcon fontSize="large" />}
+                <PictureAsPdfIcon fontSize="large" />
                 <Typography sx={{ fontSize: 10, fontWeight: 800 }} pt={1}>PDF SUNAT</Typography>
               </Box>
               <Box
@@ -1872,6 +2052,22 @@ const GuiaRemisionMain = () => {
             <Box sx={{ width: '100%', height: '70vh' }} component={'embed'} src={`data:application/pdf;base64,${base64Pdf}`} />
           </Box>
         </Modal>
+
+        <Modal
+          open={openSunat}
+          onClose={() => setOpenSunat(false)}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+
+        >
+          <Box sx={style}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Visor de Pdf
+            </Typography>
+            <Box sx={{ width: '100%', height: '70vh' }} component={'embed'} src={pdfUrl} />
+          </Box>
+        </Modal>
+
 
         <Dialog
           sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
@@ -1963,7 +2159,7 @@ const GuiaRemisionMain = () => {
               }}
               onClick={handleBackdropPDfSunatClick}
             >
-              {loadingPdf ? <CircularProgress color="inherit" /> : <PictureAsPdfIcon fontSize="large" />}
+              <PictureAsPdfIcon fontSize="large" />
               <Typography sx={{ fontSize: 10, fontWeight: 800 }} pt={1}>PDF SUNAT</Typography>
             </Box>
             <Box

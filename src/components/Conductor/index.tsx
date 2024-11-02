@@ -34,7 +34,7 @@ interface ConductorFormProps {
 
 const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) => {
 
-// console.log(initialValue)
+  // console.log(initialValue)
   const { getError } = useNotification()
 
   const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
@@ -80,7 +80,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
   const updateConductor = async (values: conductor) => {
     try {
       const { data, status } = await clienteAxios.put(`/api/conductor/${values.id}`, {
-        
+
         nroDoc: values.nroDoc,
         nombres: values.nombres,
         fav: values.fav,
@@ -113,11 +113,18 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
     initialValues: initialValue || ConductorInitialValues,
     validationSchema: ConductorSchema,
     onSubmit: (values) => {
+      const newValues: conductor = {
+        ...values,
+        apellidos: values.apellidos.toUpperCase(),
+        nombres: values.nombres.toUpperCase(),
+        nombreCorto: values?.nombreCorto?.toUpperCase() || '',
+        licencia: values.licencia.toUpperCase(),
+      }
 
       if (edit) {
-        updateConductor(values)
+        updateConductor(newValues)
       } else {
-        storeConductor(values)
+        storeConductor(newValues)
       }
 
     },
@@ -125,7 +132,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
 
   const handleSearch = (searchPerson: searchPersona): void => {
 
-    if (!searchPerson){
+    if (!searchPerson) {
       getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
       return;
     }
@@ -134,10 +141,10 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
       return;
     }
 
-    if(formik.values.tipoDoc==='6'){
+    if (formik.values.tipoDoc === '6') {
       formik.setFieldValue('apellidos', searchPerson.persona.nombreRazonSocial)
       formik.setFieldValue('nombres', '-')
-    }else{
+    } else {
 
       formik.setFieldValue('apellidos', searchPerson.persona.apellidos)
       formik.setFieldValue('nombres', searchPerson.persona.nombres)
@@ -240,7 +247,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
             label="Nro. Licencia"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.licencia.toUpperCase()}
+            value={formik.values?.licencia?.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.licencia && formik.errors.licencia}
@@ -256,7 +263,7 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
             type="text"
             label="Nombre corto de la persona"
             sx={{ my: 1.5 }}
-            value={formik.values?.nombreCorto.toUpperCase()}
+            value={formik.values?.nombreCorto?.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}

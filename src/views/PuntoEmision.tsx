@@ -1,17 +1,14 @@
-import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import { Box, Button, CircularProgress, Container, Fab,  Paper, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Theme, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useState } from 'react'
 import useSWR from 'swr';
 import clienteAxios from '../config/axios';
 
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
-
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
 
-import { transportista } from '../types/transportista.interface';
-import ModalTransportista from '../components/Transportista';
+import { puntoEmision } from '../types/puntoemision.interface';
+import ModalPuntoEmision from '../components/PuntoEmision';
 
 
 type ModalsProps = {
@@ -20,7 +17,7 @@ type ModalsProps = {
   title: string;
 };
 
-const Transportistas = () => {
+const PuntoEmision = () => {
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -28,20 +25,31 @@ const Transportistas = () => {
     title: "",
   });
 
+  const theme = useTheme()
+
+  const colorStyles = theme.palette['primary'];
+
+  const customTableHeader: SxProps<Theme> = {
+    backgroundColor: colorStyles.dark,
+  }
+
+
+  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
+
+  
 
   const handleCloseModalForm = () => {
     // Cierra el modal en la posición especificada
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-
   const handleConfirm = (): void => {
     handleCloseModalForm()
   }
-
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
 
@@ -54,45 +62,49 @@ const Transportistas = () => {
     setPage(0);
   };
 
-
   // const [edit, setEdit] = useState<boolean>(false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/transportistas', {
+  const fetcher = () => clienteAxios('/api/puntoemision', {
     headers: {
       Authorization: `Bearer ${token}`
     }
   })
 
-  const { data,  isLoading } = useSWR('/api/transportistas', fetcher);
+  const { data,  isLoading } = useSWR('/api/puntoemision', fetcher);
+
+  const TableCellStyles = {
+    // padding: '8px',
+    fontSize: !isMobile?'0.875rem':'0.60rem', // Adjust font size here
+
+
+  }
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:transportista) => {
+  data?.data?.data.forEach((fil:puntoEmision) => {
     rows.push(
       <TableRow
         key={fil.id}
       >
-        <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.numDoc}</TableCell>
-        <TableCell align="left">{fil.rznSocial}</TableCell>
-        <TableCell align="left">{fil.tipodocumento}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
-        <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditTransportista(fil)} ><EditIcon /></Fab></TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.id}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.codigo}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.nombre}</TableCell>
+        <TableCell sx={TableCellStyles} align="left">{fil.direccion}</TableCell>
+        <TableCell sx={TableCellStyles} align="left"><Fab color='primary' size='small' onClick={() => handleEditPuntoEmision(fil)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
   })
 
 
 
-  const handleEditTransportista = (transportista:transportista) => {
-    // setEdit(false);
-    // const selectedPunto = data.data.data.find(item => item.id === id);
+  const handleEditPuntoEmision = (puntoemision:puntoEmision) => {
+    
     handleOpenModalForm(
-      <ModalTransportista initialValue={transportista} edit={true} onConfirm={handleConfirm} />,
-      'Editar Transportista'
+      <ModalPuntoEmision initialValue={puntoemision} edit={true} onConfirm={handleConfirm} />,
+      'Editar PuntoEmision'
     )
   }
 
@@ -100,33 +112,33 @@ const Transportistas = () => {
 
   return (
     <Container>
-      <Box my={3} display='flex' component='div' justifyContent='space-between'>
-        <Typography>
-          Transportistas
+      <Box my={3} display='flex' component='div' justifyContent='space-between' flexDirection={{sm:'row',xs:'column'}}>
+        <Typography variant='h5' textAlign={{sm:'left',xs:'center'}} mb={{sm:0,xs:1}}>
+          Punto de Emision
         </Typography>
         <Button
           color='primary'
           onClick={() => {
             handleOpenModalForm(
-              <ModalTransportista initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
-              'Nuevo Transportista'
+              <ModalPuntoEmision initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
+              'Nuevo Punto de Emision'
             )
           }}
           variant='outlined'>
-          Agregar Transportista
+          Agregar Punto Emision
         </Button>
       </Box>
 
       <TableContainer component={Paper} >
         <Table aria-label="simple table" size='small'>
-          <TableHead>
+          <TableHead sx={customTableHeader}>
             <TableRow>
-              <TableCell width={'5%'}>Id</TableCell>
-              <TableCell width={'10%'} align="left">Nro.Doc.</TableCell>
-              <TableCell width={'50%'} align="left">Razón Social</TableCell>
-              <TableCell width={'5%'} align="left">Tipo.Doc.</TableCell>
-              <TableCell width={'10%'} align="left">Fav?</TableCell>
-              <TableCell width={'10%'} align="left">Editar</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'5%'}>Id</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Codigo</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'25%'} align="left">Nombre</TableCell>
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'30%'} align="left">Dirección</TableCell>
+              
+              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Editar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -172,4 +184,4 @@ const Transportistas = () => {
   )
 }
 
-export default Transportistas
+export default PuntoEmision

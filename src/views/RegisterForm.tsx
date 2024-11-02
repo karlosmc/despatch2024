@@ -194,7 +194,9 @@ const RegisterForm = () => {
             required
           >
             <MenuItem value={""}>Seleccione la empresa</MenuItem>
-            <MenuItem value={"1"}>Estación de energías el centenario S.A.C.</MenuItem>
+            {/* <MenuItem value={"1"}>ESTACION DE ENERGIAS EL CENTENARIO S.A.C.</MenuItem> */}
+            <MenuItem value={"1"}>Agropecuaria e Industrias Fafio S.A.</MenuItem>
+            {/* <MenuItem value={"1"}>SAVIT S.A.</MenuItem> */}
           </Select>
           <FormHelperText>
             Seleccione la empresa dónde labora

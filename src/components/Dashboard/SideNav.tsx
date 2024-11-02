@@ -12,6 +12,8 @@ import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import NumbersIcon from '@mui/icons-material/Numbers';
 
 // import { StyleOutlined } from '@mui/icons-material';
 
@@ -157,9 +159,15 @@ const SideNav = ({ toggle, setToggle }: AppHeaderInterface) => {
           <Typography variant='body2'>Reportes</Typography>
         </MyMenu>
 
-        <ConditionalDiv hidden={user?.perfil==='operador'} textContent={'Configuración'}/>
+        <ConditionalDiv hidden={user?.perfil!=='admin'} textContent={'Configuración'}/>
 
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/sunat'} component={<Link to="/admin/sunat" />} icon={<SettingsApplicationsIcon />}>
+        <MyMenu hidden={user?.perfil!=='admin'} active={location.pathname === '/admin/puntoemision'} component={<Link to="/admin/puntoemision" />} icon={<GpsFixedIcon />}>
+          <Typography variant='body2'>Puntos de emision</Typography>
+        </MyMenu>
+        <MyMenu hidden={user?.perfil!=='admin'} active={location.pathname === '/admin/numeracion'} component={<Link to="/admin/numeracion" />} icon={<NumbersIcon />}>
+          <Typography variant='body2'>Numeración</Typography>
+        </MyMenu>
+        <MyMenu hidden={user?.perfil!=='admin'} active={location.pathname === '/admin/sunat'} component={<Link to="/admin/sunat" />} icon={<SettingsApplicationsIcon />}>
           <Typography variant='body2'>Sunat</Typography>
         </MyMenu>
 

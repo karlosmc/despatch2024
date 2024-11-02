@@ -111,7 +111,7 @@ const SearchVehiculo = ({ onCheck }: SearchVehiculoProps) => {
             onChange={handleChange}
           >
             <MenuItem value={'placa'}>Placa</MenuItem>
-            <MenuItem value={'nombreCorto'}>nombreCorto</MenuItem>
+            <MenuItem value={'nombreCorto'}>Nombre Corto</MenuItem>
           </Select>
         </FormControl>
 

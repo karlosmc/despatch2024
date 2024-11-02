@@ -83,6 +83,7 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
       // console.log(values);
       // onChange(values);
 
+
       onConfirm(values);
     },
   });
@@ -110,7 +111,6 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
       console.log(error)
     }
   }
-
 
   const handleNewChofer = (newChofer: EnvioChoferes): void => {
     // console.log(chofer)

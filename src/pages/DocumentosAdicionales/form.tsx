@@ -52,6 +52,7 @@ const AddDocValues: AddDoc = {
 const TipoDocumentos = [
   { valor: "03", descripcion: "BOLETA" },
   { valor: "01", descripcion: "FACTURA" },
+  { valor: "04", descripcion: "LIQUIDACION DE COMPRA"},
   { valor: "81", descripcion: "CODIGO DE AUTORIZACION EMITIDA POR EL SCOP" },
 ];
 
@@ -122,7 +123,12 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
       values.tipoDesc = tipoDesc;
       // console.log(values);
       // onChange(values);
-      onNewAddDoc(values);
+
+      const newValues:AddDoc={
+        ...values,
+        nro:values.nro.toUpperCase()
+      }  
+      onNewAddDoc(newValues);
     },
   });
 
@@ -160,6 +166,28 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
     setChipRazonSocial(searchPerson.persona.nombreRazonSocial)
   }
 
+
+  const PlaceHolderTipoComprobante = (valor: string):string=>{
+
+    let placeholder = ''
+    switch (valor) {
+      case '01':
+        placeholder =`Ejemplo:F123-456789`;
+        break;
+      case '03':
+        placeholder = `Ejemplo:B123-456789`;
+        break;
+      case '04':
+        placeholder = `Ejemplo:E001-123456`;
+        break;
+    
+      default:
+        placeholder =''
+        break;
+    }
+
+    return placeholder
+  }
 
   const handleSetFavorite = (item: ChipInterface): void => {
     const persona = dataFilter.find(it => it.id === item.id);
@@ -258,9 +286,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
           helperText={formik.touched.nro && formik.errors.nro}
           error={formik.touched.nro && Boolean(formik.errors.nro)}
           inputProps={{ style: { textTransform: "uppercase" } }}
-          placeholder={ formik.values.tipo==='81'?'':`EJEMPLO: ${
-            formik.values.tipo === "01" ? "F" : "B"
-          }123-456789`}
+          placeholder={ PlaceHolderTipoComprobante(formik.values.tipo) }
         />
 
         <Button

@@ -17,6 +17,7 @@ import {
   Select,
   Box,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 
 
@@ -51,7 +52,9 @@ const LoginForm = () => {
   const [message, setMessage] = useState('');
 
 
-  const { login } = useAuth({ middleware: 'guest', url: '/' });
+  const { login ,user } = useAuth({ middleware: 'guest', url: '/' });
+
+  const [ingresar, setIngresar] = useState<boolean>(false)
 
   const [errores, setErrores] = useState([]);
 
@@ -62,6 +65,8 @@ const LoginForm = () => {
     validationSchema: LoginSchema,
     onSubmit: (values) => {
       // LogInUser(values);
+      setMessage('')
+      setIngresar(true)
 
       const datos: LoginUser = {
         documento: values.documento,
@@ -71,6 +76,7 @@ const LoginForm = () => {
       }
 
       login({ datos, setErrores })
+      
     },
   });
 
@@ -80,9 +86,11 @@ const LoginForm = () => {
   useEffect(() => {
     if(errores.length>0){
       setMessage(errores[0])
+      setIngresar(false)
     }
   }, [errores])
   
+  // console.log(user)
  
   // const classes = useStyles();
   return (
@@ -92,6 +100,7 @@ const LoginForm = () => {
       <div style={{ marginBottom: "1.5rem", width: "100%" }}>
         {message !== "" ? <Alert severity="error">{message}</Alert> : ""}
       </div>
+      {(!user && ingresar )  && <CircularProgress color="error" />}
       <Typography variant='h4' mb={2}>
         Inicio de Sesión
       </Typography>
@@ -151,8 +160,9 @@ const LoginForm = () => {
             required
           >
             <MenuItem value={""}>Seleccione la empresa</MenuItem>
-            <MenuItem value={"1"}>Estación de energías el centenario S.A.C.</MenuItem>
-            <MenuItem value={"2"}>Agropecuaria e Industrias Fafio S.A.</MenuItem>
+            {/* <MenuItem value={"1"}>ESTACION DE ENERGIAS EL CENTENARIO S.A.C.</MenuItem> */}
+            {/* <MenuItem value={"1"}>SAVIT S.A.</MenuItem> */}
+            <MenuItem value={"1"}>Agropecuaria e Industrias Fafio S.A.</MenuItem>
           </Select>
           <FormHelperText>
             Seleccione la empresa dónde labora

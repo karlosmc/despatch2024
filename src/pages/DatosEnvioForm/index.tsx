@@ -136,6 +136,9 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
 
   useEffect(() => {
     // console.log(formik.values);
+
+    
+
     onChange(formik.values);
   }, [formik.values]);
 
@@ -203,7 +206,7 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
      
       </Grid>
       <Grid my={1} container item xs={12} spacing={2}>
-        <Grid item lg={5} xs={12}>
+        <Grid item lg={5} xs={6}>
           <TextField
             fullWidth
             size="small"
@@ -221,7 +224,7 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             }}
           />
         </Grid>
-        <Grid item lg={2} xs={4}>
+        <Grid item lg={2} xs={6}>
           <TextField
             fullWidth
             size="small"
@@ -236,7 +239,7 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             onBlur={formik.handleBlur}
           />
         </Grid>
-        <Grid item lg={2} xs={4}>
+        <Grid item lg={2} xs={6}>
           <TextField
             fullWidth
             size="small"
@@ -249,7 +252,7 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             onBlur={formik.handleBlur}
           />
         </Grid>
-        <Grid item lg={3} xs={4}>
+        <Grid item lg={3} xs={6}>
           <FormControl fullWidth size="small">
             <InputLabel>Unidad de Peso Total</InputLabel>
             <Select

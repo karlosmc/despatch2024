@@ -10,6 +10,8 @@ import GradeIcon from '@mui/icons-material/Grade';
 
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
+import BuscarComponent from '../components/BuscarComponent';
+import { BuscarOpcionesInterface } from '../types/buscar.interface';
 
 
 type ModalsProps = {
@@ -17,6 +19,26 @@ type ModalsProps = {
   form: React.ReactNode | null;
   title: string;
 };
+
+const opciones: BuscarOpcionesInterface[] = [
+  {
+    codigo: 'codigo',
+    valor: 'Código'
+  },
+  {
+    codigo: 'descripcion',
+    valor: 'Descripción'
+  },
+  {
+    codigo: 'nombreCorto',
+    valor: 'Nombre Corto'
+  },   
+  // {
+  //   codigo: 'fav',
+  //   valor: 'Favoritos'
+  // },
+]
+
 
 const Productos = () => {
 
@@ -26,6 +48,13 @@ const Productos = () => {
     title: "",
   });
 
+  const [inputQueryTemp, setInputQueryTemp] = useState<string>(''); // Valores temporales
+  const [searchFieldTemp, setSearchFieldTemp] = useState<string>('');
+
+  const [inputQuery, setInputQuery] = useState<string>('')
+
+  const [searchField, setSearchField] = useState<string>('')
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -34,6 +63,7 @@ const Productos = () => {
     // Cierra el modal en la posición especificada
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
+
 
 
   const handleConfirm = (): void => {
@@ -52,23 +82,47 @@ const Productos = () => {
     setPage(0);
   };
 
+  // const HandleSearchParams = (field:string,query:string) => {
+
+  //   setInputQuery(query)
+  //   setSearchField(field)
+  // }
+
+  const handleSearchParams = (field: string, query: string) => {
+    setSearchFieldTemp(field);  // Guarda en los estados temporales
+    setInputQueryTemp(query);
+  };
+
+  // Ejecutar búsqueda al presionar "Buscar"
+  const handleSearch = () => {
+    setSearchField(searchFieldTemp); // Actualiza los estados definitivos
+    setInputQuery(inputQueryTemp);
+  };
+
 
   // const [edit, setEdit] = useState<boolean>(false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/productos', {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
 
-  const { data,  isLoading } = useSWR('/api/productos', fetcher);
+  const fetcher = () => {
+    let url = '/api/productos';
+    if (searchField && inputQuery) {
+      url += `/buscar?${searchField}=${inputQuery}`; // Agrega los parámetros si existen
+    }
+    return clienteAxios(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  }
+
+  const { data, isLoading } = useSWR(['/api/productos', searchField, inputQuery], fetcher);
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:Producto) => {
+  data?.data?.data.forEach((fil: Producto) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -82,8 +136,6 @@ const Productos = () => {
       </TableRow>
     )
   })
-
-
 
   const handleEditProduct = (id: number) => {
     // setEdit(false);
@@ -114,6 +166,11 @@ const Productos = () => {
           Agregar Producto
         </Button>
       </Box>
+      <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} my={1}>
+        <BuscarComponent opciones={opciones} onSearchChange={handleSearchParams} />
+      </Box>
+
+      <Button onClick={handleSearch} size='small' fullWidth color='success' variant='contained' sx={{ mb: 1 }}>Buscar</Button>
 
       <TableContainer component={Paper} >
         <Table aria-label="simple table" size='small'>

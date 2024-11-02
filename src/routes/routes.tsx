@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import {  createHashRouter } from "react-router-dom";
 
 // import DespatchPage from "../pages/despatch";
 
@@ -23,19 +23,19 @@ import Personas from "../views/Personas";
 import Conductores from "../views/Conductores";
 import Transportistas from "../views/Transportista";
 import SunatParameters from "../views/SunatParameters";
-import Grelayout from "../layouts/GreLayout";
+
 import Vehiculos from "../views/Vehiculos";
 import Guias from "../views/Guias";
-import GuiaRemisionEdicion from "../pages/GuiaRemision/edicionMode";
+import PuntoEmision from "../views/PuntoEmision";
+import Numeracion from "../views/Numeracion";
 
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { ThemeContextProvider, useThemeContext } from '../context/themeProvider';
+
 // import LoginForm from "../pages/login";
 
 
 
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
         path: "/",
         
@@ -99,8 +99,16 @@ export const router = createBrowserRouter([
         element:<Vehiculos/>
       },
       {
+        path:'/admin/numeracion',
+        element:<Numeracion/>
+      },
+      {
         path:'/admin/guias',
         element:<Guias/>
+      },
+      {
+        path:'/admin/puntoemision',
+        element:<PuntoEmision/>
       },
       {
         path:'/admin/guiaremision',

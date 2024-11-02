@@ -420,7 +420,13 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
     initialValues: DetailValues,
     validationSchema: DetailSchema,
     onSubmit: (values) => {
-      onNewDetail(values);
+
+      const newValues:Detail={
+        ...values,
+        codigo:values.codigo.toUpperCase(),
+        descripcion:values.descripcion.toUpperCase(),
+      }
+      onNewDetail(newValues);
     },
   });
 
@@ -482,7 +488,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             fullWidth
             name="codigo"
             label="Codigo de producto"
-            value={formik.values.codigo}
+            value={formik.values.codigo.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.codigo && formik.errors.codigo}
@@ -499,7 +505,8 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             name="cantidad"
             label="Cantidad"
             value={formik.values.cantidad}
-            InputProps={{ inputProps: { min: 1 } }}
+            // InputProps={{ inputProps: { min: 1 } }}
+            inputProps={{step: "0.0000000001"}}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.cantidad && formik.errors.cantidad}
@@ -564,7 +571,7 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
           fullWidth
           name="descripcion"
           label="Descripcion"
-          value={formik.values.descripcion}
+          value={formik.values.descripcion.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.descripcion && formik.errors.descripcion}

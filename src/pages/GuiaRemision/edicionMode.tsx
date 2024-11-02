@@ -28,14 +28,13 @@ import {
   Box,
   Button,
   Container,
-  FormControl,
+  
   Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
+  
   Modal,
   Paper,
-  Select,
+  
   SxProps,
 
   TextField,
@@ -63,9 +62,9 @@ import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DialogComponentCustom } from "../../components";
-import DatosGeneralesForm from "../DatosGeneralesForm";
+
 import Cliente from "../PersonaCliente";
-import EnvioForm from "../DatosEnvioForm";
+
 import DocumentosAdicionales from "../DocumentosAdicionales";
 import DocumentoAdicional from "../DocumentosAdicionales/form";
 import DocumentosDetalles from "../DocumentosDetalles";
@@ -209,9 +208,9 @@ const GuiaRemisionEdicion = () => {
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
-  const [puntosEmision, setPuntosEmision] = useState<puntoEmision[]>([]);
+  const [_, setPuntosEmision] = useState<puntoEmision[]>([]);
 
-  const [puntoEmisionSelected, setPuntoEmisionSelected] = useState<number>(0)
+  
 
   const [params, setParams] = useState<ParamsInterface>(null)
 

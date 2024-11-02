@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { Stack, Button, InputAdornment, Tooltip, styled, TooltipProps, tooltipClasses, keyframes, Box } from "@mui/material";
+import { Stack, Button, InputAdornment, Tooltip, styled, TooltipProps, tooltipClasses, keyframes, Box, CircularProgress } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -111,7 +111,14 @@ const DatosDireccion = ({
     initialValues: initialValue,
     validationSchema: schema || PartidaSchema,
     onSubmit: (values) => {
-      onChange(values);
+
+      const newValues:Direccion={
+        ...values,
+        direccion:values.direccion.toUpperCase(),
+        rznSocial:values.rznSocial.toUpperCase(),        
+      }
+
+      onChange(newValues);
     },
   });
 
@@ -133,6 +140,9 @@ const DatosDireccion = ({
   const [dataFilter, setDataFilter] = useState<puntoUbicacion[]>([])
 
   const [isLoading, setIsLoading] = useState(true)
+
+  const [loading, setLoading] = useState(false)
+  const [ubigeos, setUbigeos] = useState<Ubigeos[]>(null)
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
@@ -157,7 +167,7 @@ const DatosDireccion = ({
   // const correlativo = parseInt(dataUser.sercor.correlativo)+1
 
 
-  const { ubigeos } = useAuxiliares();
+  const { getUbigeos2 } = useAuxiliares();
 
   useEffect(() => {
     if (codTraslado === '04') {
@@ -168,6 +178,19 @@ const DatosDireccion = ({
     }
 
   }, [codTraslado])
+
+
+  const getUbigeos = async()=>{
+    setLoading(true)
+    const data = await getUbigeos2()
+    setUbigeos(data)
+
+    setLoading(false)
+
+  }
+  useEffect(()=>{
+    getUbigeos()
+  },[])
 
   /* establecer valores dando click a los valores por defecto */
 
@@ -211,7 +234,7 @@ const DatosDireccion = ({
   const handleSetFavorite = (item: ChipInterface): void => {
     const punto = dataFilter.find(it => it.id === item.id);
     formik.setFieldValue('id', punto.id)
-    formik.setFieldValue('rznSocial', punto.rznSocial?punto.rznSocial:'')
+    formik.setFieldValue('rznSocial', punto.rznSocial ? punto.rznSocial : '')
     formik.setFieldValue('ubigeo', punto.ubigeo)
     formik.setFieldValue('direccion', punto.direccion)
     formik.setFieldValue('codLocal', punto.codLocal)
@@ -231,179 +254,190 @@ const DatosDireccion = ({
 
   useEffect(() => {
 
-    if (ubigeos.length > 0) {
-      const initialUbigeo = ubigeos.find(option => option.ubigeo === formik.values?.ubigeo) || null;
-      // console.log(initialUbigeo)
-      setValue(initialUbigeo);
-      setSelectedUbigeo(initialUbigeo?.ubigeo || null);
+    if(ubigeos){
+      if (ubigeos.length > 0) {
+        const initialUbigeo = ubigeos.find(option => option.ubigeo === formik.values?.ubigeo) || null;
+        // console.log(initialUbigeo)
+        setValue(initialUbigeo);
+        setSelectedUbigeo(initialUbigeo?.ubigeo || null);
+      }
     }
   }, [formik.values.ubigeo, ubigeos]);
 
   return (
     <>
-      <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Puntos de ubicación favoritos" />
-      <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
-        <StyledNewButton fullWidth variant="contained"
-          onClick={() => {
-            handleOpenModalForm(
-              <ModalPuntoUbicacion initialValue={null} edit={false} onConfirm={handleConfirm} />,
-              'Punto Ubicacion'
-            )
-          }}
-        >
-          Crear Punto
-        </StyledNewButton>
 
-        <StyledSearchButton fullWidth variant="contained"
-          onClick={() => {
-            handleOpenModalForm(
-              <SearchPuntos onCheck={handleConfirm} />,
-              'Buscar Punto de ubicación'
-            )
-          }}
-        >
-          Buscar
-        </StyledSearchButton>
-      </Box>
-      <Box component={'form'} onSubmit={formik.handleSubmit}>
-        <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="codLocal"
-          type="text"
-          label="Código de Local"
-          sx={{ my: 1.5 }}
-          value={formik.values.codLocal}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.codLocal && formik.errors.codLocal}
-          error={formik.touched.codLocal && Boolean(formik.errors.codLocal)}
-          InputProps={{
-            endAdornment: (
-              <AnimatedInputAdornment position="end">
-                <LightTooltip arrow title="Usa Código de Local solo si vas a considerar un RUC para establecer el punto de Ubicación, si no, dejalo por defecto {0000}">
-                  <InfoIcon color="action" />
-                </LightTooltip>
-              </AnimatedInputAdornment>
-            ),
-            readOnly: formik.values.id <= 1 ? false : true
-          }}
-
-        />
-        <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="direccion"
-          type="text"
-          label="Dirección"
-          sx={{ my: 1.5 }}
-
-          value={formik.values.direccion}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.direccion && formik.errors.direccion}
-          error={formik.touched.direccion && Boolean(formik.errors.direccion)}
-          inputProps={{ style: { textTransform: "uppercase" } }}
-          InputProps={{ readOnly: formik.values.id <= 1 ? false : true }}
-        />
-        <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
-          <TextField
-            margin="normal"
-            size="small"
-            fullWidth
-            name="ruc"
-            type="text"
-            label="R.U.C. (solo valido para RUC de 11 caracteres)"
-            sx={{ my: 1.5 }}
-
-            value={formik.values.ruc}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            helperText={formik.touched.ruc && formik.errors.ruc}
-            error={formik.touched.ruc && Boolean(formik.errors.ruc)}
-            InputProps={{
-              endAdornment: (
-                <AnimatedInputAdornment position="end">
-                  <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
-                    <InfoIcon color="action" />
-                  </LightTooltip>
-                </AnimatedInputAdornment>
-              ),
-              readOnly: formik.values.id <= 1 ? false : true
-            }}
-          />
-          <ButtonSearch type={'6'} valor={formik.values.ruc} onSearch={handleSearch} />
+      {loading ?
+        <Box width={200} height={200} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+          <CircularProgress color="inherit" size={80} />
         </Box>
-        <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="rznSocial"
-          type="text"
-          label="Razón Social (Opcional)"
-          sx={{ my: 1.5 }}
+        :
+        <>
+          <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Puntos de ubicación favoritos" />
+          <Box display={'flex'} flexDirection={'row'} gap={2} my={2}>
+            <StyledNewButton fullWidth variant="contained"
+              onClick={() => {
+                handleOpenModalForm(
+                  <ModalPuntoUbicacion initialValue={null} edit={false} onConfirm={handleConfirm} />,
+                  'Punto Ubicacion'
+                )
+              }}
+            >
+              Crear Punto
+            </StyledNewButton>
 
-          value={formik.values.rznSocial}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.rznSocial && formik.errors.rznSocial}
-          error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
-          inputProps={{ style: { textTransform: "uppercase" } }}
-        />
-        <Autocomplete
-          size='small'
-          options={ubigeos}
-          value={value}
-          getOptionLabel={(option) => option.fullubigeo}
-          filterOptions={(options, state) =>
-            options.filter((option) =>
-              option.distrito.toLowerCase().includes(state.inputValue.toLowerCase())
-            )
-          }
-          isOptionEqualToValue={(option, value) =>
-            option.id === value.id
-          }
-          renderInput={(params) => (
+            <StyledSearchButton fullWidth variant="contained"
+              onClick={() => {
+                handleOpenModalForm(
+                  <SearchPuntos onCheck={handleConfirm} />,
+                  'Buscar Punto de ubicación'
+                )
+              }}
+            >
+              Buscar
+            </StyledSearchButton>
+          </Box>
+          <Box component={'form'} onSubmit={formik.handleSubmit}>
             <TextField
-              {...params}
-              label="Selecciona un Ubigeo"
-              variant="outlined"
-            // onChange={(event) => setInputValue(event.target.value)}
+              margin="normal"
+              size="small"
+              fullWidth
+              name="codLocal"
+              type="text"
+              label="Código de Local"
+              sx={{ my: 1.5 }}
+              value={formik.values.codLocal}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              helperText={formik.touched.codLocal && formik.errors.codLocal}
+              error={formik.touched.codLocal && Boolean(formik.errors.codLocal)}
+              InputProps={{
+                endAdornment: (
+                  <AnimatedInputAdornment position="end">
+                    <LightTooltip arrow title="Usa Código de Local solo si vas a considerar un RUC para establecer el punto de Ubicación, si no, dejalo por defecto {0000}">
+                      <InfoIcon color="action" />
+                    </LightTooltip>
+                  </AnimatedInputAdornment>
+                ),
+                readOnly: formik.values.id <= 1 ? false : true
+              }}
+
             />
-          )}
-          inputValue={inputValue}
-          onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
-          onChange={onChangeUbigeo}
-          readOnly={formik.values.id <= 1 ? false : true}
-        />
+            <TextField
+              margin="normal"
+              size="small"
+              fullWidth
+              name="direccion"
+              type="text"
+              label="Dirección"
+              sx={{ my: 1.5 }}
 
-        <Stack direction="row" spacing={2} mt={1}>
-          <Button fullWidth variant="contained" color="success" type="submit">
-            Agregar
-          </Button>
+              value={formik.values?.direccion?.toUpperCase()}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              helperText={formik.touched.direccion && formik.errors.direccion}
+              error={formik.touched.direccion && Boolean(formik.errors.direccion)}
+              inputProps={{ style: { textTransform: "uppercase" } }}
+              InputProps={{ readOnly: formik.values.id <= 1 ? false : true }}
+            />
+            <Box display={'flex'} flexDirection={{ md: 'row' }} alignItems={'center'} gap={1}>
+              <TextField
+                margin="normal"
+                size="small"
+                fullWidth
+                name="ruc"
+                type="text"
+                label="R.U.C. (11 caracteres)"
+                sx={{ my: 1.5 }}
 
-          <Button fullWidth variant="outlined" color="secondary" onClick={handleClean}>
-            Limpiar
-          </Button>
-        </Stack>
-      </Box>
-      <DialogComponentCustom
-        closeButton={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => handleCloseModalForm()}
-          >
-            Cerrar
-          </Button>
-        }
-        open={modalsForm.open}
-        title={modalsForm.title}
-        element={modalsForm.form}
+                value={formik.values.ruc}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                helperText={formik.touched.ruc && formik.errors.ruc}
+                error={formik.touched.ruc && Boolean(formik.errors.ruc)}
+                InputProps={{
+                  endAdornment: (
+                    <AnimatedInputAdornment position="end">
+                      <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
+                        <InfoIcon color="action" />
+                      </LightTooltip>
+                    </AnimatedInputAdornment>
+                  ),
+                  readOnly: formik.values.id <= 1 ? false : true
+                }}
+              />
+              <ButtonSearch type={'6'} valor={formik.values.ruc} onSearch={handleSearch} />
+            </Box>
+            <TextField
+              margin="normal"
+              size="small"
+              fullWidth
+              name="rznSocial"
+              type="text"
+              label="Razón Social (Opcional)"
+              sx={{ my: 1.5 }}
 
-      />
+              value={formik.values?.rznSocial?.toUpperCase()}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              helperText={formik.touched.rznSocial && formik.errors.rznSocial}
+              error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
+              inputProps={{ style: { textTransform: "uppercase" } }}
+            />
+            <Autocomplete
+              size='small'
+              options={ubigeos}
+              value={value}
+              getOptionLabel={(option) => option.fullubigeo}
+              filterOptions={(options, state) =>
+                options.filter((option) =>
+                  option.distrito.toLowerCase().includes(state.inputValue.toLowerCase())
+                )
+              }
+              isOptionEqualToValue={(option, value) =>
+                option.id === value.id
+              }
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Selecciona un Ubigeo"
+                  variant="outlined"
+                // onChange={(event) => setInputValue(event.target.value)}
+                />
+              )}
+              inputValue={inputValue}
+              onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
+              onChange={onChangeUbigeo}
+              readOnly={formik.values.id <= 1 ? false : true}
+            />
+
+            <Stack direction="row" spacing={2} mt={1}>
+              <Button fullWidth variant="contained" color="success" type="submit">
+                Agregar
+              </Button>
+
+              <Button fullWidth variant="outlined" color="secondary" onClick={handleClean}>
+                Limpiar
+              </Button>
+            </Stack>
+          </Box>
+          <DialogComponentCustom
+            closeButton={
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => handleCloseModalForm()}
+              >
+                Cerrar
+              </Button>
+            }
+            open={modalsForm.open}
+            title={modalsForm.title}
+            element={modalsForm.form}
+          />
+        </>
+      }
+
     </>
   );
 };

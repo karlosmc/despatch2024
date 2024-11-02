@@ -54,7 +54,15 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
     if (Object.keys(formik.errors).length > 0) {
       return;
     }
-    onChange(formik.values);
+
+    const newValues:EnvioChoferes={
+      ...formik.values,
+      apellidos:formik.values.apellidos.toUpperCase(),
+      licencia:formik.values.licencia.toUpperCase(),
+      nombres:formik.values.nombres.toUpperCase()
+    }
+
+    onChange(newValues);
 
     // formik.resetForm();
   };
@@ -164,7 +172,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           fullWidth
           name="nombres"
           label="Nombres"
-          value={formik.values.nombres.toUpperCase()}
+          value={formik.values?.nombres?.toUpperCase()}
           onChange={formik.handleChange}
           error={formik.touched.nombres && Boolean(formik.errors.nombres)}
           helperText={formik.touched.nombres && formik.errors.nombres}
@@ -178,7 +186,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           fullWidth
           name="apellidos"
           label="Apellidos"
-          value={formik.values.apellidos.toUpperCase()}
+          value={formik.values?.apellidos?.toUpperCase()}
           onChange={formik.handleChange}
           error={formik.touched.apellidos && Boolean(formik.errors.apellidos)}
           helperText={formik.touched.apellidos && formik.errors.apellidos}
@@ -192,7 +200,7 @@ const ConductorForm = ({ onChange, initialValue,conductor }: ChoferFormProps) =>
           fullWidth
           name="licencia"
           label="Nro. Licencia"
-          value={formik.values.licencia.toUpperCase()}
+          value={formik.values?.licencia?.toUpperCase()}
           onChange={formik.handleChange}
           error={formik.touched.licencia && Boolean(formik.errors.licencia)}
           helperText={formik.touched.licencia && formik.errors.licencia}

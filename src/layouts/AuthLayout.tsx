@@ -10,8 +10,10 @@ const AuthLayout = () => {
           <Grid item md={6} xs={12}>
             <img
               style={{ maxWidth: "350px" }}
-              src={'/assets/img/elcentenario.png'}
-              alt="logocente"
+              // src={'/assets/img/elcentenario.png'}
+              src={'/assets/img/logofafio.png'}
+              // src={'/assets/img/logokankas.jpeg'}
+              alt="logo"
             ></img>
           </Grid>
           <Outlet/>

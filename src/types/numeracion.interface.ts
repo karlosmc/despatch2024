@@ -1,4 +1,5 @@
 import { EnvioVehiculo } from "./guias/guiaremision.interface";
+import { puntoEmision } from "./puntoemision.interface";
 
 export interface numeracion {
   id?:number,
@@ -8,4 +9,5 @@ export interface numeracion {
   id_puntoemision:number,
   primario?:EnvioVehiculo,
   secundario?:EnvioVehiculo[],
+  puntoemision?:puntoEmision,
 }

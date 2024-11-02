@@ -7,7 +7,7 @@ import "./index.css";
 import { NotificationProvider } from "./context/notification.context.tsx";
 // import { ParamsProvider } from "./context/params.context.tsx";
 // import { TokenProvider } from "./context/token.context.tsx";
-import { RouterProvider } from "react-router-dom";
+import {  RouterProvider } from "react-router-dom";
 import { router } from "./routes/routes.tsx";
 // import { CssBaseline } from "@mui/material";
 
@@ -34,7 +34,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             {/* <TokenProvider> */}
             <AuxiliarProvider>
               <ConfirmProvider>
+              
                 <RouterProvider router={router} />
+              
               </ConfirmProvider>
             </AuxiliarProvider>
             {/* <App /> */}

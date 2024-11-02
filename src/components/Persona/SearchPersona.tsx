@@ -119,7 +119,7 @@ const SearchPersona = ({ onCheck }: SearchPersonaProps) => {
 
       </Box>
       <TextField
-        value={inputQuery}
+        value={inputQuery.toUpperCase()}
         onChange={handleInputChange}
         label='Texto a buscar'
         margin='normal'

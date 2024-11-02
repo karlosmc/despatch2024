@@ -104,7 +104,7 @@ interface EnvioFormProps {
   EnvioValues: Envio;
 }
 
-const EnvioFormEdicion = ({ onChange, EnvioValues }: EnvioFormProps) => {
+const EnvioFormEdicion = ({  EnvioValues }: EnvioFormProps) => {
 
 
 

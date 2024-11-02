@@ -20,7 +20,7 @@ const ObservacionesTextField = ({observaciones,onChange}:ObservacionesForm) => {
   })
 
   const handleChange=()=>{
-    onChange(formik.values.observacion)
+    onChange(formik.values.observacion.toUpperCase())
   }
 
   return (
@@ -30,7 +30,7 @@ const ObservacionesTextField = ({observaciones,onChange}:ObservacionesForm) => {
         fullWidth
         label='Escriba las observaciones'
         name="observacion"
-        value={formik.values.observacion}
+        value={formik.values.observacion.toUpperCase()}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.observacion && Boolean(formik.errors.observacion)}

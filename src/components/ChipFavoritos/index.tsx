@@ -105,7 +105,7 @@ const ChipFavoritos = <T extends ChipInterface>({ isLoading, items, onPick, titl
             <Typography color='secondary'>No hay favoritos para mostrar</Typography>
             :
 
-            <Box display={'flex'} flexWrap={'wrap'} >
+            <Box display={'flex'} flexWrap={'wrap'} justifyContent={'space-between'} >
 
               {paginatedItems?.map((favorito, index) => {
                 return (

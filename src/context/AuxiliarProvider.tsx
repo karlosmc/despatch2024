@@ -20,7 +20,10 @@ interface IndicadorInterface {
 interface IndicadoresContextProps {
   indicadores: IndicadorInterface[];
   setIndicadores: React.Dispatch<React.SetStateAction<IndicadorInterface[]>>;
+  loading:boolean;
+  errorApi:string;
   ubigeos:Ubigeos[];
+  getUbigeos2:()=>Promise<Ubigeos[] | null>;
 }
 
 
@@ -63,10 +66,26 @@ export const AuxiliarProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const [ubigeos, setUbigeos] = useState<Ubigeos[]>([]);
 
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const [errorApi, setErrorApi] = useState<string>('')
+
   const GetAllUbigeos=async()=>{
-    const data = await getUbigeos();
-    if(data){
-      setUbigeos(data)
+    setLoading(true)
+    setErrorApi('')
+
+    try {
+      
+      const data = await getUbigeos();
+      if(data){
+        setUbigeos(data)
+      }else{
+        setErrorApi('No se pudo obtener los datos de ubigeos')
+      }
+    } catch (error) {
+      setErrorApi('Error al obtener los datos de ubigeos')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -75,12 +94,19 @@ export const AuxiliarProvider: React.FC<{ children: ReactNode }> = ({ children }
   },[])
 
 
+  const getUbigeos2 = async():Promise<Ubigeos[]|null> =>{
+    return await getUbigeos()
+  }
+
   return (
 
     <AuxiliarContext.Provider value={{
       indicadores,
       setIndicadores,
-      ubigeos
+      ubigeos,
+      errorApi,
+      loading,
+      getUbigeos2
     }}>
       {children}
     </AuxiliarContext.Provider>

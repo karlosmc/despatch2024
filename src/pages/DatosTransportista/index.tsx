@@ -90,7 +90,14 @@ const DatosTransportista = ({
     initialValues: initialValue,
     validationSchema: TransportistaSchema,
     onSubmit: (values) => {
-      onChange(values)
+
+      const newValues:Transportista={
+        ...values,
+        nroMtc:values?.nroMtc?.toUpperCase()||'',
+        rznSocial:values.rznSocial.toUpperCase()
+      }
+
+      onChange(newValues)
     }
   })
 
@@ -215,7 +222,7 @@ const DatosTransportista = ({
           fullWidth
           name="rznSocial"
           label="Razón Social"
-          value={formik.values.rznSocial}
+          value={formik.values?.rznSocial?.toUpperCase()}
           error={formik.touched?.rznSocial && Boolean(formik.errors?.rznSocial)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
@@ -230,7 +237,7 @@ const DatosTransportista = ({
           fullWidth
           name="nroMtc"
           label="Nro. MTC (opcional)"
-          value={formik.values.nroMtc||''}
+          value={formik.values?.nroMtc?.toUpperCase()||''}
           error={formik.touched?.nroMtc && Boolean(formik.errors?.nroMtc)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}

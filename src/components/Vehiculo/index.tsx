@@ -176,10 +176,15 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
     initialValues: initialValue || VehiculoInitialValues,
     validationSchema: VehiculoSchema,
     onSubmit: (values) => {
+      const newValue:vehiculo={
+        ...values,
+        placa:values.placa.toUpperCase(),
+        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
+      }
       if (edit) {
-        updateVehiculo(values)
+        updateVehiculo(newValue)
       } else {
-        storeVehiculo(values)
+        storeVehiculo(newValue)
       }
     },
   });
@@ -208,7 +213,7 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
             type="text"
             label="Placa"
             disabled={Boolean(edit)}
-            value={formik.values.placa.toUpperCase()}
+            value={formik.values?.placa?.toUpperCase()}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched?.placa && formik.errors?.placa}
@@ -255,7 +260,7 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
             name="nroAutorizacion"
             type="text"
             label="Nro. Autorizacion"
-            value={formik.values?.nroAutorizacion.toUpperCase()||''}
+            value={formik.values?.nroAutorizacion?.toUpperCase()||''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.nroAutorizacion && formik.errors.nroAutorizacion}
@@ -271,7 +276,7 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
           name="nombreCorto"
           type="text"
           label="Nombre corto del vehiculo"
-          value={formik.values?.nombreCorto}
+          value={formik.values?.nombreCorto.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}

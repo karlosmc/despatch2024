@@ -27,7 +27,7 @@ const ButtonSearch = ({ type, valor, onSearch }: ButtonSearchProps) => {
     const tipo = _TIPO_DOCUMENTO.find((item) => item.valor === type).name;
     try {
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/factiliza/consulta/?nro=${valor}&type=${tipo}`,{timeout:20000})
+      const { data, status } = await clienteAxios(`/api/factiliza/consulta?nro=${valor}&type=${tipo}`,{timeout:20000})
       if (status === 200) {
         onSearch(data)
         setIsLoading(false)

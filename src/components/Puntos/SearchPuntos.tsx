@@ -126,7 +126,7 @@ const SearchPuntos = ({ onCheck }: SearchProductoProps) => {
 
       </Box>
       <TextField
-        value={inputQuery}
+        value={inputQuery.toUpperCase()}
         onChange={handleInputChange}
         label='Texto a buscar'
         margin='normal'

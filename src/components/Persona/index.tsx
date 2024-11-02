@@ -121,10 +121,16 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
     validationSchema: PersonaSchema,
     onSubmit: (values) => {
 
+      const newValues:persona={
+        ...values,
+        rznSocial:values.rznSocial.toUpperCase(),
+        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
+      }
+
       if (edit) {
-        updatePersona(values)
+        updatePersona(newValues)
       } else {
-        storePersona(values)
+        storePersona(newValues)
       }
 
     },
@@ -188,7 +194,7 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
           label="Razón social"
           sx={{ my: 1.5 }}
 
-          value={formik.values.rznSocial}
+          value={formik.values?.rznSocial?.toUpperCase()||''}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.rznSocial && formik.errors.rznSocial}
@@ -240,7 +246,7 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
             label="Nombre corto de la persona"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.nombreCorto || ''}
+            value={formik.values?.nombreCorto?.toUpperCase() || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}

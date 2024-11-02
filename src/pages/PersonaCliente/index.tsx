@@ -114,7 +114,13 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
     validationSchema: schema || DestinatarioSchema,
     enableReinitialize:true,
     onSubmit: (values) => {
-      onChange(values);
+
+      const newValue:Client={
+        ...values,
+        rznSocial:values.rznSocial.toUpperCase(),
+    
+      }
+      onChange(newValue);
     },
   });
 
@@ -128,6 +134,8 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
   };
 
   const handleConfirm = (persona: persona): void => {
+    console.log(persona)
+    formik.setFieldValue('id', persona.id)
     formik.setFieldValue('tipoDoc', persona.tipoDoc)
     formik.setFieldValue('numDoc', persona.numDoc)
     formik.setFieldValue('rznSocial', persona.rznSocial)
@@ -135,6 +143,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
   }
 
   const handleSetFavorite = (item: ChipInterface): void => {
+    
     const persona = dataFilter.find(it => it.id === item.id);
     formik.setFieldValue('id', persona.id)
     formik.setFieldValue('tipoDoc', persona.tipoDoc)
@@ -240,7 +249,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
           fullWidth
           name="rznSocial"
           label="Razón Social"
-          value={formik.values.rznSocial}
+          value={formik.values.rznSocial.toUpperCase()}
           error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
           helperText={formik.touched.rznSocial && formik.errors.rznSocial}
           onBlur={formik.handleBlur}

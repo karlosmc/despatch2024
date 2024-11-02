@@ -1,29 +1,25 @@
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody,  Fab, FormControl, MenuItem, InputLabel, Box,  Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
 import clienteAxios from '../../config/axios';
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
-
-import StoreIcon from '@mui/icons-material/Store';
-import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
 
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 
-import { conductor } from '../../types/conductor.interface';
+
+import { User } from '../../types/user.interface';
 
 
 
-interface SearchConductorProps {
-  onCheck: (conductor: conductor) => void;
+interface SearchUserProps {
+  onCheck: (user: User) => void;
 }
 
-const SearchConductor = ({ onCheck }: SearchConductorProps) => {
+const SearchUser = ({ onCheck }: SearchUserProps) => {
 
   const token = localStorage.getItem('AUTH_TOKEN');
 
-  const [foundConductores, setfoundConductores] = useState<conductor[]>([])
+  const [foundUsers, setfoundUsers] = useState<User[]>([])
 
   const [searchField, setSearchField] = useState('')
 
@@ -45,13 +41,13 @@ const SearchConductor = ({ onCheck }: SearchConductorProps) => {
   const handleSearch = async () => {
     try {
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/conductor/buscar?${searchField}=${inputQuery}`, {
+      const { data, status } = await clienteAxios(`/api/user/buscar?${searchField}=${inputQuery}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       })
       if (status === 200) {
-        setfoundConductores(data?.data)
+        setfoundUsers(data?.data)
         setIsLoading(false)
       }
       // console.log(data)
@@ -63,8 +59,8 @@ const SearchConductor = ({ onCheck }: SearchConductorProps) => {
     }
   }
 
-  const handleCheck = (conductor: conductor) => {
-    onCheck(conductor)
+  const handleCheck = (user: User) => {
+    onCheck(user)
   }
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -81,18 +77,15 @@ const SearchConductor = ({ onCheck }: SearchConductorProps) => {
 
   const rows = [];
 
-  foundConductores?.forEach((fil: conductor) => {
+  foundUsers?.forEach((fil:User) => {
     rows.push(
       <TableRow
         key={fil.id}
       >
         <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.nroDoc}</TableCell>
-        <TableCell align="left">{fil.apellidos} {fil.nombres}</TableCell>
-        <TableCell align="left">{fil.tipodocumento}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
-        <TableCell align="left"><Icon color={fil.isCompany ? 'info' : 'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
-        <TableCell align="center"><Fab color='success' size='small' onClick={() => handleCheck(fil)}><PanToolAltIcon sx={{ color: 'white' }} /></Fab></TableCell>
+        <TableCell align="left">{fil.name}</TableCell>
+        <TableCell align="left">{fil.documento}</TableCell>
+        <TableCell align="center"><Fab color='success' size='small' onClick={()=>handleCheck(fil)}><PanToolAltIcon sx={{color:'white'}} /></Fab></TableCell>
       </TableRow>
     )
   })
@@ -110,10 +103,9 @@ const SearchConductor = ({ onCheck }: SearchConductorProps) => {
             label="Búsqueda por"
             onChange={handleChange}
           >
-            <MenuItem value={'nroDoc'}>Nro. Doc.</MenuItem>
-            <MenuItem value={'nombres'}>Nombres</MenuItem>
-            <MenuItem value={'apellidos'}>Apellidos</MenuItem>
-            <MenuItem value={'licencia'}>Licencia</MenuItem>
+            <MenuItem value={'documento'}>Nro. Doc.</MenuItem>
+            <MenuItem value={'name'}>Nombre</MenuItem>
+            
             
           </Select>
         </FormControl>
@@ -128,6 +120,7 @@ const SearchConductor = ({ onCheck }: SearchConductorProps) => {
         size='small'
         fullWidth
         sx={{ mb: 1 }}
+        inputProps={{ style: { textTransform: "uppercase" } }}
 
       />
       <Button fullWidth sx={{ my: 2 }} size='small' variant='contained' color='primary' onClick={handleSearch}>
@@ -138,13 +131,10 @@ const SearchConductor = ({ onCheck }: SearchConductorProps) => {
         <Table aria-label="simple table" size='small'>
           <TableHead>
             <TableRow>
-              <TableCell width={'5%'}>Id</TableCell>
-              <TableCell width={'20%'} align="left">T.Conductor</TableCell>
-              <TableCell width={'10%'} align="left">Tip.Doc.</TableCell>
+            <TableCell width={'5%'}>Id</TableCell>
               <TableCell width={'10%'} align="left">Nro.Doc.</TableCell>
-              <TableCell width={'50%'} align="left">Nombres</TableCell>
-              <TableCell width={'10%'} align="left">Licencia</TableCell>
-              <TableCell width={'10%'} align="left">Sel.</TableCell>
+              <TableCell width={'5%'} align="left">Nombre</TableCell>
+              <TableCell width={'10%'} align="left">Seleccionar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -174,4 +164,4 @@ const SearchConductor = ({ onCheck }: SearchConductorProps) => {
   )
 }
 
-export default SearchConductor
+export default SearchUser

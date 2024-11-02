@@ -69,8 +69,10 @@ const useAuthToken = () => {
   // }
 
   const getSunatParams = async (): Promise<ParamsInterface | null> => {
+    
 
     const params = await fetchSunatParameters();
+
 
     // setEntorno(params.tipo)
 
@@ -92,7 +94,7 @@ const fetchSunatParameters = async (): Promise<ParamsInterface | null> => {
   // Implement your API call to fetch a new token
 
   const token = localStorage.getItem('AUTH_TOKEN');
-  const { data, statusText, } = await clienteAxios('/api/sunat/parametros',
+  const { data, statusText } = await clienteAxios('/api/sunat/parametros',
     {
       headers: {
         Authorization: `Bearer ${token}`
@@ -125,7 +127,8 @@ const fetchNewToken = async (): Promise<IToken | null> => {
 
 const checkToken = async (): Promise<IToken | null> => {
   const token = localStorage.getItem('AUTH_TOKEN');
-  const { data, statusText, } = await clienteAxios('/api/tokensunat/',
+  console.log(token)
+  const { data, statusText } = await clienteAxios('/api/tokensunat',
     {
       headers: {
         Authorization: `Bearer ${token}`

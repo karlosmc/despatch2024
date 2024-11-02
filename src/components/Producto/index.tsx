@@ -27,6 +27,10 @@ const _UNIDAD_MEDIDA: UnidadMedidaType[] = [
     descripcion: 'KGM:UNIDAD (SERVICIOS)',
   },
   {
+    codigo: 'LTR',
+    descripcion: 'LITROS',
+  },
+  {
     codigo: 'GLL',
     descripcion: 'GLL:US GALON (3,7843 L)',
   }
@@ -115,10 +119,16 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
     validationSchema: ProductoSchema,
     onSubmit: (values) => {
 
+      const newValues:Producto={
+        ...values,
+        descripcion:values.descripcion.toUpperCase(),
+        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
+      }
+
       if (edit) {
-        updateProducto(values)
+        updateProducto(newValues)
       } else {
-        storeProducto(values)
+        storeProducto(newValues)
       }
 
     },
@@ -139,7 +149,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
           fullWidth
           label='Código'
           size='small'
-          value={formik.values.codigo}
+          value={formik.values?.codigo?.toUpperCase()}
           error={formik.touched.codigo && Boolean(formik.errors.codigo)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
@@ -153,7 +163,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
           fullWidth
           label='Código Sunat'
           size='small'
-          value={formik.values.codProdSunat}
+          value={formik.values?.codProdSunat}
           error={formik.touched.codProdSunat && Boolean(formik.errors.codProdSunat)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
@@ -169,7 +179,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
         size='small'
         multiline
         rows={2}
-        value={formik.values.descripcion}
+        value={formik.values?.descripcion?.toUpperCase()}
         error={formik.touched.descripcion && Boolean(formik.errors.descripcion)}
         onBlur={formik.handleBlur}
         onChange={formik.handleChange}
@@ -203,7 +213,7 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
           fullWidth
           label='Nombre corto'
           size='small'
-          value={formik.values.nombreCorto}
+          value={formik.values?.nombreCorto?.toUpperCase()}
           error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}

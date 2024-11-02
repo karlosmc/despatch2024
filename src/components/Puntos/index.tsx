@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, InputAdornment, TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
+import { Autocomplete, Box, Button, CircularProgress, InputAdornment, TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
 import { useEffect, useState } from 'react'
 
 
@@ -43,6 +43,10 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
 
   const [inputValue, setInputValue] = useState('');
   const [_selectedUbigeo, setSelectedUbigeo] = useState<string | null>(null);
+
+  const [ubigeos, setUbigeos] = useState<Ubigeos[]>(null);
+
+  const [loading, setLoading] = useState<boolean>(false)
 
   const [value, setValue] = useState<Ubigeos | null>(null);
 
@@ -151,10 +155,17 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
     validationSchema: PuntosSchema,
     onSubmit: (values) => {
 
+
+      const newValues:puntoUbicacion={
+        ...values,
+        direccion:values.direccion.toUpperCase(),
+        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
+      }
+
       if (edit) {
-        updatePuntos(values)
+        updatePuntos(newValues)
       } else {
-        storePuntos(values)
+        storePuntos(newValues)
       }
 
     },
@@ -193,165 +204,185 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
   }, [isCompany])
 
 
-  const { ubigeos } = useAuxiliares()
+  const { getUbigeos2 } = useAuxiliares()
   // console.log(ubigeos)
 
-  useEffect(() => {
-    if (ubigeos.length > 0) {
-      // console.log(initialValue.ubigeo)
 
-      const initialUbigeo = ubigeos.find(option => option.ubigeo === initialValue?.ubigeo) || null;
-      // console.log(initialUbigeo)
-      setValue(initialUbigeo);
-      setSelectedUbigeo(initialUbigeo?.ubigeo || null);
+  const getUbigeos = async()=>{
+    setLoading(true)
+    const data = await getUbigeos2()
+    setUbigeos(data)
+
+    setLoading(false)
+
+  }
+  useEffect(()=>{
+    getUbigeos()
+  },[])
+
+
+  useEffect(() => {
+    if(ubigeos){
+      if (ubigeos.length > 0) {
+        // console.log(initialValue.ubigeo)
+  
+        const initialUbigeo = ubigeos.find(option => option.ubigeo === initialValue?.ubigeo) || null;
+        // console.log(initialUbigeo)
+        setValue(initialUbigeo);
+        setSelectedUbigeo(initialUbigeo?.ubigeo || null);
+      }
     }
   }, [ubigeos]);
 
   return (
     <>
-
-      <Box component={'form'} onSubmit={formik.handleSubmit}>
-        <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="codLocal"
-          type="text"
-          label="Código de Local"
-          sx={{ my: 1.5 }}
-          value={formik.values.codLocal}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.codLocal && formik.errors.codLocal}
-          error={formik.touched.codLocal && Boolean(formik.errors.codLocal)}
-          InputProps={{
-            endAdornment: (
-              <AnimatedInputAdornment position="end">
-                <LightTooltip arrow title="Usa Código de Local solo si vas a considerar un RUC para establecer el punto de Ubicación, si no, dejalo por defecto {0000}">
-                  <InfoIcon color="action" />
-                </LightTooltip>
-              </AnimatedInputAdornment>
-            ),
-          }}
-
-        />
-        <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="direccion"
-          type="text"
-          label="Dirección"
-          sx={{ my: 1.5 }}
-
-          value={formik.values.direccion}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.direccion && formik.errors.direccion}
-          error={formik.touched.direccion && Boolean(formik.errors.direccion)}
-          inputProps={{ style: { textTransform: "uppercase" } }}
-        />
-
-
-        <Box display={'flex'} flexDirection={{ xs: 'column', md: 'row' }} alignItems={'center'} gap={1}>
+      {loading ?
+        <Box width={200} height={200} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+          <CircularProgress color="inherit" size={80} />
+        </Box>
+        :
+        <Box component={'form'} onSubmit={formik.handleSubmit}>
           <TextField
             margin="normal"
             size="small"
             fullWidth
-            name="ruc"
+            name="codLocal"
             type="text"
-            label="R.U.C. (solo valido para RUC de 11 caracteres)"
+            label="Código de Local"
             sx={{ my: 1.5 }}
-
-            value={formik.values.ruc}
+            value={formik.values.codLocal}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            helperText={formik.touched.ruc && formik.errors.ruc}
-            error={formik.touched.ruc && Boolean(formik.errors.ruc)}
+            helperText={formik.touched.codLocal && formik.errors.codLocal}
+            error={formik.touched.codLocal && Boolean(formik.errors.codLocal)}
             InputProps={{
               endAdornment: (
                 <AnimatedInputAdornment position="end">
-                  <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
+                  <LightTooltip arrow title="Usa Código de Local solo si vas a considerar un RUC para establecer el punto de Ubicación, si no, dejalo por defecto {0000}">
                     <InfoIcon color="action" />
                   </LightTooltip>
                 </AnimatedInputAdornment>
               ),
             }}
+
           />
-          <ButtonSearch type={'6'} valor={formik.values.ruc} onSearch={handleSearch} />
-        </Box>
-        <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="rznSocial"
-          type="text"
-          label="Razón Social (Opcional)"
-          sx={{ my: 1.5 }}
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="direccion"
+            type="text"
+            label="Dirección"
+            sx={{ my: 1.5 }}
 
-          value={formik.values.rznSocial}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.rznSocial && formik.errors.rznSocial}
-          error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
-          inputProps={{ style: { textTransform: "uppercase" } }}
-        />
+            value={formik.values?.direccion?.toUpperCase()}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.direccion && formik.errors.direccion}
+            error={formik.touched.direccion && Boolean(formik.errors.direccion)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
+          />
 
-        <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="nombreCorto"
-          type="text"
-          label="Nombre corto del punto de ubicación"
-          sx={{ my: 1.5 }}
-
-          value={formik.values.nombreCorto}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
-          error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
-          inputProps={{ style: { textTransform: "uppercase" } }}
-        />
-        <Autocomplete
-          size='small'
-          options={ubigeos}
-          value={value}
-          getOptionLabel={(option) => option.fullubigeo}
-          filterOptions={(options, state) =>
-            options.filter((option) =>
-              option.distrito.toLowerCase().includes(state.inputValue.toLowerCase())
-            )
-          }
-          renderInput={(params) => (
+          <Box display={'flex'} flexDirection={{ md: 'row' }} alignItems={'center'} gap={1}>
             <TextField
-              {...params}
-              label="Selecciona un Ubigeo"
-              variant="outlined"
-            // onChange={(event) => setInputValue(event.target.value)}
+              margin="normal"
+              size="small"
+              fullWidth
+              name="ruc"
+              type="text"
+              label="R.U.C. (11 caracteres)"
+              sx={{ my: 1.5 }}
+
+              value={formik.values.ruc}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              helperText={formik.touched.ruc && formik.errors.ruc}
+              error={formik.touched.ruc && Boolean(formik.errors.ruc)}
+              InputProps={{
+                endAdornment: (
+                  <AnimatedInputAdornment position="end">
+                    <LightTooltip arrow title="No uses un R.U.C. si vas a consignar un DNI, dejalo en blanco. SUNAT hará la validación y va a notificar un ERROR">
+                      <InfoIcon color="action" />
+                    </LightTooltip>
+                  </AnimatedInputAdornment>
+                ),
+              }}
             />
-          )}
-          inputValue={inputValue}
-          onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
-          onChange={onChangeUbigeo}
-        />
+            <ButtonSearch type={'6'} valor={formik.values.ruc} onSearch={handleSearch} />
+          </Box>
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="rznSocial"
+            type="text"
+            label="Razón Social (Opcional)"
+            sx={{ my: 1.5 }}
 
-        <Box textAlign={'center'}>
+            value={formik.values.rznSocial}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.rznSocial && formik.errors.rznSocial}
+            error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
+          />
 
-          <Button onClick={() => setFav(!fav)} variant={!fav ? 'outlined' : 'contained'} color='warning' sx={{ display: 'inline-block', mt: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>
-            FAVORITO
+          <TextField
+            margin="normal"
+            size="small"
+            fullWidth
+            name="nombreCorto"
+            type="text"
+            label="Nombre corto del punto de ubicación"
+            sx={{ my: 1.5 }}
+
+            value={formik.values?.nombreCorto?.toUpperCase()}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
+            error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
+            inputProps={{ style: { textTransform: "uppercase" } }}
+          />
+          <Autocomplete
+            size='small'
+            options={ubigeos}
+            value={value}
+            getOptionLabel={(option) => option.fullubigeo}
+            filterOptions={(options, state) =>
+              options.filter((option) =>
+                option.distrito.toLowerCase().includes(state.inputValue.toLowerCase())
+              )
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Selecciona un Ubigeo"
+                variant="outlined"
+              // onChange={(event) => setInputValue(event.target.value)}
+              />
+            )}
+            inputValue={inputValue}
+            onInputChange={(_event, newInputValue) => setInputValue(newInputValue)}
+            onChange={onChangeUbigeo}
+          />
+
+          <Box textAlign={'center'}>
+
+            <Button onClick={() => setFav(!fav)} variant={!fav ? 'outlined' : 'contained'} color='warning' sx={{ display: 'inline-block', mt: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>
+              FAVORITO
+            </Button>
+          </Box>
+
+          <Box textAlign={'center'}>
+            <Button onClick={() => setIsCompany(!isCompany)} variant={!isCompany ? 'outlined' : 'contained'} color='info' sx={{ display: 'inline-block', my: 2, width: '80%', letterSpacing: 5, fontWeight: 600 }}>
+              PUNTO DE LA EMPRESA?
+            </Button>
+          </Box>
+          <Button type='submit' color='success' variant='outlined' sx={{ width: '50%', alignItems: 'start', display: 'inline-block' }}>
+            Guardar
           </Button>
         </Box>
-
-        <Box textAlign={'center'}>
-          <Button onClick={() => setIsCompany(!isCompany)} variant={!isCompany ? 'outlined' : 'contained'} color='info' sx={{ display: 'inline-block', my: 2, width: '80%', letterSpacing: 5, fontWeight: 600 }}>
-            PUNTO DE LA EMPRESA?
-          </Button>
-        </Box>
-        <Button type='submit' color='success' variant='outlined' sx={{ width: '50%', alignItems: 'start', display: 'inline-block' }}>
-          Guardar
-        </Button>
-      </Box>
+      }
     </>
   );
 }

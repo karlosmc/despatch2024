@@ -13,6 +13,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
 import { puntoUbicacion } from '../types/puntoubicacion.interface';
 import ModalPuntoUbicacion from '../components/Puntos';
+import BuscarComponent from '../components/BuscarComponent';
+import { BuscarOpcionesInterface } from '../types/buscar.interface';
 
 
 type ModalsProps = {
@@ -21,6 +23,34 @@ type ModalsProps = {
   title: string;
 };
 
+const opciones: BuscarOpcionesInterface[] = [
+  {
+    codigo: 'ubigeo',
+    valor: 'Ubigeo'
+  },
+  {
+    codigo: 'fullubigeo',
+    valor: 'Full ubigeo'
+  },
+  {
+    codigo: 'direccion',
+    valor: 'Dirección'
+  },
+  {
+    codigo: 'rznSocial',
+    valor: 'Razón Social'
+  },
+  {
+    codigo: 'ruc',
+    valor: 'RUC'
+  },
+  
+  // {
+  //   codigo: 'fav',
+  //   valor: 'Favoritos'
+  // },
+]
+
 const PuntoUbicacion = () => {
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
@@ -28,6 +58,13 @@ const PuntoUbicacion = () => {
     form: null,
     title: "",
   });
+
+  const [inputQueryTemp, setInputQueryTemp] = useState<string>(''); // Valores temporales
+  const [searchFieldTemp, setSearchFieldTemp] = useState<string>('');
+
+  const [inputQuery, setInputQuery] = useState<string>('')
+
+  const [searchField, setSearchField] = useState<string>('')
 
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
@@ -42,6 +79,17 @@ const PuntoUbicacion = () => {
   const handleConfirm = (): void => {
     handleCloseModalForm()
   }
+
+  const handleSearchParams = (field: string, query: string) => {
+    setSearchFieldTemp(field);  // Guarda en los estados temporales
+    setInputQueryTemp(query);
+  };
+
+  // Ejecutar búsqueda al presionar "Buscar"
+  const handleSearch = () => {
+    setSearchField(searchFieldTemp); // Actualiza los estados definitivos
+    setInputQuery(inputQueryTemp);
+  };
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -59,13 +107,25 @@ const PuntoUbicacion = () => {
   // const [edit, setEdit] = useState<boolean>(false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/puntos', {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
+  // const fetcher = () => clienteAxios('/api/puntos', {
+  //   headers: {
+  //     Authorization: `Bearer ${token}`
+  //   }
+  // })
 
-  const { data,  isLoading } = useSWR('/api/puntos', fetcher);
+  const fetcher = () => {
+    let url = '/api/puntos';
+    if (searchField && inputQuery) {
+      url += `/buscar?${searchField}=${inputQuery}`; // Agrega los parámetros si existen
+    }
+    return clienteAxios(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  }
+
+  const { data,  isLoading } = useSWR(['/api/puntos',searchField,inputQuery], fetcher);
 
   // if (isLoading) return <div>Cargando</div>
 
@@ -120,6 +180,11 @@ const PuntoUbicacion = () => {
           Agregar Punto de Ubicación
         </Button>
       </Box>
+      <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} columnGap={1} my={1}>
+        <BuscarComponent opciones={opciones} onSearchChange={handleSearchParams} />
+      </Box>
+
+      <Button onClick={handleSearch} size='small' fullWidth color='success' variant='contained' sx={{ mb: 1 }}>Buscar</Button>
 
       <TableContainer component={Paper} >
         <Table aria-label="simple table" size='small'>

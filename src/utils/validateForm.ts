@@ -253,10 +253,14 @@ export const ConductorSchema = yup.object().shape({
   })
 })
 
-// export const PuntoEmisionSchema = yup.object().shape({
-//   id:yup.number().notRequired()
-
-// })
+export const PuntoEmisionSchema = yup.object().shape({
+  id:yup.number().notRequired(),
+  codigo:yup.string().required('Debe escribir un Código'),
+  nombre:yup.string().required('Debe escribir un Nombre'),
+  codLocal:yup.string(),
+  direccion:yup.string(),
+  ruc:yup.string(),
+})
 
 
 
@@ -429,6 +433,18 @@ export const RegisterSchema = yup.object().shape({
   documento:yup.string().required('Debe escribir un numero de documento'),
   id_empresa:yup.number().required('Debe elegir una empresa')
 })
+
+export const NumeracionSchema = yup.object().shape({
+  id:yup.number().notRequired(),
+  nombre:yup.string().trim().required('Debe escribir un nombre'),
+  serie:yup.string().trim().required('Debe escribir una serie').test('serieDoc','Respeta el patron T@@@',function(value){
+    const regexp =/^[Tt][a-zA-Z0-9]{3}$/;
+    const ejecutar = regexp.test(value);
+    return ejecutar;
+  }),
+  numeroActual:yup.number(),
+  id_puntoemision:yup.number().notRequired()
+});
 
 export const SunatParamsSchema = yup.object().shape({
   client_id:yup.string().trim().required('Debe escribir un id de cliente SUNAT'),

@@ -1,11 +1,10 @@
 
-import { FormControl, InputLabel, MenuItem, Select, TextField, FormHelperText, Box } from '@mui/material'
+import { FormControl, InputLabel, MenuItem, Select, TextField,  Box } from '@mui/material'
 import { useFormik } from 'formik';
 import { DatosGenerales } from '../../types/guias/guiaremision.interface';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { DatosGeneralesSchema } from '../../utils/validateGuiaRemision';
-import clienteAxios from '../../config/axios';
-import { numeracion } from '../../types/numeracion.interface';
+
 
 
 
@@ -16,7 +15,7 @@ interface DatosGeneralesFormProps {
   datosGeneralesValues: DatosGenerales;
 }
 
-const DatosGeneralesFormEdicion = ({ onChange, datosGeneralesValues,puntoEmision }: DatosGeneralesFormProps) => {
+const DatosGeneralesFormEdicion = ({ onChange, datosGeneralesValues }: DatosGeneralesFormProps) => {
 
   // console.log(puntosEmision)
 

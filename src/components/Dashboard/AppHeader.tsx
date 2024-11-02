@@ -42,7 +42,9 @@ const AppHeader = ({ toggle, setToggle }: AppHeaderInterface) => {
           <Box
             component='img'
             sx={appLogo}
-            src='/assets/img/elcentenario.png'
+            // src='/assets/img/logokankas.jpeg'
+            src='/assets/img/logofafio.png'
+            // src='/assets/img/elcentenario.png'
           />
           <Box sx={{ flexGrow: 1 }} />
 

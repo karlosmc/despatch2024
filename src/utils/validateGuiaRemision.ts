@@ -327,6 +327,10 @@ export const AddDocSchema = yup.object().shape({
     },
     then:(schema)=>schema.test('patroDocumento','Respeta el patron del documento',function(value){
       const regexp =/^[FB-fb][a-zA-Z0-9]{3}-\d+$/;
+
+      // const regexp =/^T[a-zA-Z0-9]{3}$/;
+
+      
   
       const ejecutar = regexp.test(value);
       
@@ -411,8 +415,8 @@ export const GuiaRemisionSchema = yup.object().shape({
   .test('Transportisa Requerido','Debe proporcionar la Información del transportista',
     function(value){
       const { envio } = this.parent;
-      const {modTraslado}= envio;
-      if(modTraslado==='01'){
+      const {modTraslado,indicadores}= envio;
+      if(modTraslado==='01' && !indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L')){
         return TransportistaSchema.isValid(value)
       }
       return true

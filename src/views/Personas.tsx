@@ -13,7 +13,25 @@ import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
 import { persona } from '../types/persona.interface';
 import ModalPersona from '../components/Persona';
+import BuscarComponent from '../components/BuscarComponent';
+import { BuscarOpcionesInterface } from '../types/buscar.interface';
 
+
+const opciones: BuscarOpcionesInterface[] = [
+  {
+    codigo: 'numDoc',
+    valor: 'Nro. Documento'
+  },
+  {
+    codigo: 'rznSocial',
+    valor: 'Razón social'
+  },
+  
+  // {
+  //   codigo: 'fav',
+  //   valor: 'Favoritos'
+  // },
+]
 
 type ModalsProps = {
   open: boolean;
@@ -28,6 +46,13 @@ const Personas = () => {
     form: null,
     title: "",
   });
+
+  const [inputQueryTemp, setInputQueryTemp] = useState<string>(''); // Valores temporales
+  const [searchFieldTemp, setSearchFieldTemp] = useState<string>('');
+
+  const [inputQuery, setInputQuery] = useState<string>('')
+
+  const [searchField, setSearchField] = useState<string>('')
 
   const theme = useTheme()
 
@@ -49,6 +74,17 @@ const Personas = () => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
+  const handleSearchParams = (field: string, query: string) => {
+    setSearchFieldTemp(field);  // Guarda en los estados temporales
+    setInputQueryTemp(query);
+  };
+
+  // Ejecutar búsqueda al presionar "Buscar"
+  const handleSearch = () => {
+    setSearchField(searchFieldTemp); // Actualiza los estados definitivos
+    setInputQuery(inputQueryTemp);
+  };
+
   const handleConfirm = (): void => {
     handleCloseModalForm()
   }
@@ -67,13 +103,26 @@ const Personas = () => {
   // const [edit, setEdit] = useState<boolean>(false);
 
   const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/clientes', {
-    headers: {
-      Authorization: `Bearer ${token}`
+  // const fetcher = () => clienteAxios('/api/clientes', {
+  //   headers: {
+  //     Authorization: `Bearer ${token}`
+  //   }
+  // })
+  const fetcher = () => {
+    let url = '/api/clientes';
+    if (searchField && inputQuery) {
+      url += `/buscar?${searchField}=${inputQuery}`; // Agrega los parámetros si existen
     }
-  })
+    return clienteAxios(url, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  }
 
-  const { data,  isLoading } = useSWR('/api/clientes', fetcher);
+
+
+  const { data,  isLoading } = useSWR(['/api/clientes',searchField, inputQuery], fetcher);
 
   const TableCellStyles = {
     // padding: '8px',
@@ -133,6 +182,11 @@ const Personas = () => {
           Agregar Persona
         </Button>
       </Box>
+      <Box display={'flex'} flexDirection={{ xs: 'column', sm: 'row' }} my={1}>
+        <BuscarComponent opciones={opciones} onSearchChange={handleSearchParams} />
+      </Box>
+
+      <Button onClick={handleSearch} size='small' fullWidth color='success' variant='contained' sx={{ mb: 1 }}>Buscar</Button>
 
       <TableContainer component={Paper} >
         <Table aria-label="simple table" size='small'>
