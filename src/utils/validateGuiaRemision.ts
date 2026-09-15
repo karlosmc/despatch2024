@@ -1,8 +1,6 @@
 import * as yup from "yup";
 import { object } from "yup";
 
-
-
 export const DestinatarioSchema = object({
   tipoDoc: yup
     .string()
@@ -38,9 +36,9 @@ export const DestinatarioSchema = object({
 
 export const CompradorSchema = object({
   tipoDoc: yup
-  .string()
-  .required("Comprador: Debe elegir el Tipo de Documento")
-  .trim(),
+    .string()
+    .required("Comprador: Debe elegir el Tipo de Documento")
+    .trim(),
   numDoc: yup
     .string()
     .notRequired()
@@ -55,24 +53,28 @@ export const CompradorSchema = object({
     })
     .when("tipoDoc", {
       is: "6", // alternatively: (val) => val == true
-      then: (schema) =>schema.length(11,({ length }) =>`Comprador: El campo Número de documento debe tener ${length} caracteres`)
-      ,
+      then: (schema) =>
+        schema.length(
+          11,
+          ({ length }) =>
+            `Comprador: El campo Número de documento debe tener ${length} caracteres`
+        ),
       otherwise: (schema) => schema,
-    }).optional(),
-  rznSocial: yup
-    .string()
-    .when("numDoc",{
-      is:(numDoc) => numDoc && numDoc.length >0,
-      then: (schema) => schema.required('Comprador: Si Número de documento existe, debe escribir una Razón Social'),
     })
+    .optional(),
+  rznSocial: yup.string().when("numDoc", {
+    is: (numDoc) => numDoc && numDoc.length > 0,
+    then: (schema) =>
+      schema.required(
+        "Comprador: Si Número de documento existe, debe escribir una Razón Social"
+      ),
+  }),
 });
 
 export const TerceroSchema = object({
-  tipoDoc: yup
-  .string()
+  tipoDoc: yup.string(),
   // .required("Proveedor: Debe elegir el Tipo de Documento")
   // .trim()
-  ,
   numDoc: yup
     .string()
     .notRequired()
@@ -87,16 +89,22 @@ export const TerceroSchema = object({
     })
     .when("tipoDoc", {
       is: "6", // alternatively: (val) => val == true
-      then: (schema) =>schema.length(11,({ length }) =>`Proveedor: El campo Número de documento debe tener ${length} caracteres`)
-      ,
+      then: (schema) =>
+        schema.length(
+          11,
+          ({ length }) =>
+            `Proveedor: El campo Número de documento debe tener ${length} caracteres`
+        ),
       otherwise: (schema) => schema,
-    }).optional(),
-  rznSocial: yup
-    .string()
-    .when("numDoc",{
-      is:(numDoc) => numDoc && numDoc.length >0,
-      then: (schema) => schema.required('Proveedor: Si Número de documento existe, debe escribir una Razón Social'),
     })
+    .optional(),
+  rznSocial: yup.string().when("numDoc", {
+    is: (numDoc) => numDoc && numDoc.length > 0,
+    then: (schema) =>
+      schema.required(
+        "Proveedor: Si Número de documento existe, debe escribir una Razón Social"
+      ),
+  }),
 });
 
 export const DestinatarioTest = object({
@@ -133,13 +141,12 @@ export const DestinatarioTest = object({
     .string()
     .required("Destinatario: Debe escribir una razón social")
     .trim(),
-  direccion:yup.string().notRequired(),
-  ubigeo:yup.string().notRequired(),
+  direccion: yup.string().notRequired(),
+  ubigeo: yup.string().notRequired(),
 });
 
-
 // function ValidateCodTraslado(value:string,esquema:any){
-  
+
 //   const arraySchema = esquema;
 //   console.log(arraySchema)
 //   const getFormatedArraySchema = arraySchema.map(item=> item.value)
@@ -148,40 +155,67 @@ export const DestinatarioTest = object({
 
 //   console.log(schemaEnvio?.codTraslado,value)
 //   return schemaEnvio?.codTraslado===value;
-  
+
 // }
 
-export const PartidaSchema =yup.object().shape({
-  id:yup.number().notRequired(),
-  ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
-  direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
-  codLocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
-  ruc:yup.string(),
-  rznSocial:yup.string()
-})
+export const PartidaSchema = yup.object().shape({
+  id: yup.number().notRequired(),
+  ubigeo: yup
+    .string()
+    .trim()
+    .required("Punto de partida: Debe Elegir un ubigeo"),
+  direccion: yup
+    .string()
+    .trim()
+    .required("Punto de partida: Debe escribir una dirección"),
+  codLocal: yup
+    .string()
+    .required("Punto de partida: Debe escribir el código de local")
+    .matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números")
+    .min(4, "Punto de partida: Debe tener exactamente 4 digitos")
+    .max(4, "Punto de partida: Debe tener exactamente 4 digitos"),
+  ruc: yup.string(),
+  rznSocial: yup.string(),
+});
 
-
-export const PuntosSchema =yup.object().shape({
-  ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
-  direccion:yup.string().trim().required('Punto de partida: Debe escribir una dirección'),
-  codLocal:yup.string().required('Punto de partida: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números").min(4,'Punto de partida: Debe tener exactamente 4 digitos').max(4,'Punto de partida: Debe tener exactamente 4 digitos'),
-  ruc:yup.string(),
-  fav:yup.boolean(),
-  isCompany:yup.boolean(),
-  rznSocial:yup.string(),
-  nombreCorto:yup.string()
-  .when("fav", {
-    is: true, // alternatively: (val) => val == true
-    then: (schema) => schema.required('Cuando Favorito está activo, debe colocar un nombre corto'),
-    otherwise:(schema)=>schema.nullable()
-  })
-  .when("isCompany", {
-    is: true, // alternatively: (val) => val == true
-    then: (schema) => schema.required('Cuando Punto de la empresa está activo, debe colocar un nombre corto'),
-    otherwise:(schema)=>schema.nullable()
-  })
-
-})
+export const PuntosSchema = yup.object().shape({
+  ubigeo: yup
+    .string()
+    .trim()
+    .required("Punto de partida: Debe Elegir un ubigeo"),
+  direccion: yup
+    .string()
+    .trim()
+    .required("Punto de partida: Debe escribir una dirección"),
+  codLocal: yup
+    .string()
+    .required("Punto de partida: Debe escribir el código de local")
+    .matches(/^[0-9]+$/, "Punto de partida: Solo debe escribir números")
+    .min(4, "Punto de partida: Debe tener exactamente 4 digitos")
+    .max(4, "Punto de partida: Debe tener exactamente 4 digitos"),
+  ruc: yup.string(),
+  fav: yup.boolean(),
+  isCompany: yup.boolean(),
+  rznSocial: yup.string(),
+  nombreCorto: yup
+    .string()
+    .when("fav", {
+      is: true, // alternatively: (val) => val == true
+      then: (schema) =>
+        schema.required(
+          "Cuando Favorito está activo, debe colocar un nombre corto"
+        ),
+      otherwise: (schema) => schema.nullable(),
+    })
+    .when("isCompany", {
+      is: true, // alternatively: (val) => val == true
+      then: (schema) =>
+        schema.required(
+          "Cuando Punto de la empresa está activo, debe colocar un nombre corto"
+        ),
+      otherwise: (schema) => schema.nullable(),
+    }),
+});
 
 // export const PartidaSchemaError =yup.object().shape({
 //   ubigeo:yup.string().trim().required('Punto de partida: Debe Elegir un ubigeo'),
@@ -193,7 +227,6 @@ export const PuntosSchema =yup.object().shape({
 //         const getFormatedArraySchema = esquema.map(item=> item.value)
 //         console.log(getFormatedArraySchema)
 //         const schemaEnvio = getFormatedArraySchema.find(item=> item.envio)?.envio;
-        
 
 //         if(ValidateCodTraslado('04',esquema)){
 //           // console.log('entro')
@@ -209,7 +242,7 @@ export const PuntosSchema =yup.object().shape({
 //   //   }
 //   //   return true;
 //   // }),
-  
+
 //   // .test('onlyNumbers','Punto de partida: Solo debe escribir números',function(value){
 //   //   const arraySchema = this.from;
 //   //   const getFormatedArraySchema = arraySchema.map(item=> item.value)
@@ -221,7 +254,7 @@ export const PuntosSchema =yup.object().shape({
 //   //   }
 //   //   return false;
 //   // .length(4, 'Punto de partida: Debe tener exactamente 4 dígitos'),
-  
+
 //     // .when('$envio', (envio: any, schema: yup.StringSchema<string>) => {
 //     //   if (envio.codTraslado !== '04') {
 //     //     return schema.required('Punto de partida: Debe escribir el código de local')
@@ -235,74 +268,118 @@ export const PuntosSchema =yup.object().shape({
 // })
 
 export const LlegadaSchema = yup.object().shape({
-  id:yup.number().notRequired(),
-  ubigeo:yup.string().trim().required('Punto de llegada: Debe Elegir un ubigeo'),
-  direccion:yup.string().trim().required('Punto de llegada: Debe escribir una dirección'),
-  codLocal:yup.string().required('Punto de llegada: Debe escribir el código de local').matches(/^[0-9]+$/, "Punto de llegada: Solo debe escribir números").min(4,'Punto de llegada: Debe tener exactamente 4 digitos').max(4,'Punto de llegada: Debe tener exactamente 4 digitos'),
-  ruc:yup.string(),
-  rznSocial:yup.string(),
-})
+  id: yup.number().notRequired(),
+  ubigeo: yup
+    .string()
+    .trim()
+    .required("Punto de llegada: Debe Elegir un ubigeo"),
+  direccion: yup
+    .string()
+    .trim()
+    .required("Punto de llegada: Debe escribir una dirección"),
+  codLocal: yup
+    .string()
+    .required("Punto de llegada: Debe escribir el código de local")
+    .matches(/^[0-9]+$/, "Punto de llegada: Solo debe escribir números")
+    .min(4, "Punto de llegada: Debe tener exactamente 4 digitos")
+    .max(4, "Punto de llegada: Debe tener exactamente 4 digitos"),
+  ruc: yup.string(),
+  rznSocial: yup.string(),
+});
 
 export const PuertoSchema = yup.object().shape({
-  codigo:yup.string().trim().required('Debe elegir un puerto'),
-})
+  codigo: yup.string().trim().required("Debe elegir un puerto"),
+});
 
 export const AeropuertoSchema = yup.object().shape({
-  codigo:yup.string().trim().required('Debe elegir un aeropuerto'),
-})
+  codigo: yup.string().trim().required("Debe elegir un aeropuerto"),
+});
 
 export const SecundariosSchema = yup.object().shape({
   // placa:yup.string().trim().required('Vehiculo: Debe escribir una placa'),
-  id:yup.number().notRequired(),
-  placa:yup.string().trim().notRequired(),
-  nroCirculacion:yup.string().notRequired(),
-  codEmisor:yup.string().notRequired(),
-  nroAutorizacion:yup.string().notRequired(),
-  
-})
+  id: yup.number().notRequired(),
+  placa: yup.string().trim().notRequired(),
+  nroCirculacion: yup.string().notRequired(),
+  codEmisor: yup.string().notRequired(),
+  nroAutorizacion: yup.string().notRequired(),
+});
 
 export const VehiculoSchema = yup.object().shape({
   // placa:yup.string().trim().required('Vehiculo: Debe escribir una placa'),
-  id:yup.number().notRequired(),
-  placa:yup.string().trim(),
-  nroCirculacion:yup.string().notRequired(),
-  codEmisor:yup.string().notRequired(),
-  nroAutorizacion:yup.string().notRequired(),
-  secundarios:yup.array(SecundariosSchema).notRequired()
-})
+  id: yup.number().notRequired(),
+  placa: yup.string().trim(),
+  nroCirculacion: yup.string().notRequired(),
+  codEmisor: yup.string().notRequired(),
+  nroAutorizacion: yup.string().notRequired(),
+  secundarios: yup.array(SecundariosSchema).notRequired(),
+});
 
 export const ChoferSchema = yup.object().shape({
-  tipo:yup.string().trim().required('Chofer: Debe elegir un tipo de conductor'),
-  tipoDoc:yup.string().trim().required('Chofer: Debe elegir un tipo de documento'),
-  nroDoc:yup.string().trim().required('Chofer: Debe escribir un Nro de documento'),
-  nombres:yup.string().trim().required('Chofer: Debe escribir los nombres del conductor'),
-  apellidos:yup.string().trim().notRequired(),
-  licencia:yup.string().trim().required('Chofer: Debe escribir el número de licencia')
-})
+  tipo: yup
+    .string()
+    .trim()
+    .required("Chofer: Debe elegir un tipo de conductor"),
+  tipoDoc: yup
+    .string()
+    .trim()
+    .required("Chofer: Debe elegir un tipo de documento"),
+  nroDoc: yup
+    .string()
+    .trim()
+    .required("Chofer: Debe escribir un Nro de documento"),
+  nombres: yup
+    .string()
+    .trim()
+    .required("Chofer: Debe escribir los nombres del conductor"),
+  apellidos: yup.string().trim().notRequired(),
+  licencia: yup
+    .string()
+    .trim()
+    .required("Chofer: Debe escribir el número de licencia"),
+});
 
 export const EnvioSchema = yup.object().shape({
-  
-  codTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir un motivo de traslado'),
-  desTraslado:yup.string(),
-  pesoTotal:yup.number().required('Datos de Traslado: Debe escribir el peso total'),
-  fecTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir una fecha de traslado')
-              .test('fecTraslado','Datos de Traslado: La fecha de traslado debe ser mayor a la fecha de Emision del documento',function(fecTraslado){
-                const arraySchema = this.from;
-                
-                const getFormatedArraySchema = arraySchema.map(item=> item.value)
-                const schema = getFormatedArraySchema.find(item=> item.fechaEmision);
-                const fechaEmision = schema?.fechaEmision
-                if(fecTraslado && fechaEmision){
-                  const parseFechaEmision = new Date(fechaEmision)
-                  const parseFecTraslado = new Date(fecTraslado)
-                  return parseFecTraslado > parseFechaEmision
-                }
-                return true
-              }),
-  numBultos:yup.number().required('Datos de Traslado: Debe ingresar el número de bultos'),
-  modTraslado:yup.string().trim().required('Datos de Traslado: Debe elegir la modalidad del traslado'),
-  undPesoTotal:yup.string().trim().required('Datos de Traslado: Debe elegir una unidad de medida'),
-  indicadores: yup.array()
+  codTraslado: yup
+    .string()
+    .trim()
+    .required("Datos de Traslado: Debe elegir un motivo de traslado"),
+  desTraslado: yup.string(),
+  pesoTotal: yup
+    .number()
+    .required("Datos de Traslado: Debe escribir el peso total"),
+  fecTraslado: yup
+    .string()
+    .trim()
+    .required("Datos de Traslado: Debe elegir una fecha de traslado")
+    .test(
+      "fecTraslado",
+      "Datos de Traslado: La fecha de traslado debe ser mayor a la fecha de Emision del documento",
+      function (fecTraslado) {
+        const arraySchema = this.from;
+
+        const getFormatedArraySchema = arraySchema.map((item) => item.value);
+        const schema = getFormatedArraySchema.find((item) => item.fechaEmision);
+        const fechaEmision = schema?.fechaEmision;
+        if (fecTraslado && fechaEmision) {
+          const parseFechaEmision = new Date(fechaEmision);
+          const parseFecTraslado = new Date(fecTraslado);
+          return parseFecTraslado > parseFechaEmision;
+        }
+        return true;
+      }
+    ),
+  numBultos: yup
+    .number()
+    .required("Datos de Traslado: Debe ingresar el número de bultos"),
+  modTraslado: yup
+    .string()
+    .trim()
+    .required("Datos de Traslado: Debe elegir la modalidad del traslado"),
+  undPesoTotal: yup
+    .string()
+    .trim()
+    .required("Datos de Traslado: Debe elegir una unidad de medida"),
+  indicadores: yup.array(),
   // .when(['codTraslado'], {
   //   is:(codTraslado:string)=>{
   //     if(codTraslado!=='02'){
@@ -312,63 +389,78 @@ export const EnvioSchema = yup.object().shape({
   //   then:(schema)=> schema.min(1,`Indicadores de Traslado: Debes agregar por lo menos 1 indicador para el Motivo de traslado`),
   //   otherwise:(schema)=> schema.max(0,`Indicadores de Traslado: No debe existir indicadores agregados para el Motivo de traslado`)
   // }),
-  
-})
+});
 
 export const AddDocSchema = yup.object().shape({
-  tipo:yup.string().trim().required('Debe elegir un tipo de comprobante'),
+  tipo: yup.string().trim().required("Debe elegir un tipo de comprobante"),
   // nro:yup.string().trim().required('Debe escribir un Nro de comprobante').matches(/^([FB][a-zA-Z0-9]{3}-\d{1}\d{0,7})$/, "Debe escribir igual que el ejemplo"),
-  nro:yup.string().trim().required('Debe escribir un Nro de comprobante')
-  .when('tipo',{
-    is:(tipo:string)=>{
-      if(tipo==='03' || tipo==='01'){
-        return true
-      }
-    },
-    then:(schema)=>schema.test('patroDocumento','Respeta el patron del documento',function(value){
-      const regexp =/^[FB-fb][a-zA-Z0-9]{3}-\d+$/;
+  nro: yup
+    .string()
+    .trim()
+    .required("Debe escribir un Nro de comprobante")
+    .when("tipo", {
+      is: (tipo: string) => {
+        if (tipo === "03" || tipo === "01") {
+          return true;
+        }
+      },
+      then: (schema) =>
+        schema.test(
+          "patroDocumento",
+          "Respeta el patron del documento",
+          function (value) {
+            // const regexp =/^[FB-fb][a-zA-Z0-9]{3}-\d+$/;
+            const regexp = /^[FBE-fbe][a-zA-Z0-9]{3}-\d+$/;
 
-      // const regexp =/^T[a-zA-Z0-9]{3}$/;
+            // const regexp =/^T[a-zA-Z0-9]{3}$/;
 
-      
-  
-      const ejecutar = regexp.test(value);
-      
-      return ejecutar;
+            const ejecutar = regexp.test(value);
+
+            return ejecutar;
+          }
+        ),
+      otherwise: (schema) => schema.required(),
     }),
-    otherwise:(schema)=>schema.required()
-  })
-  ,
-  emisor:yup.string().trim().required('Debe escribir el RUC del emisor'),
-  tipoDesc:yup.string().trim().required('Debe escribir la descripción del tipo de documento')
-})
+  emisor: yup.string().trim().required("Debe escribir el RUC del emisor"),
+  tipoDesc: yup
+    .string()
+    .trim()
+    .required("Debe escribir la descripción del tipo de documento"),
+});
 
 export const DetailSchema = yup.object().shape({
-  id:yup.number().notRequired(),
-  codigo:yup.string().trim().required('Debe tener un código de producto'),
-  descripcion:yup.string().trim().required('Debe escribir la descripción del producto'),
-  unidad:yup.string().trim().required('Debe escribir una Unidad de medida'),
-  cantidad:yup.number().positive('La cantidad debe ser mayor que { 0 }').required('Debe escribir una Cantidad'),
-  codProdSunat:yup.string().trim().notRequired(),
-  atributos:yup.array().notRequired(),
-})
+  id: yup.number().notRequired(),
+  codigo: yup.string().trim().required("Debe tener un código de producto"),
+  descripcion: yup
+    .string()
+    .trim()
+    .required("Debe escribir la descripción del producto"),
+  unidad: yup.string().trim().required("Debe escribir una Unidad de medida"),
+  cantidad: yup
+    .number()
+    .positive("La cantidad debe ser mayor que { 0 }")
+    .required("Debe escribir una Cantidad"),
+  codProdSunat: yup.string().trim().notRequired(),
+  atributos: yup.array().notRequired(),
+});
 
-export const DatosGeneralesSchema= yup.object().shape({
+export const DatosGeneralesSchema = yup.object().shape({
   serie: yup
-  .string()
-  .trim()
-  .required(
-    "Datos Generales: Debe elegir una Serie para el documento"
-  ),
+    .string()
+    .trim()
+    .required("Datos Generales: Debe elegir una Serie para el documento"),
   correlativo: yup
     .number()
-    .positive('Datos Generales: El número de documento debe ser mayor a 0')
-    , 
-  fechaEmision: yup.string().required("Datos Generales: Debe elegir una fecha de emisión del comprobante"),
+    .positive("Datos Generales: El número de documento debe ser mayor a 0"),
+  fechaEmision: yup
+    .string()
+    .required(
+      "Datos Generales: Debe elegir una fecha de emisión del comprobante"
+    ),
 });
 
 export const TransportistaSchema = yup.object().shape({
-  id:yup.number().notRequired(),
+  id: yup.number().notRequired(),
   tipoDoc: yup
     .string()
     .required("Transportista: Debe elegir el Tipo de Documento")
@@ -390,61 +482,67 @@ export const TransportistaSchema = yup.object().shape({
     .string()
     .required("Transportista: Debe escribir una razón social")
     .trim(),
-  nroMtc:yup.string().notRequired()
-})
+  nroMtc: yup.string().notRequired(),
+});
 
 export const GuiaRemisionSchema = yup.object().shape({
- 
-  datosGenerales:DatosGeneralesSchema,
+  datosGenerales: DatosGeneralesSchema,
   destinatario: DestinatarioSchema,
   // comprador: CompradorSchema.optional().notRequired(),
   proveedor: TerceroSchema.optional().notRequired(),
   envio: EnvioSchema,
-  addDocs:yup.array(AddDocSchema),
+  addDocs: yup.array(AddDocSchema),
   // .min(1,'Debe agregar por lo menos { 1 } Documento adicional'),
-  details:yup.array(DetailSchema)
-  .min(1,'Debe agregar por lo menos {1} Detalle'),
-  vehiculo:VehiculoSchema,
-  choferes:yup.array(ChoferSchema),
-//  choferes:yup.array(ChoferSchema).min(1, "Debe agregar por lo menos 1 Chofer").max(3,"Solo se permite {1} Principal y {2} Secundarios"),
+  details: yup
+    .array(DetailSchema)
+    .min(1, "Debe agregar por lo menos {1} Detalle"),
+  vehiculo: VehiculoSchema.nullable(),
+  choferes: yup.array(ChoferSchema),
+  //  choferes:yup.array(ChoferSchema).min(1, "Debe agregar por lo menos 1 Chofer").max(3,"Solo se permite {1} Principal y {2} Secundarios"),
 
-  partida:PartidaSchema,
-  llegada:LlegadaSchema,
-  
-  transportista:yup.object()
-  .test('Transportisa Requerido','Debe proporcionar la Información del transportista',
-    function(value){
-      const { envio } = this.parent;
-      const {modTraslado,indicadores}= envio;
-      if(modTraslado==='01' && !indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L')){
-        return TransportistaSchema.isValid(value)
+  partida: PartidaSchema,
+  llegada: LlegadaSchema,
+
+  transportista: yup
+    .object()
+    .nullable() // Permite valores null
+    .test(
+      "Transportista Requerido",
+      "Debe proporcionar la Información del transportista",
+      function (value) {
+        const { envio } = this.parent;
+        const { modTraslado, indicadores } = envio;
+
+        // Si es transporte público Y NO tiene el indicador de vehículo M1L, entonces SÍ es requerido
+        if (
+          modTraslado === "01" &&
+          !indicadores.includes("SUNAT_Envio_IndicadorTrasladoVehiculoM1L")
+        ) {
+          return TransportistaSchema.isValid(value);
+        }
+
+        // En todos los demás casos, puede ser null/vacío
+        return true;
       }
-      return true
-    }
-  ),
-  observacion:yup.string().notRequired()
-})
-
-
-
-
+    ),
+  observacion: yup.string().notRequired(),
+});
 
 export const DniDataSchema = object({
   dni: yup.string().notRequired(),
   apellidoPaterno: yup.string().notRequired(),
   apellidoMaterno: yup.string().notRequired(),
   nombres: yup.string().notRequired(),
-})
+});
 
 export const RucDataSchema = object({
   ruc: yup.string().notRequired(),
   razonSocial: yup.string().notRequired(),
   nombreComercial: yup.string().notRequired(),
   direccion: yup.string().notRequired().optional(),
-})
-
+});
 
 export const DataFoundTest = object({
-  dniData:DniDataSchema,
-  rucData:RucDataSchema
-})
+  dniData: DniDataSchema,
+  rucData: RucDataSchema,
+});

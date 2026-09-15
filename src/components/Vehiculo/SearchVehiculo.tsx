@@ -1,9 +1,9 @@
+import FavoritoToggle from '../FavoritoToggle';
+import { TIPOS_FAVORITO } from '../../service/FavoritoService';
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
-import clienteAxios from '../../config/axios';
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
+
 
 import StoreIcon from '@mui/icons-material/Store';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
@@ -12,6 +12,7 @@ import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 
 import { vehiculo } from '../../types/vehiculo.interface';
+import { VehiculoService } from '../../service/VehiculoService';
 
 
 
@@ -21,7 +22,7 @@ interface SearchVehiculoProps {
 
 const SearchVehiculo = ({ onCheck }: SearchVehiculoProps) => {
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const [foundVehiculos, setfoundVehiculos] = useState<vehiculo[]>([])
 
@@ -45,21 +46,28 @@ const SearchVehiculo = ({ onCheck }: SearchVehiculoProps) => {
   const handleSearch = async () => {
     try {
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/vehiculos/buscar?${searchField}=${inputQuery}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setfoundVehiculos(data?.data)
-        setIsLoading(false)
-      }
+
+      const {data} = await VehiculoService.get(`${searchField}=${inputQuery}`)
+
+      setfoundVehiculos(data)
+      // const { data, status } = await clienteAxios(`/api/vehiculos/buscar?${searchField}=${inputQuery}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      // if (status === 200) {
+      //   setfoundVehiculos(data?.data)
+      //   setIsLoading(false)
+      // }
       // console.log(data)
 
 
     }
     catch (error) {
       console.log(error)
+    }
+    finally{
+      setIsLoading(false)
     }
   }
 
@@ -90,7 +98,7 @@ const SearchVehiculo = ({ onCheck }: SearchVehiculoProps) => {
         <TableCell align="left">{fil.placa}</TableCell>
         <TableCell align="left">{fil.nombreCorto}</TableCell>
         <TableCell align="left">{fil.nroCirculacion}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.vehiculo} id={fil.id} fav={fil.fav} /></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany ? 'info' : 'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         <TableCell align="center"><Fab color='success' size='small' onClick={() => handleCheck(fil)}><PanToolAltIcon sx={{ color: 'white' }} /></Fab></TableCell>
       </TableRow>

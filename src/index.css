@@ -1,5 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Carter+One&display=swap');
+/* Fuente del tema: estaba declarada en `config/theme.tsx` pero nunca se cargaba. */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;500;600;700;800&display=swap');
 
 
 html,body,#root{
@@ -8,8 +10,3 @@ html,body,#root{
 body {
   margin: 0;
 }
-
-/* .ps-menu-button:hover {
-  background-color: red  !important;
-  
-} */

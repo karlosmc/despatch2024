@@ -26,9 +26,10 @@ import ModalPersona from "../../components/Persona";
 import { persona } from "../../types/persona.interface";
 import SearchPersona from "../../components/Persona/SearchPersona";
 import { DialogComponentCustom } from "../../components";
-import clienteAxios from "../../config/axios";
+
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { ChipInterface } from "../../types/general.interface";
+import { PersonaService } from "../../service/PersonaService";
 
 
 
@@ -85,23 +86,21 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
 
   const [isLoading, setIsLoading] = useState(true)
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const filterFav = async () => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/clientes/buscar?fav=1`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setIsLoading(false)
-        setDataFilter(data?.data)
-      }
+
+      const {data} = await PersonaService.get('fav=1');
+      setDataFilter(data)
+
     }
     catch (error) {
       console.log(error)
+    }
+    finally{
+      setIsLoading(false)
     }
   }
 
@@ -110,7 +109,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
   }, [])
 
   const formik = useFormik({
-    initialValues: initialValue,
+    initialValues: initialValue || ClientValues,
     validationSchema: schema || DestinatarioSchema,
     enableReinitialize:true,
     onSubmit: (values) => {
@@ -134,7 +133,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
   };
 
   const handleConfirm = (persona: persona): void => {
-    console.log(persona)
+    // console.log(persona)
     formik.setFieldValue('id', persona.id)
     formik.setFieldValue('tipoDoc', persona.tipoDoc)
     formik.setFieldValue('numDoc', persona.numDoc)
@@ -207,7 +206,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={formik.values.tipoDoc}
+            value={formik?.values?.tipoDoc}
             // value={dataCliente.tipoDoc}
             label="Tipo de documento"
             // onChange={(e: SelectChangeEvent): void => SelectHandleChange(e)}
@@ -233,7 +232,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
           fullWidth
           name="numDoc"
           label="Número de documento"
-          value={formik.values.numDoc}
+          value={formik.values?.numDoc}
           error={formik.touched.numDoc && Boolean(formik.errors.numDoc)}
           onBlur={formik.handleBlur}
           onChange={formik.handleChange}
@@ -249,7 +248,7 @@ const Cliente = ({ initialValue, onChange, schema, tipo = '' }: ClienteFormProps
           fullWidth
           name="rznSocial"
           label="Razón Social"
-          value={formik.values.rznSocial.toUpperCase()}
+          value={formik.values?.rznSocial.toUpperCase()}
           error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
           helperText={formik.touched.rznSocial && formik.errors.rznSocial}
           onBlur={formik.handleBlur}

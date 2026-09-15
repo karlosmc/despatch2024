@@ -23,11 +23,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Alert,
-  Backdrop,
   Box,
   Button,
-  CircularProgress,
   Container,
   Dialog,
   DialogActions,
@@ -42,9 +39,6 @@ import {
   Paper,
   Select,
   SxProps,
-
-  TextField,
-
   Theme,
   Typography,
   useMediaQuery,
@@ -56,7 +50,7 @@ import PinDropIcon from "@mui/icons-material/PinDrop";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import CommuteIcon from "@mui/icons-material/Commute";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import CloseIcon from '@mui/icons-material/Close';
+
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
@@ -64,8 +58,8 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import PeopleIcon from '@mui/icons-material/People';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import BadgeIcon from '@mui/icons-material/Badge';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-// import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+
+
 
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -87,14 +81,20 @@ import DatosVehiculo from "../DatosVehiculos";
 import VehiculosSecundarios from "../DatosVehiculos/secundarios";
 import ObservacionesTextField from "../Observaciones";
 
-import useAuthToken from "../../hooks/useAuthToken";
-import clienteAxios from "../../config/axios";
-import { useAuth } from "../../hooks/useAuth";
+
+
 import { puntoEmision } from "../../types/puntoemision.interface";
-import { ParamsInterface } from "../../types/params.interface";
+
 // import AppHeader from "../../components/Dashboard/AppHeader";
 // import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import { ProcesarGuiaModal } from "./ProcesarGuia";
+
+import { GuiaServices } from "../../service/GuiaServices";
+import { PuntoEmisionService } from "../../service/PuntoEmisionService";
+import { ConductoresService } from "../../service/ConductoresServices";
+import { GuiaElectronicaService } from "../../service/GuiaElectronicaService";
 
 
 
@@ -193,33 +193,21 @@ type ModalsProps = {
 
 const GuiaRemisionMain = () => {
 
-  let navigate = useNavigate();
+
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
 
-  const { getError, getSuccess, getWarning } = useNotification();
-  const [backdropOpen, setBackdropOpen] = useState(false);
-
+  const navigate = useNavigate();
+  const { getError, getSuccess } = useNotification();
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
     form: null,
     title: "",
   });
 
-  const [pdfUrl, setPdfUrl] = useState<string>('')
-
-  const [aceptada, setAceptada] = useState<boolean>(false)
-
-  const [message, setMessage] = useState<string>('')
-
-  const [open, setOpen] = useState(false);
-
-  const [openSunat, setOpenSunat] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [openPreview, setOpenPreview] = useState(false);
 
   const [openConfirmChofer, setOpenConfirmChofer] = useState<boolean>(false)
-
-  const [procesoCompleto, setProcesoCompleto] = useState<boolean>(true)
 
   const [openConfirmVehiculo, setOpenConfirmVehiculo] = useState<boolean>(false)
 
@@ -229,63 +217,92 @@ const GuiaRemisionMain = () => {
 
   const [base64Pdf, setBase64Pdf] = useState<string>('')
 
-  const [accion, setAccion] = useState<string>('form')
-
   const [adicionalDocs, setAdicionalDocs] = useState<AddDoc[]>(initialValues.addDocs);
 
-  // const [refresh, setRefresh] = useState<boolean>(false)
+  const [datosParaProcesar, setDatosParaProcesar] = useState(null)
 
   const [detalles, setDetalles] = useState<Detail[]>(initialValues.details);
-
-  const token = localStorage.getItem('AUTH_TOKEN');
 
   const [puntosEmision, setPuntosEmision] = useState<puntoEmision[]>([]);
 
   const [puntoEmisionSelected, setPuntoEmisionSelected] = useState<number>(0)
 
-  const [params, setParams] = useState<ParamsInterface>(null)
-
-  const [ticket, setTicket] = useState<string>('')
-
-  const [est, setEst] = useState<number>(null)
+  const [estadoElectronico, setEstadoElectronico] = useState<null>(null)
 
   const [idDespatch, setIdDespatch] = useState<number>(null);
 
-  const [consultToken, setConsultToken] = useState<string>('')
+  const user = useAuthStore(state => state.user);
 
 
-  // const [hashQr, setHashQr] = useState<string>('');
+  const handleProcesoSuccess = (resultado: any): void => {
+    console.log('Proceso completado exitosamente:', resultado);
+    getSuccess('Guia enviada correctamente a SUNAT');
+    setTimeout(() => {
+      navigate('/admin/guias');
+    }, 2000);
+  };
 
+  const handleProcesoError = (error: any): void => {
+    console.error('Error en el proceso:', error);
+    // Convertir el error a string de forma segura
+    let errorMessage = 'Error en el proceso de la guía electrónica';
+    if (typeof error === 'string') {
+      errorMessage = error;
+    } else if (error?.message) {
+      errorMessage = error.message;
+    } else if (error?.toString) {
+      errorMessage = error.toString();
+    }
+    // Mostrar notificación de error al usuario
+    getError(errorMessage);
+  };
 
-  const { user } = useAuth({ middleware: '', url: '' });
+  const handleModalClose = (): void => {
+    setModalOpen(false);
+
+  };
+
+  const handleOpenPreview = () => setOpenPreview(true);
+  const handleClosePreview = () => setOpenPreview(false);
 
 
   const getPuntosEmision = async () => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/usuario/${user.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      // console.log(data)
-      if (status === 200) {
-        console.log(data)
-        setPuntosEmision(data)
-
-      }
-      // console.log(data)
-
+      const response = await PuntoEmisionService.getPuntosByUserId(user.id)
+      setPuntosEmision(response)
 
     }
-    catch (error) {
-      console.log(error)
+    catch (error: any) {
+      console.log(error || 'Hubo un error al obtener los puntos de emisión del usuario')
     }
   }
 
-  const onHandlePreview = () => {
-    setAccion('pdf');
-    formik.submitForm();
+  const onHandlePreview = async () => {
+    // setAccion('pdf');
+    // formik.submitForm();
+    const errors = await formik.validateForm();
+    if (Object.keys(errors).length > 0) {
+      const ErrorValues = Object.values(formik.errors)[0];
+      // console.log(ErrorValues);
+      //const ErrorKeys = Object.keys(formik.errors)[0]
+      if (isObject(ErrorValues)) {
+        // console.log(Object.values(ErrorValues)[0])
+        const ErrorValuesSub = Object.values(ErrorValues)[0];
+        // const ErrorKeySub = Object.keys(ErrorKeys)[0]
+        if (isObject(ErrorValuesSub)) {
+          //getError(`Error en la Seccion:${Object.keys(ErrorKeySub)[0]}: ${Object.values(ErrorValuesSub)[0]}`)
+          getError(`${Object.values(ErrorValuesSub)[0]}`);
+        } else {
+          //getError(`Error en la Seccion:${ErrorKeys.toUpperCase()}: ${ErrorValuesSub}`)
+          getError(ErrorValuesSub);
+        }
+      } else {
+        getError(ErrorValues);
+      }
+    } else {
+      previewPDF(formik.values);
+    }
 
   }
 
@@ -304,20 +321,15 @@ const GuiaRemisionMain = () => {
   }
 
   const handleConfirmVehiculoDialog = () => {
-    console.log(vehiculoFound)
+
     formik.setFieldValue("vehiculo", vehiculoFound);
     setOpenConfirmVehiculo(false)
   }
 
-  // const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
 
-
-  const { getToken, getSunatParams } = useAuthToken()
-
-  const API_GUIAS = import.meta.env.VITE_API_URL_GUIAS
   // console.log(API_GUIAS)
 
-  const previewPDF = (values: GuiaRemision) => {
+  const previewPDF = async (values: GuiaRemision) => {
     const doc = {
       fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
       correlativo: values.datosGenerales.correlativo,
@@ -340,124 +352,26 @@ const GuiaRemisionMain = () => {
       },
       addDocs: values.addDocs,
       details: values.details,
-
     }
-    // console.log(doc)
 
-    // console.log(JSON.stringify(doc));
+    const { response } = await GuiaElectronicaService.getPdfPreview(doc);
 
-    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch", '');
+    if (response.TramaPdf) {
 
-    responsePdf.then(pdf => {
-      setBase64Pdf(pdf.response.TramaPdf)
+      setBase64Pdf(response.TramaPdf)
       if (isMobile) {
         const link = document.createElement('a');
-        link.href = `data:application/pdf; base64,${pdf.response.TramaPdf}`;
+        link.href = `data:application/pdf; base64,${response.TramaPdf}`;
         // document.body.appendChild(link);
         link.download = `${doc.serie}-${doc.correlativo}.pdf`
         link.click();
         // document.body.removeChild(link);
 
       } else {
-        handleOpen()
+
+        handleOpenPreview()
       }
-      // handleOpen()
-    });
-  }
-
-  const sendApi = async (param: any, api: string, process: string, timeout: boolean = false) => {
-    const url = `${API_GUIAS}${api}`;
-    setTimeoutMessage(process, timeout)
-    const options = {
-      method: "post",
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify(param),
-    };
-    const resp = await fetch(url, options);
-    return resp.json();
-  };
-
-
-  const consultarToken = () => {
-
-    if (ticket === '') {
-      getError('Debe exister el número de TICKET');
-      return;
     }
-    const numeroDocumento = `${params.ruc}-${formik.values.datosGenerales.tipoDoc}-${formik.values.datosGenerales.serie}-${formik.values.datosGenerales.correlativo}`;
-    const urlconsult = params.urlconsult;
-
-    const consult = {
-      "access_token": consultToken,
-      "EndPointUrl": `${urlconsult}${ticket}`,
-      numeroDocumento
-    }
-
-    sendApi(consult, '/ConsultaGuia', 'Consultando Ticket', true)
-      .then(resConsult => {
-        // console.log(resConsult)
-        if (resConsult.error && resConsult.indCdrGenerado === "1") {
-          getError(resConsult.error.desError);
-          updateEstadoElectronico({
-            'estado': 'C',
-            // 'descripcion':'Documento consultado con Exito',
-            'rutaCdr': `/CDR/`,
-            'rutaPdf': `/PDF/`,
-            'descripcion': resConsult.error.desError,
-            'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-            'codigoSunat': resConsult.error.numError,
-            'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
-            'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
-          }, est);
-          setProcesoCompleto(false)
-          return;
-        }
-
-        if (!resConsult.CdrResponse) {
-          updateEstadoElectronico({
-            'estado': 'C',
-            // 'descripcion':'Documento consultado con Exito',
-            'rutaCdr': `/CDR/`,
-            'rutaPdf': `/PDF/`,
-            'descripcion': resConsult.codRespuesta ? resConsult.error.numError : 'PENDIENTE DE CONSULTA',
-            'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : ''
-          }, est);
-          getWarning('Si ha generado el token y el ticket de consulta, presiona CONSULTAR');
-          setProcesoCompleto(false)
-          return;
-        }
-
-        updateEstadoElectronico({
-          'estado': 'F',
-          // 'descripcion':'Documento consultado con Exito',
-          'rutaCdr': `/CDR/${numeroDocumento}.zip`,
-          'rutaPdf': `/PDF/${numeroDocumento}.pdf`,
-          'cdrbase64': resConsult.arcCdr ? resConsult.arcCdr : '',
-          'hashQr': resConsult.CdrResponse?.hashQr ? resConsult.CdrResponse.hashQr : '',
-          'descripcion': resConsult.CdrResponse?.Descripcion ? resConsult.CdrResponse.Descripcion : '',
-          'estadoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-          'codigoSunat': resConsult.codRespuesta ? resConsult.codRespuesta : '',
-        }, est);
-
-        // setHashQr(resConsult.CdrResponse.hashQr)
-        getSuccess(resConsult.CdrResponse.Descripcion);
-        setProcesoCompleto(false)
-
-        if (resConsult.codRespuesta === "0") {
-
-          setAceptada(true)
-          const rutaPDF = `${API_GUIAS}/PDF/${numeroDocumento}.pdf`;
-          setPdfUrl(rutaPDF)
-
-          // HandlePdfCompany(idDespatch)
-          // setRefresh(true)
-        }
-        // console.log(resConsult)
-      });
-
-
   }
 
   const formik = useFormik({
@@ -465,426 +379,152 @@ const GuiaRemisionMain = () => {
     validationSchema: GuiaRemisionSchema,
     enableReinitialize: false,
     onSubmit: async (values) => {
+      try {
+        const { observacion, destinatario, tercero, envio, addDocs, details, vehiculo, choferes, transportista, partida, llegada } = values;
+        const { fechaEmision, correlativo, serie, tipoDoc, version } = values.datosGenerales;
+        const { fecTraslado, indicadores } = envio;
 
-      // const fechaEmision = values.datosGenerales.fechaEmision;
-      // const fecTraslado = values.envio.fecTraslado;
+        // Validación de fechas
+        if (fecTraslado && fechaEmision) {
+          const parseFechaEmision = new Date(fechaEmision);
+          const parseFecTraslado = new Date(fecTraslado);
 
-      const { observacion, destinatario, tercero, envio, addDocs, details, vehiculo, choferes, transportista, partida, llegada } = values;
-
-      const { fechaEmision, correlativo, serie, tipoDoc, version } = values.datosGenerales;
-      const { fecTraslado, indicadores } = envio;
-
-      if (fecTraslado && fechaEmision) {
-
-        const parseFechaEmision = new Date(fechaEmision)
-        const parseFecTraslado = new Date(fecTraslado)
-
-        if (parseFecTraslado < parseFechaEmision) {
-          getError('Datos de Envío: La fecha de traslado debe ser mayor a la fecha de Emisión de la Guía')
-          return;
-        }
-      }
-
-      if (!indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && transportista.numDoc === '') {
-        if (vehiculo.placa === '') {
-          getError('Debe escribir una Placa');
-          return;
-        }
-      }
-      if (accion === 'pdf') {
-        previewPDF(values)
-        setAccion('form')
-        return;
-      }
-
-      const doc = {
-        // ...values.datosGenerales,
-        fechaEmision: fechaEmision + ' ' + dayjs().format('HH:mm'),
-        correlativo: correlativo,
-        serie: serie,
-        tipoDoc: tipoDoc,
-        version: version,
-        observacion: observacion,
-        destinatario: destinatario,
-        tercero: tercero.numDoc !== '' ? tercero : null,
-        comprador: null,
-        envio: {
-          ...envio,
-          partida: partida,
-          llegada: llegada,
-          vehiculo: vehiculo.placa !== '' ? vehiculo : null,
-          aeropuerto: null,
-          puerto: null,
-          choferes: choferes,
-          transportista: transportista.numDoc !== '' ? transportista : null
-        },
-        addDocs: addDocs,
-        details: details,
-      }
-
-      setProcesoCompleto(true)
-      setBackdropOpen(true)
-      
-      const token_sunat = await getToken()
-      if (token_sunat) {
-
-        setProcesoCompleto(true)
-        setBackdropOpen(true)
-
-        if (idDespatch) {
-          const respuesta = await updateGuia(doc);
-          if (!respuesta.exito) {
-            getError(respuesta.message);
+          if (isNaN(parseFechaEmision.getTime()) || isNaN(parseFecTraslado.getTime())) {
+            getError('Las fechas ingresadas no son válidas');
             return;
           }
-          procesoElectronico(doc, respuesta.electronico, token_sunat)
+
+          // Validación de rango de fecha de emisión
+          const fechaActual = new Date();
+          
+          
+          const dosDiasAdelante = new Date(fechaActual);
+          dosDiasAdelante.setDate(fechaActual.getDate() + 2);
+
+          // Resetear horas para comparar solo fechas
+          const fechaEmisionSinHora = new Date(parseFechaEmision.getFullYear(), parseFechaEmision.getMonth(), parseFechaEmision.getDate());
+          // const unDiaAtrasSinHora = new Date(unDiaAtras.getFullYear(), unDiaAtras.getMonth(), unDiaAtras.getDate());
+          const dosDiasAdelanteSinHora = new Date(dosDiasAdelante.getFullYear(), dosDiasAdelante.getMonth(), dosDiasAdelante.getDate());
+
+          // if (fechaEmisionSinHora < unDiaAtrasSinHora) {
+          //   getError('La fecha de emisión no puede ser anterior a 1 día de la fecha actual');
+          //   return;
+          // }
+
+          if (fechaEmisionSinHora > dosDiasAdelanteSinHora) {
+            getError('La fecha de emisión no puede ser posterior a 2 días de la fecha actual');
+            return;
+          }
+
+          if (parseFecTraslado < parseFechaEmision) {
+            getError('Datos de Envío: La fecha de traslado debe ser mayor a la fecha de Emisión de la Guía');
+            return;
+          }
+        }
+
+        // Validación de vehículo y transportista
+        if (!indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && transportista.numDoc === '') {
+          if (vehiculo.placa === '') {
+            getError('Debe escribir una Placa');
+            return;
+          }
+        }
+
+        // Validación de destinatario
+        if (!destinatario || !destinatario.numDoc) {
+          getError('Debe especificar un destinatario válido');
+          return;
+        }
+
+        // Validación de direcciones
+        if (!partida || !partida.direccion) {
+          getError('Debe especificar una dirección de partida');
+          return;
+        }
+
+        if (!llegada || !llegada.direccion) {
+          getError('Debe especificar una dirección de llegada');
+          return;
+        }
+
+        // Validación de detalles
+        if (!details || details.length === 0) {
+          getError('Debe agregar al menos un producto/detalle');
+          return;
+        }
+
+        if( values.envio.modTraslado === '01' && values.choferes.length > 0 && values.envio.fecInicioTrasladoBienes){
+          getError('Datos de Envío: La fecha de inicio de traslado de bienes debe elegirse');
+          return;
+        }
+
+        if( values.envio.modTraslado === '01' && values.choferes.length === 0){
+          values.envio.fecInicioTrasladoBienes = fecTraslado
+        }
+        if (values.envio.modTraslado === '02') {
+          values.envio.fecInicioTrasladoBienes = null;
+        }
+
+        // Construcción del documento
+        const doc = {
+          fechaEmision: fechaEmision + ' ' + dayjs().format('HH:mm'),
+          correlativo: correlativo,
+          serie: serie,
+          tipoDoc: tipoDoc,
+          version: version,
+          observacion: observacion,
+          destinatario: destinatario,
+          tercero: tercero.numDoc !== '' ? tercero : null,
+          comprador: null,
+          envio: {
+            ...envio,
+            partida: partida,
+            llegada: llegada,
+            vehiculo: vehiculo.placa !== '' ? vehiculo : null,
+            aeropuerto: null,
+            puerto: null,
+            choferes: choferes,
+            transportista: transportista.numDoc !== '' ? transportista : null
+          },
+          addDocs: addDocs,
+          details: details,
+        };
+
+        // setBackdropOpen(true);
+        setDatosParaProcesar(doc);
+
+        // Guardar o actualizar
+        let response;
+        if (idDespatch) {
+          response = await GuiaServices.update(doc, idDespatch);
 
         } else {
-          const respuesta = await storeGuia(doc);
-          setIdDespatch(respuesta.despatch.id)
-          setEst(respuesta.electronico)
-          if (!respuesta.exito) {
-            getError(respuesta.message);
-            return;
-          }
-          procesoElectronico(doc, respuesta.electronico, token_sunat)
+          response = await GuiaServices.save(doc);
+          setIdDespatch(response?.despatch?.id);
+          setEstadoElectronico(response?.electronico);
         }
 
-      } else {
-        console.log('error al obtener el token')
-        setProcesoCompleto(false)
-        setBackdropOpen(false)
+        if (!response || !response.exito) {
+
+          // setBackdropOpen(false);
+          getError(response?.message || 'Error al procesar la guía');
+          return;
+        }
+        getSuccess('La guía se guardó correctamente, se procede a enviar a SUNAT');
+
+        setModalOpen(true);
+
+      } catch (error) {
+
+        // setBackdropOpen(false);
+        const errorMessage = error instanceof Error ? error.message : 'Error inesperado al procesar la guía';
+        getError(errorMessage);
+        console.error('Error en onSubmit:', error);
       }
     },
   });
 
 
-  const HandlePdfCompany = (id: number) => {
-    clienteAxios(`/api/despatches/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then(response => {
-      const { status, data } = response;
-      if (status || status === 200) {
-        previewPDFQr(data?.data);
-      }
-    })
-  }
-
-  const previewPDFQr = (values: any) => {
-    // console.log(values)
-
-    // console.log(values.envio.indicadores)
-    // console.log(values.envio.vehiculo)
-
-    let vehiculos = values.envio.vehiculo?.length > 0 ? values.envio.vehiculo?.find(ve => ve.tipo === 'P') : null;
-    let secundarios = values.envio.vehiculo?.length > 0 ? values.envio.vehiculo?.filter(ve => ve.tipo === 'S') : [];
-
-
-    if (vehiculos) {
-      // console.log(values.envio.vehiculo)
-      // let secundarios = values.envio.vehiculo.filter(ve => ve.tipo === 'S') && [];
-      // console.log(secundarios)
-      vehiculos.secundarios = secundarios;
-    }
-
-    const doc = {
-      ...values,
-      tipoDoc: '09',
-      envio: {
-        ...values.envio,
-        indicadores: values.envio.indicadores.map(indi => indi.indicador),
-        vehiculo: vehiculos
-      }
-
-    }
-
-
-    const responsePdf = sendApi({ doc }, "/GeneraPdfDespatch", '');
-
-    responsePdf.then(pdf => {
-      setBase64Pdf(pdf.response.TramaPdf)
-      if (isMobile) {
-        const link = document.createElement('a');
-        link.href = `data:application/pdf; base64,${pdf.response.TramaPdf}`;
-        // document.body.appendChild(link);
-        link.download = `${doc.serie}-${doc.correlativo}.pdf`
-        link.click();
-        // document.body.removeChild(link);
-
-      } else {
-        handleOpen()
-      }
-
-      // setAccion('pdf')
-    });
-  }
-
-
-
-  const handleBackdropPDfEmpresaClick = () => {
-    HandlePdfCompany(idDespatch)
-  }
-
-
-  // const [loadingPdf, setLoadingPdf] = useState(false);
-
-  const handleBackdropPDfSunatClick = async () => {
-    // setLoadingPdf(true);
-    // try {
-    //   // const response = await axios.get('https://e-factura.sunat.gob.pe/v1/contribuyente/gre/comprobantes/descargaqr?hashqr=jNMQfx+wgqSxczqDe4SlHskqSTID3PdKjQzkoRtlthPyL7fQS57FJatUY+XowvZSvTsFtZ/DrcTX0rEak2M86+9CAwX6Fk177abLLPRihrA=', {
-    //   const response = await axios.get(hashQr, {
-    //     responseType: 'blob',
-    //     timeout: 20000,
-    //   });
-
-    //   const url = window.URL.createObjectURL(new Blob([response.data]));
-    //   const a = document.createElement('a');
-    //   a.href = url;
-    //   a.download = 'SUNAT_Hashqr.pdf'; // You can change the file name here
-    //   document.body.appendChild(a);
-    //   a.click();
-    //   document.body.removeChild(a);
-    //   window.URL.revokeObjectURL(url);
-    // } catch (error) {
-    //   if (axios.isCancel(error)) {
-    //     console.error('Download canceled', error.message);
-    //   } else {
-    //     console.error('Error downloading the file', error);
-    //     getError('Error al descargar el documento')
-    //   }
-    // } finally {
-    //   setLoadingPdf(false);
-    // }
-
-    if (pdfUrl.length > 0) {
-      if (isMobile) {
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        // document.body.appendChild(link);
-        link.download = `${formik.values.datosGenerales.serie}-${formik.values.datosGenerales.correlativo}.pdf`
-        link.click();
-        // document.body.removeChild(link);
-
-      } else {
-        setOpenSunat(true)
-      }
-    } else {
-      getError('No existe el link del HashQR')
-    }
-
-  };
-
-  const procesoElectronico = async (doc, estadoElectronico, token_sunat) => {
-    if (!params) return;
-    const numeroDocumento = `${params.ruc}-${doc.tipoDoc}-${doc.serie}-${doc.correlativo}`;
-    try {
-      const xmlRes = await sendApi({ doc }, "/GeneraXmlDespatch", 'Generando XML ...');
-      if (!params.certificado) {
-        getError('NO HAY UN TOKEN GENERADO');
-        return;
-      }
-
-      if (xmlRes.response.Exito) {
-        await updateEstadoElectronico({
-          estado: 'G',
-          descripcion: 'Documento Generado con Exito',
-          rutaXml: `/XML/${numeroDocumento}.xml`
-        }, estadoElectronico);
-
-        const sign = {
-          CertificadoDigital: params.certificado,
-          PasswordCertificado: params.clavecertificado,
-          TramaXmlSinFirma: xmlRes.response.TramaXmlSinFirma,
-          numeroDocumento
-        };
-
-        const signRes = await sendApi(sign, '/FirmarXml', 'Firmando XML...');
-        if (signRes.response.Exito) {
-          await updateEstadoElectronico({
-            estado: 'F',
-            descripcion: 'Documento Firmado con Exito',
-            hash: signRes.response.ResumenFirma
-          }, estadoElectronico);
-
-          const sendReq = {
-            Ruc: '',
-            EndPointUrl: params.urlsend,
-            TramaXmlFirmado: signRes.response.TramaXmlFirmado,
-            TipoDocumento: doc.tipoDoc,
-            IdDocumento: `${doc.serie}-${doc.correlativo}`,
-            token: token_sunat
-          };
-
-          const sendRes = await sendApi(sendReq, '/SendDespatch', 'Enviando Guiá electrónica');
-          if (sendRes.exito) {
-            setConsultToken(token_sunat);
-            setTicket(sendRes.numTicket);
-            await updateEstadoElectronico({
-              estado: 'S',
-              descripcion: 'Documento enviado con Exito',
-              token_sunat,
-              ticket: sendRes.numTicket
-            }, estadoElectronico);
-
-            const consultReq = {
-              access_token: token_sunat,
-              EndPointUrl: `${params.urlconsult}${sendRes.numTicket}`,
-              numeroDocumento
-            };
-
-            const consultRes = await sendApi(consultReq, '/ConsultaGuia', 'Consultando Ticket', true);
-            if (consultRes.error) {
-              getError(consultRes.error.desError);
-              await updateEstadoElectronico({
-                estado: 'C',
-                descripcion: consultRes.error.desError,
-                estadoSunat: consultRes.codRespuesta || '',
-                codigoSunat: consultRes.error.numError,
-                cdrbase64: consultRes.arcCdr || '',
-                hashQr: consultRes.CdrResponse?.hashQr || ''
-              }, estadoElectronico);
-
-              // setBackdropOpen(false)
-              setProcesoCompleto(false)
-              return;
-            }
-
-            const descripcion = consultRes.CdrResponse?.Descripcion || 'PENDIENTE DE CONSULTA';
-            // const estadoSunat = consultRes.codRespuesta || '';
-
-            await updateEstadoElectronico({
-              estado: descripcion === 'PENDIENTE DE CONSULTA' ? 'P' : 'F',
-              rutaCdr: `/CDR/${numeroDocumento}.zip`,
-              rutaPdf: `/PDF/${numeroDocumento}.pdf`,
-              cdrbase64: consultRes.arcCdr || '',
-              hashQr: consultRes.CdrResponse?.hashQr || '',
-              descripcion,
-              'estadoSunat': consultRes.codRespuesta ? consultRes.codRespuesta : '',
-              'codigoSunat': consultRes.codRespuesta ? consultRes.codRespuesta : '',
-            }, estadoElectronico);
-
-            setProcesoCompleto(false)
-
-            // setHashQr(consultRes.CdrResponse?.hashQr);
-            getSuccess(descripcion);
-
-            if (consultRes.codRespuesta === "0") {
-              setAceptada(true)
-
-              const rutaPDF = `${API_GUIAS}/PDF/${numeroDocumento}.pdf`;
-              setPdfUrl(rutaPDF)
-
-              // HandlePdfCompany(despacho);
-
-              // setRefresh(true);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const storeGuia = async (values: any) => {
-    try {
-
-      console.log(values);
-      const { data, status } = await clienteAxios.post(`/api/despatches`, { ...values }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      // console.log(data)
-      if (status === 200) {
-        return data;
-      } else {
-        return null;
-      }
-      // console.log(data)
-
-
-    }
-    catch (error) {
-      console.log(error)
-      return null;
-    }
-  }
-
-
-  const updateGuia = async (values: any) => {
-    try {
-
-      // console.log(values)
-      // const doc = {
-      //   // ...values.datosGenerales,
-      //   fechaEmision: values.datosGenerales.fechaEmision + ' ' + dayjs().format('HH:mm'),
-      //   correlativo: values.datosGenerales.correlativo,
-      //   serie: values.datosGenerales.serie,
-      //   tipoDoc: values.datosGenerales.tipoDoc,
-      //   version: values.datosGenerales.version,
-      //   observacion: values.observacion,
-      //   destinatario: values.destinatario,
-      //   tercero: values.tercero.numDoc !== '' ? values.tercero : null,
-      //   comprador: null,
-      //   envio: {
-      //     ...values.envio,
-      //     partida: values.partida,
-      //     llegada: values.llegada,
-      //     vehiculo: values.vehiculo.placa !== '' ? values.vehiculo : null,
-      //     aeropuerto: null,
-      //     puerto: null,
-      //     choferes: values.choferes,
-      //     transportista: values.transportista.numDoc !== '' ? values.transportista : null
-      //   },
-      //   addDocs: values.addDocs,
-      //   details: values.details,
-      // }
-
-      const { data, status } = await clienteAxios.put(`/api/despatches/${idDespatch}`, { ...values }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      // console.log(data)
-      if (status === 200) {
-        return data;
-      } else {
-        return null;
-      }
-      // console.log(data)
-
-
-    }
-    catch (error) {
-      console.log(error)
-      return null;
-    }
-  }
-
-  const updateEstadoElectronico = async (values: any, id: number) => {
-
-    try {
-      const { data, status } = await clienteAxios.put(`/api/estadoelectronico/${id}`, {
-
-        ...values
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      console.log(data)
-
-      // console.log(data)
-      if (status === 200) {
-
-      }
-    }
-    catch (error) {
-      console.log(error)
-    }
-  }
 
   useEffect(() => {
     if (!formik.isSubmitting) return;
@@ -910,64 +550,26 @@ const GuiaRemisionMain = () => {
   }, [formik]);
 
 
-  // useEffect(() => {
-
-  //   if (hashQr !== '') {
-
-  //     setTimeout(() => {
-  //       window.open(hashQr, '_blank');
-  //     }, 3000);
-
-  //     setTimeout(() =>
-  //       setHashQr('')
-  //       , 2000)
-  //   }
-
-  // }, [hashQr])
-
-  const ActualizarPagina = () => {
-    navigate('/admin/guias');
-  }
-
-  const getParams = async () => {
-    const data = await getSunatParams();
-    setParams(data)
-  }
-
-  useEffect(() => {
-    getParams()
-  }, [])
-
-
 
   const SearchConductorByNrodoc = async (nrodoc: string) => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/conductor/buscar?nroDoc=${nrodoc}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        // setIsLoading(false)
-        // setDataFilter(data?.data)
-        // console.log(data.data)
-        if (data?.data.length > 0) {
+      const { data } = await ConductoresService.getConductorByNroDoc(nrodoc);
+      if (data.length > 0) {
 
-          const choferes: EnvioChoferes[] = [{
-            apellidos: data.data[0].apellidos,
-            licencia: data.data[0].licencia,
-            nombres: data.data[0].nombres,
-            nroDoc: data.data[0].nroDoc,
-            tipoDoc: data.data[0].tipoDoc,
-            tipo: 'Principal',
-            id: data.data[0].id,
-          }]
+        const chofer = data[0];
 
-          setConductorFound(choferes)
-          setOpenConfirmChofer(true)
-        }
-        // console.log(data)
+        const choferes: EnvioChoferes[] = [{
+          apellidos: chofer.apellidos,
+          licencia: chofer.licencia,
+          nombres: chofer.nombres,
+          nroDoc: chofer.nroDoc,
+          tipoDoc: chofer.tipoDoc,
+          tipo: 'Principal',
+          id: chofer.id,
+        }];
+        setConductorFound(choferes)
+        setOpenConfirmChofer(true)
       }
     }
     catch (error) {
@@ -1166,22 +768,11 @@ const GuiaRemisionMain = () => {
   const handleTransportistaChange = (
     transportista: EnvioTransportista
   ): void => {
+    console.log(transportista);
     formik.setFieldValue("transportista", transportista);
     setModalsForms({ ...modalsForm, open: false });
   };
 
-  const setTimeoutMessage = (mensaje: string, timeout: boolean = false) => {
-    setMessage(mensaje)
-
-    if (timeout) {
-      setTimeout(() => {
-        setMessage('')
-      }, 2000);
-    }
-    // setTimeout(() => {
-    //   setMessage('')
-    // }, 2000);
-  }
 
   useEffect(() => {
     if (user) {
@@ -1337,6 +928,7 @@ const GuiaRemisionMain = () => {
                       <Button
                         variant="outlined"
                         color="warning"
+                        disabled={formik.values?.envio?.codTraslado === '04'}
                         onClick={(_e) =>
                           handleOpenModalForm(
                             <Cliente
@@ -1666,6 +1258,14 @@ const GuiaRemisionMain = () => {
                           >
                             <CommuteIcon fontSize="large" />
                           </IconButton>
+                          {formik.values.transportista.numDoc !== '' &&
+                            <Box display={'flex'} flexDirection={'column'} mt={1}>
+                              <Typography sx={{ fontSize: 12 }} color={theme.palette.text.secondary} >{formik.values.transportista?.numDoc}</Typography>
+                              <Typography sx={{ fontSize: 12 }} color={theme.palette.text.secondary} >{formik.values.transportista?.rznSocial}</Typography>
+                              <Typography sx={{ fontSize: 11 }} color={theme.palette.text.disabled} >{formik.values.transportista?.nroMtc}</Typography>
+                            </Box>
+                          }
+                          {/* <h1>{formik.values.transportista.numDoc}</h1> */}
                         </Box>
                       </Grid>
                       <Grid item sm={4} xs={12}>
@@ -1749,154 +1349,6 @@ const GuiaRemisionMain = () => {
                         </Box>
                       </Grid>
                     </Grid>
-                    {/* <Box
-                      component={"div"}
-                      display={"grid"}
-                      gridTemplateColumns={{
-                        xs: "repeat(2,1fr)",
-                        sm: "repeat(3,1fr)",
-                      }}
-                      columnGap={1}
-                      rowGap={3}
-                      alignItems={"end"}
-                    >
-                      <Box component={"div"}>
-                        <Typography
-                          fontWeight={900}
-                          letterSpacing={3}
-                          color="secondary.dark"
-                        >
-                          Chofer
-                        </Typography>
-                        <IconButton
-                          color="default"
-                          size="large"
-                          aria-label="add an alarm"
-                          disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') && formik.values.envio.modTraslado === '02'}
-                          sx={BoxShadoWButton}
-                          onClick={(_e) =>
-                            handleOpenModalForm(
-                              <Conductores
-                                choferes={formik.values.choferes}
-                                onConfirm={handleConfirmListaChoferes}
-                              />,
-                              "Choferes"
-                            )
-                          }
-                        >
-                          <AssignmentIndIcon fontSize="large" />
-                        </IconButton>
-
-                        {formik.values.choferes.map(cho => (
-                          <Typography key={cho.id} sx={{ fontSize: cho.tipo === 'Principal' ? 12 : 11 }} color={cho.tipo === 'Principal' ? 'warning.dark' : 'warning.light'} >{cho.tipo.substring(0, 3).toUpperCase()}: {cho.nombres} {cho.apellidos}</Typography>
-                        ))}
-
-                      </Box>
-                      <Box component={"div"}>
-                        <Typography
-                          fontWeight={900}
-                          letterSpacing={3}
-                          color="primary"
-                        >
-                          Transportista
-                        </Typography>
-                        <IconButton
-                          color="primary"
-                          aria-label="add an alarm"
-                          sx={{ ...BoxShadoWButton }}
-                          size="large"
-                          disabled={formik.values.envio.indicadores.includes('SUNAT_Envio_IndicadorTrasladoVehiculoM1L') || formik.values.envio.modTraslado === '02'}
-                          onClick={(_e) =>
-                            handleOpenModalForm(
-                              <DatosTransportista
-                                initialValue={formik.values.transportista}
-                                onChange={handleTransportistaChange}
-                              />,
-                              "Transportista"
-                            )
-                          }
-                        >
-                          <CommuteIcon fontSize="large" />
-                        </IconButton>
-                      </Box>
-                      <Box component={"div"}>
-                        <Typography
-                          textAlign={"center"}
-                          fontWeight={900}
-                          letterSpacing={10}
-                          color="secondary.dark"
-                        >
-                          Vehiculos
-                        </Typography>
-                        <Box
-                          component={"div"}
-                          display={{ sm: "flex", xs: "block" }}
-                          alignItems={"end"}
-                          justifyContent={"space-around"}
-                        >
-                          <Box component={"div"}>
-                            <Typography
-                              fontSize={12}
-                              fontWeight={800}
-                              color="secondary.dark"
-                            >
-                              Principal
-                            </Typography>
-                            <IconButton
-                              color="default"
-                              aria-label="add an alarm"
-                              sx={BoxShadoWButton}
-                              onClick={(_e) =>
-                                handleOpenModalForm(
-                                  <DatosVehiculo
-                                    onChange={handleVehiculoChange}
-                                    initialValue={formik.values.vehiculo}
-                                  />,
-                                  "Vehiculo"
-                                )
-                              }
-                            >
-                              <LocalShippingIcon fontSize="large" />
-                            </IconButton>
-                          </Box>
-                          <Box component={"div"} alignSelf={"start"}>
-                            <Typography
-                              fontSize={12}
-                              fontWeight={800}
-                              color="secondary.dark"
-                            >
-                              Secundarios
-                            </Typography>
-                            <IconButton
-                              color="default"
-                              aria-label="add an alarm"
-                              disabled={
-                                formik.values.vehiculo.placa === "" ? true : false
-                              }
-                              sx={BoxShadoWButton}
-                              onClick={(_e) =>
-                                handleOpenModalForm(
-                                  <VehiculosSecundarios
-                                    onConfirm={handleConfirmListVehiculo}
-                                    vehiculos={formik.values.vehiculo?.secundarios}
-                                  />,
-                                  "Vehiculos secundarios"
-                                )
-                              }
-                            >
-                              <AirportShuttleIcon fontSize="small" />
-                            </IconButton>
-                          </Box>
-                        </Box>
-                        {
-                          formik.values.vehiculo.placa !== '' &&
-                          (<Typography sx={{ fontSize: 12 }} color="warning.dark">Principal: {formik.values.vehiculo.placa}</Typography>)
-                        }
-                        {formik.values.vehiculo?.secundarios?.map(veh => (
-                          <Typography key={veh.id} sx={{ fontSize: 11 }} color={'warning.light'} >Secundario: {veh.placa}</Typography>
-                        ))}
-                      </Box>
-                    </Box> */}
                   </Grid>
                 </Grid>
               </AccordionDetails>
@@ -1940,88 +1392,10 @@ const GuiaRemisionMain = () => {
             type="submit"
             variant="contained"
             color="warning"
-            disabled={aceptada}
           >
             Enviar
           </Button>
 
-          <Box columnGap={1} display={"flex"} flexDirection={'row'} mt={1} alignItems={'baseline'} >
-            <TextField
-              margin="normal"
-              size="small"
-              variant="outlined"
-              fullWidth
-              label='Token'
-              name="token"
-              sx={{ display: 'none' }}
-              value={consultToken}
-              InputProps={{ readOnly: true }}
-            />
-            <TextField
-              margin="normal"
-              size="small"
-              variant="outlined"
-              fullWidth
-              label='Ticket'
-              name="ticket"
-              value={ticket}
-              InputProps={{ readOnly: true }}
-            />
-            <Button onClick={consultarToken} fullWidth variant="contained" color="error">
-              Consultar
-            </Button>
-          </Box>
-
-          <Button size="small" fullWidth onClick={ActualizarPagina} color="inherit" variant="contained" sx={{ my: 2 }}>
-            Ir a Panel
-          </Button>
-          {aceptada &&
-
-            <Box my={3} display={'flex'} flexDirection={'row'} gap={2} justifyContent={'center'}>
-              <Box
-                component={Button}
-                display={"flex"}
-                flexDirection={"column"}
-                variant="contained"
-                sx={{
-                  height: 80,
-                  width: 100,
-                  padding: theme.spacing(2),
-                  borderRadius: theme.shape.borderRadius,
-                  '&:hover': {
-                    backgroundColor: theme.palette.secondary.light,
-                  },
-                  backgroundColor: theme.palette.secondary.main,
-                  color: '#fff',
-                }}
-                onClick={handleBackdropPDfSunatClick}
-              >
-                <PictureAsPdfIcon fontSize="large" />
-                <Typography sx={{ fontSize: 10, fontWeight: 800 }} pt={1}>PDF SUNAT</Typography>
-              </Box>
-              <Box
-                component={Button}
-                display={"flex"}
-                flexDirection={"column"}
-                variant="contained"
-                sx={{
-                  height: 80,
-                  width: 100,
-                  padding: theme.spacing(2),
-                  borderRadius: theme.shape.borderRadius,
-                  '&:hover': {
-                    backgroundColor: theme.palette.error.dark,
-                  },
-                  backgroundColor: theme.palette.error.main,
-                  color: '#fff',
-                }}
-                onClick={handleBackdropPDfEmpresaClick}
-              >
-                <PictureAsPdfIcon fontSize="large" />
-                <Typography sx={{ fontSize: 8, fontWeight: 800 }} pt={1}>PDF EMPRESA</Typography>
-              </Box>
-            </Box>
-          }
         </Box>
         <DialogComponentCustom
           closeButton={
@@ -2036,11 +1410,10 @@ const GuiaRemisionMain = () => {
           open={modalsForm.open}
           title={modalsForm.title}
           element={modalsForm.form}
-
         />
         <Modal
-          open={open}
-          onClose={handleClose}
+          open={openPreview}
+          onClose={handleClosePreview}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
 
@@ -2053,32 +1426,21 @@ const GuiaRemisionMain = () => {
           </Box>
         </Modal>
 
-        <Modal
-          open={openSunat}
-          onClose={() => setOpenSunat(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-
-        >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Visor de Pdf
-            </Typography>
-            <Box sx={{ width: '100%', height: '70vh' }} component={'embed'} src={pdfUrl} />
-          </Box>
-        </Modal>
-
-
         <Dialog
           sx={{ '& .MuiDialog-paper': { width: '80%', maxHeight: 435 } }}
           maxWidth="xs"
           open={openConfirmChofer}
         >
-          <DialogTitle>Conductor encontrado</DialogTitle>
+          <DialogTitle>
+            <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} columnGap={2}>
+              <AssignmentIndIcon color="warning" sx={{ fontSize: '70px' }} />
+              <Typography variant="subtitle2" color='text.secondary' textAlign={'center'}>Conductor encontrado</Typography>
+            </Box>
+          </DialogTitle>
           <DialogContent sx={{ textAlign: 'center' }}>
 
-            <Typography>El conductor con DNI {conductorFound.length > 0 ? conductorFound[0].nroDoc : ''} está relacionado al Usuario</Typography>
-            <Typography>¿Desea asignarlo como conductor Principal en esta GUIA?</Typography>
+            <Typography variant="body2">El conductor con DNI {conductorFound.length > 0 ? conductorFound[0].nroDoc : ''} está relacionado al Usuario</Typography>
+            <Typography variant="body2">¿Desea asignarlo como conductor Principal en esta GUIA?</Typography>
 
           </DialogContent>
 
@@ -2093,12 +1455,15 @@ const GuiaRemisionMain = () => {
           maxWidth="xs"
           open={openConfirmVehiculo}
         >
-          <DialogTitle>Vehiculo encontrado</DialogTitle>
+          <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} columnGap={2}>
+            <LocalShippingIcon color="warning" sx={{ fontSize: '70px' }} />
+            <Typography variant="subtitle2" color='text.secondary' textAlign={'center'}>Vehiculo encontrado</Typography>
+          </Box>
           <DialogContent sx={{ textAlign: 'center' }}>
 
-            <Typography>La serie tiene por defecto el vehiculo primario con Placa {vehiculoFound.placa}</Typography>
-            {vehiculoFound.secundarios.length > 0 && <Typography>Y el vehiculo Secundario con Placa {vehiculoFound.secundarios[0].placa}</Typography>}
-            <Typography>¿Desea asignarlo en la GUIA?</Typography>
+            <Typography variant="body2">La serie tiene por defecto el vehiculo primario con Placa {vehiculoFound.placa}</Typography>
+            {vehiculoFound.secundarios.length > 0 && <Typography variant="body2">Y el vehiculo Secundario con Placa {vehiculoFound.secundarios[0].placa}</Typography>}
+            <Typography variant="body2">¿Desea asignarlo en la GUIA?</Typography>
 
           </DialogContent>
 
@@ -2109,97 +1474,14 @@ const GuiaRemisionMain = () => {
         </Dialog>
       </Container>
 
-      <Backdrop
-        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
-        open={backdropOpen}
-      >
-        <IconButton
-          color="default"
-          sx={{
-            position: 'absolute',
-            border: '3px solid',
-            borderColor: 'inherit',
-            top: '100px'
-          }}
-          onClick={() => setBackdropOpen(false)}>
-          <CloseIcon />
-        </IconButton>
-        {procesoCompleto && <CircularProgress color="inherit" />}
-        <Box width={isMobile ? '100%' : '50%'}
-          // position={'fixed'} 
-          // zIndex={99999999} 
-          style={{
-            bottom: '50%',
-            // left: '50%',
-            // transform: 'translate(-50%, 50%)',
-            marginBottom: "1.5rem"
-          }}
-          px={4} textAlign={'center'} >
-          {message !== "" ? <Alert variant="filled" sx={{ color: 'white' }} severity="success">{message}</Alert> : ""}
-        </Box>
-
-        {aceptada &&
-
-          <Box mt={5} display={'flex'} flexDirection={'row'} gap={2} justifyContent={'space-between'}>
-            <Box
-              component={Button}
-              display={"flex"}
-              flexDirection={"column"}
-              variant="contained"
-              sx={{
-                height: 80,
-                width: 100,
-                padding: theme.spacing(2),
-                borderRadius: theme.shape.borderRadius,
-                '&:hover': {
-                  backgroundColor: theme.palette.secondary.light,
-                },
-                backgroundColor: theme.palette.secondary.main,
-                color: '#fff',
-              }}
-              onClick={handleBackdropPDfSunatClick}
-            >
-              <PictureAsPdfIcon fontSize="large" />
-              <Typography sx={{ fontSize: 10, fontWeight: 800 }} pt={1}>PDF SUNAT</Typography>
-            </Box>
-            <Box
-              component={Button}
-              display={"flex"}
-              flexDirection={"column"}
-              variant="contained"
-              sx={{
-                height: 80,
-                width: 100,
-                padding: theme.spacing(2),
-                borderRadius: theme.shape.borderRadius,
-                '&:hover': {
-                  backgroundColor: theme.palette.error.dark,
-                },
-                backgroundColor: theme.palette.error.main,
-                color: '#fff',
-              }}
-              onClick={handleBackdropPDfEmpresaClick}
-            >
-              <PictureAsPdfIcon fontSize="large" />
-              <Typography sx={{ fontSize: 8, fontWeight: 800 }} pt={1}>PDF EMPRESA</Typography>
-            </Box>
-          </Box>
-        }
-        <Modal
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Visor de Pdf
-            </Typography>
-            <Box sx={{ width: '100%', height: '70vh' }} component={'embed'} src={`data:application/pdf;base64,${base64Pdf}`} />
-          </Box>
-        </Modal>
-
-      </Backdrop>
+      <ProcesarGuiaModal
+        open={modalOpen}
+        onClose={handleModalClose}
+        datosGuia={datosParaProcesar}
+        onSuccess={handleProcesoSuccess}
+        onError={handleProcesoError}
+        idElectronico={estadoElectronico}
+      />
     </LocalizationProvider>
   );
 };

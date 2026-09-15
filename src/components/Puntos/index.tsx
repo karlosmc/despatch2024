@@ -1,18 +1,21 @@
-import { Autocomplete, Box, Button, CircularProgress, InputAdornment, TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
+import { FavoritoService, TIPOS_FAVORITO, favoritoVigente } from '../../service/FavoritoService';
+import { Autocomplete, Box, Button,  InputAdornment, TextField, Tooltip, TooltipProps, keyframes, styled, tooltipClasses } from '@mui/material';
 import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
+
 import { puntoUbicacion } from '../../types/puntoubicacion.interface';
 import { PuntosSchema } from '../../utils/validateGuiaRemision';
 
 import InfoIcon from '@mui/icons-material/Info';
 import { Ubigeos } from '../../types/ubigeos.interface';
-import { useAuxiliares } from '../../context/AuxiliarProvider';
+
 import { searchPersona } from '../../types/persona.interface';
 import { useNotification } from '../../context/notification.context';
 import ButtonSearch from '../ButtonSearch';
+import { PuntoUbicacionService } from '../../service/PuntoUbicacionService';
+import { useMiscStore } from '../../store/miscStore';
 
 
 
@@ -36,48 +39,68 @@ interface PuntoUbicacionFormProps {
 
 const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFormProps) => {
 
-  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
+  const [fav, setFav] = useState<boolean>(favoritoVigente(TIPOS_FAVORITO.punto, initialValue?.id, initialValue?.fav));
   const [isCompany, setIsCompany] = useState<boolean>(initialValue?.isCompany || false);
 
-  const { getError } = useNotification()
+  const { getError,getSuccess } = useNotification()
+
+  
+
+  
 
   const [inputValue, setInputValue] = useState('');
   const [_selectedUbigeo, setSelectedUbigeo] = useState<string | null>(null);
-
-  const [ubigeos, setUbigeos] = useState<Ubigeos[]>(null);
-
-  const [loading, setLoading] = useState<boolean>(false)
-
+  
   const [value, setValue] = useState<Ubigeos | null>(null);
 
+  const ubigeos = useMiscStore(state=>state.ubigeos);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+
 
   const storePuntos = async (values: puntoUbicacion) => {
 
 
+    // try {
+    //   const { data, status } = await clienteAxios.post('/api/puntos', {
+    //     ubigeo: values.ubigeo,
+    //     direccion: values.direccion,
+    //     fav: values.fav,
+    //     isCompany: values.isCompany,
+    //     rznSocial: values.rznSocial,
+    //     ruc: values.ruc,
+    //     nombreCorto: values.nombreCorto,
+    //     codLocal: values.codLocal
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   // console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.punto);
+    //   }
+    // }
+    // catch (error) {
+    //   console.log(error)
+    // }
+
     try {
-      const { data, status } = await clienteAxios.post('/api/puntos', {
-        ubigeo: values.ubigeo,
-        direccion: values.direccion,
-        fav: values.fav,
-        isCompany: values.isCompany,
-        rznSocial: values.rznSocial,
-        ruc: values.ruc,
-        nombreCorto: values.nombreCorto,
-        codLocal: values.codLocal
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.punto);
+
+      const response = await PuntoUbicacionService.save(values)
+      getSuccess('Punto de ubicación guardado con éxito')
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.punto, response?.id, values.fav, false);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
-    }
-    catch (error) {
+      onConfirm(response)
+
+
+    } catch (error) {
       console.log(error)
+      getError(error || 'Hubo un error al guardar el Punto de ubicación')
+
     }
 
 
@@ -85,31 +108,25 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
   }
 
   const updatePuntos = async (values: puntoUbicacion) => {
-    try {
-      const { data, status } = await clienteAxios.put(`/api/puntos/${values.id}`, {
-        ubigeo: values.ubigeo,
-        direccion: values.direccion,
-        fav: values.fav,
-        isCompany: values.isCompany,
-        ruc: values.ruc,
-        nombreCorto: values.nombreCorto,
-        rznSocial: values.rznSocial,
-        codLocal: values.codLocal
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
 
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.punto);
+    try {
+
+      const response = await PuntoUbicacionService.update(values)
+      getSuccess('Punto de ubicación actualizado con éxito')
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.punto, response?.id ?? values.id, values.fav, true);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
-    }
-    catch (error) {
+      onConfirm(response)
+
+
+    } catch (error) {
       console.log(error)
+      getError(error || 'Hubo un error al actualizar el Punto de ubicación')
+
     }
-    // onConfirm();
   }
 
   const pulse = keyframes`
@@ -151,15 +168,25 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
 
 
   const formik = useFormik({
-    initialValues: initialValue || PuntoInicialValues,
+    initialValues: {
+      ...PuntoInicialValues,
+      ...initialValue,
+      // Ensure string fields are never null/undefined
+      codLocal: initialValue?.codLocal || '',
+      direccion: initialValue?.direccion || '',
+      ruc: initialValue?.ruc || '',
+      ubigeo: initialValue?.ubigeo || '230101',
+      nombreCorto: initialValue?.nombreCorto || '',
+      rznSocial: initialValue?.rznSocial || '',
+    },
     validationSchema: PuntosSchema,
     onSubmit: (values) => {
 
 
-      const newValues:puntoUbicacion={
+      const newValues: puntoUbicacion = {
         ...values,
-        direccion:values.direccion.toUpperCase(),
-        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
+        direccion: values.direccion.toUpperCase(),
+        nombreCorto: values?.nombreCorto?.toUpperCase() || '',
       }
 
       if (edit) {
@@ -204,28 +231,16 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
   }, [isCompany])
 
 
-  const { getUbigeos2 } = useAuxiliares()
+  
   // console.log(ubigeos)
 
 
-  const getUbigeos = async()=>{
-    setLoading(true)
-    const data = await getUbigeos2()
-    setUbigeos(data)
-
-    setLoading(false)
-
-  }
-  useEffect(()=>{
-    getUbigeos()
-  },[])
-
 
   useEffect(() => {
-    if(ubigeos){
+    if (ubigeos) {
       if (ubigeos.length > 0) {
         // console.log(initialValue.ubigeo)
-  
+
         const initialUbigeo = ubigeos.find(option => option.ubigeo === initialValue?.ubigeo) || null;
         // console.log(initialUbigeo)
         setValue(initialUbigeo);
@@ -236,11 +251,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
 
   return (
     <>
-      {loading ?
-        <Box width={200} height={200} display={'flex'} justifyContent={'center'} alignItems={'center'}>
-          <CircularProgress color="inherit" size={80} />
-        </Box>
-        :
+    
         <Box component={'form'} onSubmit={formik.handleSubmit}>
           <TextField
             margin="normal"
@@ -275,7 +286,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
             label="Dirección"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.direccion?.toUpperCase()}
+            value={formik.values.direccion || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.direccion && formik.errors.direccion}
@@ -336,7 +347,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
             label="Nombre corto del punto de ubicación"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.nombreCorto?.toUpperCase()}
+            value={formik.values.nombreCorto || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
@@ -353,6 +364,9 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
                 option.distrito.toLowerCase().includes(state.inputValue.toLowerCase())
               )
             }
+              isOptionEqualToValue={(option, value) =>
+                option.id === value.id
+              }
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -382,7 +396,7 @@ const ModalPuntoUbicacion = ({ initialValue, onConfirm, edit }: PuntoUbicacionFo
             Guardar
           </Button>
         </Box>
-      }
+      
     </>
   );
 }

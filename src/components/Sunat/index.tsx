@@ -3,14 +3,13 @@ import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
-
 
 import { SunatParamsSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 
 
 import { SunatParams } from '../../types/sunatparameters.interface';
+import { SunatParameterService } from '../../service/SunatParameterService';
 
 
 
@@ -43,7 +42,7 @@ interface SunatFormProps {
 const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
 
   // console.log(initialValue)
-  const { getError } = useNotification()
+  const { getError, getSuccess } = useNotification()
 
   const [file, setFile] = useState<File | null>(null);
 
@@ -53,9 +52,7 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
     }
   };
 
-  const [activo, setActivo] = useState<boolean>(initialValue?.activo||false);
-
-  const token = localStorage.getItem('AUTH_TOKEN');
+  const [activo, setActivo] = useState<boolean>(initialValue?.activo || false);
 
   const storeSunat = async (values: SunatParams) => {
 
@@ -63,44 +60,71 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
       getError('Debe elegir un archivo PFX');
       return;
     }
+
+    const formData = new FormData();
+
+    formData.append('file', file);
+    formData.append('client_id', values.client_id)
+    formData.append('client_secret', values.client_secret)
+    formData.append('username', values.username)
+    formData.append('password', values.password)
+    formData.append('grant_type', values.grant_type)
+    formData.append('scope', values.scope)
+    formData.append('urlconsult', values.urlconsult)
+    formData.append('endpointurl', values.endpointurl)
+    formData.append('certificado', values.certificado)
+    formData.append('clavecertificado', values.clavecertificado)
+    formData.append('env', values.env)
+    formData.append('urlsend', values.urlsend)
+    formData.append('nombre', values.nombre)
+    formData.append('activo', String(values.activo ? 1 : 0))
+
     try {
-
-      const formData = new FormData();
-
-      formData.append('file', file);
-      formData.append('client_id', values.client_id)
-      formData.append('client_secret', values.client_secret)
-      formData.append('username', values.username)
-      formData.append('password', values.password)
-      formData.append('grant_type', values.grant_type)
-      formData.append('scope', values.scope)
-      formData.append('urlconsult', values.urlconsult)
-      formData.append('endpointurl', values.endpointurl)
-      formData.append('certificado', values.certificado)
-      formData.append('clavecertificado', values.clavecertificado)
-      formData.append('env', values.env)
-      formData.append('urlsend', values.urlsend)
-      formData.append('nombre', values.nombre)
-      formData.append('activo', String(values.activo?1:0))
-
-      const { data, status } = await clienteAxios.post('/api/sunat', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        onConfirm(data.sunat);
-      }
+      const response = await SunatParameterService.save(formData);
+      onConfirm(response);
+      getSuccess('Parametros guardados correctamente')
+    } catch (error) {
+      console.log(error || 'Hubo un error al guardar los parámetros');
+      getError(error || 'Hubo un error al guardar los parámetros');
     }
-    catch (error) {
-      // console.log(error)
+    // try {
 
-      getError(error?.response?.data?.message)
+    //   const formData = new FormData();
+
+    //   formData.append('file', file);
+    //   formData.append('client_id', values.client_id)
+    //   formData.append('client_secret', values.client_secret)
+    //   formData.append('username', values.username)
+    //   formData.append('password', values.password)
+    //   formData.append('grant_type', values.grant_type)
+    //   formData.append('scope', values.scope)
+    //   formData.append('urlconsult', values.urlconsult)
+    //   formData.append('endpointurl', values.endpointurl)
+    //   formData.append('certificado', values.certificado)
+    //   formData.append('clavecertificado', values.clavecertificado)
+    //   formData.append('env', values.env)
+    //   formData.append('urlsend', values.urlsend)
+    //   formData.append('nombre', values.nombre)
+    //   formData.append('activo', String(values.activo?1:0))
+
+    //   const { data, status } = await clienteAxios.post('/api/sunat', formData, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //       'Content-Type': 'multipart/form-data'
+    //     }
+    //   })
+    //   //  console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.sunat);
+    //   }
+    // }
+    // catch (error) {
+    //   // console.log(error)
+
+    //   getError(error?.response?.data?.message)
 
 
-    }
+    // }
   }
 
   useEffect(() => {
@@ -110,41 +134,32 @@ const ModalSunat = ({ initialValue, onConfirm, edit }: SunatFormProps) => {
   const updateSunat = async (values: SunatParams) => {
 
 
+    const formData = new FormData();
+
+    formData.append('file', file);
+    formData.append('client_id', values.client_id)
+    formData.append('client_secret', values.client_secret)
+    formData.append('username', values.username)
+    formData.append('password', values.password)
+    formData.append('grant_type', values.grant_type)
+    formData.append('scope', values.scope)
+    formData.append('urlconsult', values.urlconsult)
+    formData.append('endpointurl', values.endpointurl)
+    formData.append('certificado', values.certificado)
+    formData.append('clavecertificado', values.clavecertificado)
+    formData.append('env', values.env)
+    formData.append('urlsend', values.urlsend)
+    formData.append('nombre', values.nombre)
+    formData.append('activo', String(values.activo ? 1 : 0))
+
     try {
-
-      const formData = new FormData();
-
-      formData.append('file', file);
-      formData.append('client_id', values.client_id)
-      formData.append('client_secret', values.client_secret)
-      formData.append('username', values.username)
-      formData.append('password', values.password)
-      formData.append('grant_type', values.grant_type)
-      formData.append('scope', values.scope)
-      formData.append('urlconsult', values.urlconsult)
-      formData.append('endpointurl', values.endpointurl)
-      formData.append('certificado', values.certificado)
-      formData.append('clavecertificado', values.clavecertificado)
-      formData.append('env', values.env)
-      formData.append('urlsend', values.urlsend)
-      formData.append('nombre', values.nombre)
-      formData.append('activo', String(values.activo?1:0))
-
-      const { data, status } = await clienteAxios.post(`/api/sunat/${values.id}?_method=PUT`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-
-      if (status === 200) {
-        onConfirm(data.sunat);
-      }
+      const response = await SunatParameterService.update(formData,values.id);
+      onConfirm(response);
+      getSuccess('Parametros actualizados correctamente')
+    } catch (error) {
+      console.log(error || 'Hubo un error al actualizar los parámetros');
+      getError(error || 'Hubo un error al actualizar los parámetros');
     }
-    catch (error) {
-      console.log(error)
-    }
-    // onConfirm();
   }
 
 

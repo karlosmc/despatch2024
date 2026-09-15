@@ -1,15 +1,16 @@
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
+import FavoritoToggle from '../FavoritoToggle';
+import { TIPOS_FAVORITO } from '../../service/FavoritoService';
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
-import clienteAxios from '../../config/axios';
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
+
 
 
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 
 
 import { transportista } from '../../types/transportista.interface';
+import { TransportistaService } from '../../service/TransportistaService';
 
 
 
@@ -18,8 +19,6 @@ interface SearchTransportistaProps {
 }
 
 const SearchTransportista = ({ onCheck }: SearchTransportistaProps) => {
-
-  const token = localStorage.getItem('AUTH_TOKEN');
 
   const [foundTransportista, setfoundTransportista] = useState<transportista[]>([])
 
@@ -43,21 +42,28 @@ const SearchTransportista = ({ onCheck }: SearchTransportistaProps) => {
   const handleSearch = async () => {
     try {
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/transportistas/buscar?${searchField}=${inputQuery}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setfoundTransportista(data?.data)
-        setIsLoading(false)
-      }
+
+      const {data} = await TransportistaService.get(`${searchField}=${inputQuery}`);
+
+      setfoundTransportista(data)
+      // const { data, status } = await clienteAxios(`/api/transportistas/buscar?${searchField}=${inputQuery}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      // if (status === 200) {
+      //   setfoundTransportista(data?.data)
+      //   setIsLoading(false)
+      // }
       // console.log(data)
 
 
     }
     catch (error) {
       console.log(error)
+    }
+    finally{
+      setIsLoading(false)
     }
   }
 
@@ -88,7 +94,7 @@ const SearchTransportista = ({ onCheck }: SearchTransportistaProps) => {
         <TableCell align="left">{fil.numDoc}</TableCell>
         <TableCell align="left">{fil.rznSocial}</TableCell>
         <TableCell align="left">{fil.tipodocumento}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.transportista} id={fil.id} fav={fil.fav} /></TableCell>
         <TableCell align="center"><Fab color='success' size='small' onClick={() => handleCheck(fil)}><PanToolAltIcon sx={{ color: 'white' }} /></Fab></TableCell>
       </TableRow>
     )
@@ -107,10 +113,8 @@ const SearchTransportista = ({ onCheck }: SearchTransportistaProps) => {
             label="Búsqueda por"
             onChange={handleChange}
           >
-            <MenuItem value={'nroDoc'}>Nro. Doc.</MenuItem>
-            <MenuItem value={'nombres'}>Nombres</MenuItem>
-            <MenuItem value={'apellidos'}>Apellidos</MenuItem>
-            <MenuItem value={'licencia'}>Licencia</MenuItem>
+            <MenuItem value={'numDoc'}>Nro. Doc.</MenuItem>
+            <MenuItem value={'rznSocial'}>Razón Social</MenuItem>
             
           </Select>
         </FormControl>

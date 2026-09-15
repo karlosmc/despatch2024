@@ -1,10 +1,10 @@
 import { Box, CircularProgress, IconButton } from "@mui/material";
-import  { useState } from "react";
-// import VehiculoForm from "../../pages/vehiculo";
+import { useState } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
-import {searchPersona } from "../../types/persona.interface";
-import clienteAxios from "../../config/axios";
+import { searchPersona } from "../../types/persona.interface";
+
+import { PersonaService } from "../../service/PersonaService";
 
 interface ButtonSearchProps {
   type: string | null;
@@ -27,20 +27,19 @@ const ButtonSearch = ({ type, valor, onSearch }: ButtonSearchProps) => {
     const tipo = _TIPO_DOCUMENTO.find((item) => item.valor === type).name;
     try {
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/factiliza/consulta?nro=${valor}&type=${tipo}`,{timeout:20000})
-      if (status === 200) {
-        onSearch(data)
-        setIsLoading(false)
-      }else{
-        onSearch(data)
-        setIsLoading(false)
-      }
+      const data = await PersonaService.consulta(valor, tipo)
+      onSearch(data)
+
     }
     catch (error) {
-      console.log(error)
+      console.log(error ||'Error al consultar')
       onSearch(null)
+
+    }
+    finally {
       setIsLoading(false)
     }
+
   }
 
   return (
@@ -49,8 +48,8 @@ const ButtonSearch = ({ type, valor, onSearch }: ButtonSearchProps) => {
         <IconButton
           color="warning"
           aria-label="add an alarm"
-          //sx={BoxShadoWButton}
-          // onClick={handleSearch}
+        //sx={BoxShadoWButton}
+        // onClick={handleSearch}
         >
           <CircularProgress size={35} />
         </IconButton>

@@ -1,11 +1,10 @@
+import FavoritoToggle from '../components/FavoritoToggle';
+import { TIPOS_FAVORITO } from '../service/FavoritoService';
 import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Theme, Typography, useMediaQuery, useTheme } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import React, { useEffect, useState } from 'react'
 
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
+
 import StoreIcon from '@mui/icons-material/Store';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
@@ -15,6 +14,7 @@ import { persona } from '../types/persona.interface';
 import ModalPersona from '../components/Persona';
 import BuscarComponent from '../components/BuscarComponent';
 import { BuscarOpcionesInterface } from '../types/buscar.interface';
+import { PersonaService } from '../service/PersonaService';
 
 
 const opciones: BuscarOpcionesInterface[] = [
@@ -26,7 +26,7 @@ const opciones: BuscarOpcionesInterface[] = [
     codigo: 'rznSocial',
     valor: 'Razón social'
   },
-  
+
   // {
   //   codigo: 'fav',
   //   valor: 'Favoritos'
@@ -47,8 +47,8 @@ const Personas = () => {
     title: "",
   });
 
-  const [inputQueryTemp, setInputQueryTemp] = useState<string>(''); // Valores temporales
-  const [searchFieldTemp, setSearchFieldTemp] = useState<string>('');
+  const [personas, setPersonas] = useState<persona[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
   const [inputQuery, setInputQuery] = useState<string>('')
 
@@ -75,18 +75,20 @@ const Personas = () => {
   };
 
   const handleSearchParams = (field: string, query: string) => {
-    setSearchFieldTemp(field);  // Guarda en los estados temporales
-    setInputQueryTemp(query);
+    setSearchField(field); // Actualiza los estados definitivos
+    setInputQuery(query);
   };
 
   // Ejecutar búsqueda al presionar "Buscar"
   const handleSearch = () => {
-    setSearchField(searchFieldTemp); // Actualiza los estados definitivos
-    setInputQuery(inputQueryTemp);
+    getPersonas()
+    setPage(0)
   };
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    getPersonas()
+    setPage(0)
   }
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -102,31 +104,31 @@ const Personas = () => {
 
   // const [edit, setEdit] = useState<boolean>(false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  // const fetcher = () => clienteAxios('/api/clientes', {
-  //   headers: {
-  //     Authorization: `Bearer ${token}`
-  //   }
-  // })
-  const fetcher = () => {
-    let url = '/api/clientes';
+
+  const getPersonas = async () => {
+
+    setIsLoading(true)
+    const params = new URLSearchParams();
     if (searchField && inputQuery) {
-      url += `/buscar?${searchField}=${inputQuery}`; // Agrega los parámetros si existen
+      params.append(searchField, inputQuery);
     }
-    return clienteAxios(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+
+    try {
+      const { data } = await PersonaService.get(params.toString());
+      setPersonas(data)
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+
   }
 
 
 
-  const { data,  isLoading } = useSWR(['/api/clientes',searchField, inputQuery], fetcher);
-
   const TableCellStyles = {
     // padding: '8px',
-    fontSize: !isMobile?'0.875rem':'0.60rem', // Adjust font size here
+    fontSize: !isMobile ? '0.875rem' : '0.60rem', // Adjust font size here
 
 
   }
@@ -135,7 +137,7 @@ const Personas = () => {
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:persona) => {
+  personas.forEach((fil: persona) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -144,16 +146,19 @@ const Personas = () => {
         <TableCell sx={TableCellStyles} align="left">{fil.numDoc}</TableCell>
         <TableCell sx={TableCellStyles} align="left">{fil.rznSocial}</TableCell>
         <TableCell sx={TableCellStyles} align="left">{fil.tipodocumento}</TableCell>
-        {!isMobile && <TableCell sx={TableCellStyles} align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>}
-        {!isMobile && <TableCell sx={TableCellStyles} align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>}
+        {!isMobile && <TableCell sx={TableCellStyles} align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.cliente} id={fil.id} fav={fil.fav} /></TableCell>}
+        {!isMobile && <TableCell sx={TableCellStyles} align="left"><Icon color={fil.isCompany ? 'info' : 'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>}
         <TableCell sx={TableCellStyles} align="left"><Fab color='primary' size='small' onClick={() => handleEditPersona(fil)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
   })
 
+  useEffect(() => {
+    getPersonas()
+  }, [])
 
 
-  const handleEditPersona = (persona:persona) => {
+  const handleEditPersona = (persona: persona) => {
     // setEdit(false);
     // const selectedPunto = data.data.data.find(item => item.id === id);
     handleOpenModalForm(
@@ -166,8 +171,8 @@ const Personas = () => {
 
   return (
     <Container>
-      <Box my={3} display='flex' component='div' justifyContent='space-between' flexDirection={{sm:'row',xs:'column'}}>
-        <Typography variant='h5' textAlign={{sm:'left',xs:'center'}} mb={{sm:0,xs:1}}>
+      <Box my={3} display='flex' component='div' justifyContent='space-between' flexDirection={{ sm: 'row', xs: 'column' }}>
+        <Typography variant='h5' textAlign={{ sm: 'left', xs: 'center' }} mb={{ sm: 0, xs: 1 }}>
           Personas
         </Typography>
         <Button
@@ -192,13 +197,13 @@ const Personas = () => {
         <Table aria-label="simple table" size='small'>
           <TableHead sx={customTableHeader}>
             <TableRow>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'5%'}>Id</TableCell>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Nro.Doc.</TableCell>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'50%'} align="left">Razón Social</TableCell>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'5%'} align="left">Tipo.Doc.</TableCell>
-              {!isMobile && <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Fav?</TableCell>}
-              {!isMobile && <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Propio?</TableCell>}
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Editar</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'5%'}>Id</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'10%'} align="left">Nro.Doc.</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'50%'} align="left">Razón Social</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'5%'} align="left">Tipo.Doc.</TableCell>
+              {!isMobile && <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'10%'} align="left">Fav?</TableCell>}
+              {!isMobile && <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'10%'} align="left">Propio?</TableCell>}
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'10%'} align="left">Editar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

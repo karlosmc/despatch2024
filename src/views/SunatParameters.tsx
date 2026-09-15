@@ -1,13 +1,12 @@
-import { Box, Button, CircularProgress, Container, Fab,  Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import {  Box, Button, Chip, CircularProgress, Container, Fab,  Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
 
 import { SunatParams } from '../types/sunatparameters.interface';
 import ModalSunat from '../components/Sunat';
+import { SunatParameterService } from '../service/SunatParameterService';
 
 
 type ModalsProps = {
@@ -24,6 +23,11 @@ const SunatParameters = () => {
     title: "",
   });
 
+  const [listaSunatParameters, setListaSunatParameters] = useState<SunatParams[]>([])
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -35,6 +39,8 @@ const SunatParameters = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    getSunatParameters()
+    setPage(0)
   }
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -49,26 +55,46 @@ const SunatParameters = () => {
     setPage(0);
   };
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/sunat', {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
 
-  const { data,  isLoading } = useSWR('/api/sunat', fetcher);
-
-  // if (isLoading) return <div>Cargando</div>
+const getSunatParameters = async()=>{
+  try {
+    setIsLoading(true)
+    const {data} = await SunatParameterService.get();
+    setListaSunatParameters(data)
+  } catch (error) {
+    console.log(error || 'Hubo un error en mostrar los parametros');
+  }
+  finally{
+    setIsLoading(false)
+  }
+}
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:SunatParams) => {
+  useEffect(()=>{
+    getSunatParameters()
+
+  },[])
+
+  listaSunatParameters?.forEach((fil:SunatParams) => {
     rows.push(
       <TableRow
         key={fil.id}
       >
         <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.env}</TableCell>
+        <TableCell align="left">
+          <Box display={'flex'} flexDirection={'column'} alignItems={'center'} justifyContent={'center'} alignContent={'center'} gap={0.5}>
+            <Typography textAlign={'center'}  fontSize={12}>{fil.env}</Typography>
+            <Chip
+              label={fil.activo?'ACTIVO':'INACTIVO'}
+              size='small'
+              color={fil.activo?'success':'error'}
+              variant={fil.activo?'filled':'outlined'}
+              sx={{textAlign:'center'}}
+              
+            />
+          </Box>
+        </TableCell>
         <TableCell align="left">{fil.username}</TableCell>
         <TableCell align="left"><Typography noWrap={false}>{fil.endpointurl}</Typography></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditParams(fil)} ><EditIcon /></Fab></TableCell>
@@ -78,7 +104,7 @@ const SunatParameters = () => {
 
   const handleEditParams = (sunat:SunatParams) => {
     
-    const selectedParams = data.data.data.find(item => item.id === sunat.id);
+    const selectedParams = listaSunatParameters?.find(item => item.id === sunat.id);
     handleOpenModalForm(
       <ModalSunat initialValue={selectedParams} edit={true} onConfirm={handleConfirm} />,
       'Editar parametros'
@@ -104,6 +130,7 @@ const SunatParameters = () => {
           variant='outlined'>
           Agregar Parametros
         </Button>
+        
       </Box>
 
       <TableContainer component={Paper} >

@@ -97,6 +97,7 @@ export interface Envio {
     numBultos:     number;
     modTraslado:   string;//DatosGenerales
     fecTraslado:   string;//DatosGenerales
+    fecInicioTrasladoBienes?: string;//DatosGenerales
     
     // choferes?:      EnvioChoferes[]|null;//Listo
     

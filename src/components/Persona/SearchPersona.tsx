@@ -1,9 +1,9 @@
+import FavoritoToggle from '../FavoritoToggle';
+import { TIPOS_FAVORITO } from '../../service/FavoritoService';
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box,  Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
-import clienteAxios from '../../config/axios';
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
+
 
 import StoreIcon from '@mui/icons-material/Store';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
@@ -12,6 +12,7 @@ import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 
 import { persona } from '../../types/persona.interface';
+import { PersonaService } from '../../service/PersonaService';
 
 
 
@@ -21,7 +22,6 @@ interface SearchPersonaProps {
 
 const SearchPersona = ({ onCheck }: SearchPersonaProps) => {
 
-  const token = localStorage.getItem('AUTH_TOKEN');
 
   const [foundPersonas, setfoundPersonas] = useState<persona[]>([])
 
@@ -44,22 +44,31 @@ const SearchPersona = ({ onCheck }: SearchPersonaProps) => {
 
   const handleSearch = async () => {
     try {
+
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/clientes/buscar?${searchField}=${inputQuery}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setfoundPersonas(data?.data)
-        setIsLoading(false)
-      }
+      const {data} = await PersonaService.get(`${searchField}=${inputQuery}`)
+
+      setfoundPersonas(data)
+      setIsLoading(false)
+      // setIsLoading(true)
+      // const { data, status } = await clienteAxios(`/api/clientes/buscar?${searchField}=${inputQuery}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      // if (status === 200) {
+      //   setfoundPersonas(data?.data)
+      //   setIsLoading(false)
+      // }
       // console.log(data)
 
 
     }
     catch (error) {
       console.log(error)
+    }
+    finally{
+      setIsLoading(false)
     }
   }
 
@@ -90,7 +99,7 @@ const SearchPersona = ({ onCheck }: SearchPersonaProps) => {
         <TableCell align="left">{fil.numDoc}</TableCell>
         <TableCell align="left">{fil.rznSocial}</TableCell>
         <TableCell align="left">{fil.tipodocumento}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.cliente} id={fil.id} fav={fil.fav} /></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         <TableCell align="center"><Fab color='success' size='small' onClick={()=>handleCheck(fil)}><PanToolAltIcon sx={{color:'white'}} /></Fab></TableCell>
       </TableRow>

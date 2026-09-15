@@ -11,7 +11,7 @@ import {  RouterProvider } from "react-router-dom";
 import { router } from "./routes/routes.tsx";
 // import { CssBaseline } from "@mui/material";
 
-import { AuxiliarProvider } from "./context/AuxiliarProvider.tsx";
+
 import { DialogProvider } from "./context/dialog.context.tsx";
 import { ThemeConfig } from "./config/theme.config.tsx";
 import { ThemeContextProvider } from "./context/themeProvider.tsx";
@@ -32,13 +32,11 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           <DialogProvider>
             {/* <ParamsProvider> */}
             {/* <TokenProvider> */}
-            <AuxiliarProvider>
+            
               <ConfirmProvider>
-              
                 <RouterProvider router={router} />
-              
               </ConfirmProvider>
-            </AuxiliarProvider>
+            
             {/* <App /> */}
             {/* </TokenProvider> */}
             {/* </ParamsProvider> */}

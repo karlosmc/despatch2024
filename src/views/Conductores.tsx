@@ -1,11 +1,10 @@
+import FavoritoToggle from '../components/FavoritoToggle';
+import { TIPOS_FAVORITO } from '../service/FavoritoService';
 import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import React, { useEffect, useState } from 'react'
 
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
+
 import StoreIcon from '@mui/icons-material/Store';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
@@ -13,6 +12,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
 import { conductor } from '../types/conductor.interface';
 import ModalConductor from '../components/Conductor';
+import { ConductoresService } from '../service/ConductoresServices';
 
 
 type ModalsProps = {
@@ -29,6 +29,10 @@ const Conductores = () => {
     title: "",
   });
 
+  const [listaConductores, setListaConductores] = useState<conductor[]>([])
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -41,6 +45,8 @@ const Conductores = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    getConductores()
+    setPage(0)
   }
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -55,23 +61,28 @@ const Conductores = () => {
     setPage(0);
   };
 
+  const getConductores = async () => {
+    setIsLoading(true)
+    try {
 
-  // const [edit, setEdit] = useState<boolean>(false);
+      const { data } = await ConductoresService.get('')
+      setListaConductores(data)
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/conductor', {
-    headers: {
-      Authorization: `Bearer ${token}`
+    } catch (error) {
+      console.log(error);
     }
-  })
+    finally{
+      setIsLoading(false)
+    }
+  }
 
-  const { data,  isLoading } = useSWR('/api/conductor', fetcher);
-
-  // if (isLoading) return <div>Cargando</div>
+  useEffect(()=>{
+    getConductores()
+  },[])
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:conductor) => {
+  listaConductores?.forEach((fil: conductor) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -80,8 +91,8 @@ const Conductores = () => {
         <TableCell align="left">{fil.nroDoc}</TableCell>
         <TableCell align="left">{fil.apellidos} {fil.nombres}</TableCell>
         <TableCell align="left">{fil.tipodocumento}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
-        <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.conductor} id={fil.id} fav={fil.fav} /></TableCell>
+        <TableCell align="left"><Icon color={fil.isCompany ? 'info' : 'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditConductor(fil)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
@@ -89,7 +100,7 @@ const Conductores = () => {
 
 
 
-  const handleEditConductor = (conductor:conductor) => {
+  const handleEditConductor = (conductor: conductor) => {
     // setEdit(false);
     // const selectedPunto = data.data.data.find(item => item.id === id);
     handleOpenModalForm(

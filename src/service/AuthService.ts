@@ -1,62 +1,81 @@
-class AuthService {
-  private static TOKEN_KEY = 'sunat_client';
+0
 
-  async login(nrodoc: string, password: string, empresaId: string): Promise<string> {
+import apiLogged from "../api/axios.auth";
+import { apiInit } from "../api/axios.ini";
+import { User } from "../types/user.interface";
+
+
+
+export const authService = {
+
+  login: async (credentials: any): Promise<User> => {
+    // Simulate an API call for user authentication
     try {
-      // Lógica para autenticar al usuario y obtener el token desde el servidor
+      const { data } = await apiInit.post('/api/login', credentials);
 
-      // const Url = "http://192.168.30.199:8080/apiguias/Login";
-      // const dato = { nrodoc, password,empresa:empresaId };
-  
-      // //console.log(dato);
-      // const requestapi = {
-      //   method: "POST",
-      //   header: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify(dato),
-      // };
-      nrodoc=nrodoc
-    password=password
+      // Simulate setting a token in cookies or local storage
+      localStorage.setItem('AUTH_TOKEN', data.token)
+      
 
-      const token = await this.getTokenForEmpresa(empresaId);
+      // console.log(data);
+      return data.user;
 
-      // Guardar el token en el almacenamiento local
-      localStorage.setItem(AuthService.TOKEN_KEY, token);
-
-      return token;
-    } catch (error) {
-      console.error('Error al iniciar sesión:', error);
-      throw new Error('Error al iniciar sesión');
+    } catch (error: any) {
+      console.error("Error en AuthService login:", error);
+      
+      // Reenviar el error completo para que LoginForm pueda manejarlo
+      if (error?.response) {
+        // Error HTTP con respuesta del servidor
+        throw error;
+      } else if (error?.message) {
+        // Error de JavaScript/Network
+        throw error;
+      } else {
+        // Error genérico
+        throw new Error("Error en login");
+      }
     }
-  }
+  },
 
-  private async getTokenForEmpresa(empresaId: string): Promise<string> {
-    // Lógica para obtener el token dependiendo del ID de la empresa (puede ser una llamada al servidor)
-    // ...
+  logout: async () => {
+    try {
+      // Intentar hacer logout en el servidor
+      await apiLogged.post('/api/logout');
+    } catch (e) {
+      // Si falla la petición del servidor, igual continuamos con la limpieza local
+      console.error("Error en logout del servidor:", e);
+    } finally {
+      // Siempre limpiar el storage local, independientemente del resultado del servidor
+      localStorage.removeItem('AUTH_TOKEN');
+      
+      localStorage.removeItem('sunat_params');
+      
+      console.log("Logout local completado - tokens eliminados");
+    }
+  },
 
-    const url =`http://192.168.30.199:8080/apiguias/gettoken/newtoken/${empresaId}`;
+  register: async (credentials: any) => {
+    try {
 
-    const response = await fetch(url);
-    return response.json();
+      const { data } = await apiInit.post('/api/registro', credentials);
+      localStorage.setItem('AUTH_TOKEN', data.token)
 
-    // Ejemplo: Retornar un token de prueba con el ID de la empresa concatenado
-    // return `token_${empresaId}`;
-  }
+    } catch (error: any) {
+      console.error("Error en AuthService register:", error);
+      
+      // Reenviar el error completo para que RegisterForm pueda manejarlo
+      if (error?.response) {
+        // Error HTTP con respuesta del servidor
+        throw error;
+      } else if (error?.message) {
+        // Error de JavaScript/Network
+        throw error;
+      } else {
+        // Error genérico
+        throw new Error("Error en registro");
+      }
+    }
 
-  async renewToken(): Promise<string> {
-    // Lógica para renovar el token (puede ser una llamada al servidor)
-    // ...
+  },
 
-    // Ejemplo: Retornar un token de prueba renovado
-    return 'token_renewed';
-  }
-
-  logout(): void {
-    localStorage.removeItem(AuthService.TOKEN_KEY);
-  }
-
-  // Resto del código...
 }
-
-export default new AuthService();

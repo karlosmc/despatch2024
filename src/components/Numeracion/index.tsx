@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
+
 
 
 
@@ -18,6 +18,8 @@ import { numeracion } from '../../types/numeracion.interface';
 import { EnvioVehiculo } from '../../types/guias/guiaremision.interface';
 import SearchVehiculo from '../Vehiculo/SearchVehiculo';
 import { vehiculo } from '../../types/vehiculo.interface';
+import { NumeracionService } from '../../service/NumeracionService';
+import { PuntoEmisionService } from '../../service/PuntoEmisionService';
 
 
 
@@ -46,7 +48,7 @@ type ModalsProps = {
 
 const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps) => {
 
-  const { getError } = useNotification()
+  const { getError, getSuccess } = useNotification()
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
     form: null,
@@ -59,64 +61,65 @@ const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps)
 
   const [loading, setLoading] = useState<boolean>(true)
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-
-
   const [secundarios, setSecundarios] = useState<EnvioVehiculo[]>(initialValue?.secundario || []);
 
-
-
   const storeNumeracion = async (values: numeracion) => {
+
+
+    const secundario = secundarios.length > 0 ? secundarios[0].id : null;
+    values.primario = primario || null;
+
+
     try {
-      const { data, status } = await clienteAxios.post('/api/numeracion', {
-        nombre: values.nombre,
-        numeroActual: values.numeroActual,
-        id_puntoemision: values.id_puntoemision,
-        primario: values.primario?.id|| null,
-        secundarios: secundarios.length>0?secundarios[0].id:null,
-        serie: values.serie
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        onConfirm(data.numeracion);
-      }
+      const response = await NumeracionService.save(values, secundario)
+      onConfirm(response)
+      getSuccess('Numeración registrada con éxito')
+    } catch (error) {
+      console.log(error || 'Hubo un error al guardar la numeración');
+      getError(error || 'Hubo un error al guardar la numeración');
+
     }
-    catch (error) {
-      getError(error?.response?.data?.message)
-    }
+
+    // try {
+    //   const { data, status } = await clienteAxios.post('/api/numeracion', {
+    //     nombre: values.nombre,
+    //     numeroActual: values.numeroActual,
+    //     id_puntoemision: values.id_puntoemision,
+    //     primario: values.primario?.id|| null,
+    //     secundario: secundarios.length>0?secundarios[0].id:null,
+    //     serie: values.serie
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   //  console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.numeracion);
+    //   }
+    // }
+    // catch (error) {
+    //   getError(error?.response?.data?.message)
+    // }
   }
 
   const updateNumeracion = async (values: numeracion) => {
 
     // console.log(values);
-    
-    try {
-      const { data, status } = await clienteAxios.put(`/api/numeracion/${values.id}`, {
-        nombre: values.nombre,
-        numeroActual: values.numeroActual,
-        id_puntoemision: values.id_puntoemision,
-        primario: values.primario?.id|| null,
-        secundarios: secundarios.length>0?secundarios[0].id:null,
-        serie: values.serie
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
 
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.numeracion);
-      }
+    const secundario = secundarios.length > 0 ? secundarios[0].id : null;
+    values.primario = primario || null;
+
+    try {
+      const response = await NumeracionService.update(values, secundario)
+      onConfirm(response)
+      getSuccess('Numeración actualizada con éxito')
+    } catch (error) {
+      console.log(error || 'Hubo un error al actualizar la numeración');
+      getError(error || 'Hubo un error al actualizar la numeración');
+
     }
-    catch (error) {
-      console.log(error)
-    }
-    // onConfirm();
+
   }
 
   const formik = useFormik({
@@ -124,15 +127,11 @@ const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps)
     validationSchema: NumeracionSchema,
     onSubmit: (values) => {
 
-      const newValues: numeracion={
-        ...values,
-        nombre:values.nombre.toUpperCase(),
-        serie:values.serie.toUpperCase(),
-      }
+
       if (edit) {
-        updateNumeracion(newValues)
+        updateNumeracion(values)
       } else {
-        storeNumeracion(newValues)
+        storeNumeracion(values)
       }
     },
   });
@@ -140,19 +139,12 @@ const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps)
 
   const getPuntoEmision = async () => {
     try {
-      const { data, status } = await clienteAxios('/api/puntoemision', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        setLoading(false)
-        setPuntosEmision(data.data)
-      }
+      const { data } = await PuntoEmisionService.get('');
+      setPuntosEmision(data);
+      setLoading(false)
     }
     catch (error) {
-      getError(error?.response?.data?.message)
+      getError(error || ' Hubo un error al obtener los puntos de emisión')
     }
   }
 
@@ -185,23 +177,23 @@ const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps)
 
   const handleConfirm = (vehiculo: vehiculo): void => {
 
-    if(primario && secundarios.length===1){
+    if (primario && secundarios.length === 1) {
       getError('Ya existe 1 vehiculos secundario para esta serie')
       return;
     }
-    if(primario){
-      if(primario.id === vehiculo.id){
+    if (primario) {
+      if (primario.id === vehiculo.id) {
         getError('Ya existe la placa como vehiculo primario')
         return;
       }
-      const vehiculoFound= secundarios.find(item =>item.id === vehiculo.id)
-      if(vehiculoFound){
+      const vehiculoFound = secundarios.find(item => item.id === vehiculo.id)
+      if (vehiculoFound) {
         getError('Ya existe el vehiculo secundario en la lista')
         return;
-      }else{
-        setSecundarios((prev)=>[...prev,vehiculo])
+      } else {
+        setSecundarios((prev) => [...prev, vehiculo])
       }
-    }else{
+    } else {
       setPrimario(vehiculo)
     }
     // const userFound = userList.find(item => item.id === user.id);
@@ -220,7 +212,7 @@ const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps)
 
     setSecundarios(vehiculoUpdate)
 
-    
+
   }
   const handleDelete = (): void => {
 
@@ -336,11 +328,11 @@ const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps)
               )
             }}
           >
-            {primario===null? 'Buscar Primario':'Buscar Secundario'}
+            {primario === null ? 'Buscar Primario' : 'Buscar Secundario'}
           </StyledSearchButton>
 
           <Box display={'flex'} flexDirection={'row'} justifyContent={'space-between'} columnGap={1} mt={2}>
-            <Box sx={{ width: 200,padding:1 }} display={'flex'} flexDirection={'column'} component={Paper}>
+            <Box sx={{ width: 200, padding: 1 }} display={'flex'} flexDirection={'column'} component={Paper}>
               <Typography textAlign={'center'}>Primario</Typography>
               {
                 primario &&
@@ -360,7 +352,7 @@ const ModalNumeracion = ({ initialValue, onConfirm, edit }: NumeracionFormProps)
               }
 
             </Box>
-            <Box sx={{ width: 200, padding:1 }} component={Paper} display={'flex'} flexDirection={'column'}>
+            <Box sx={{ width: 200, padding: 1 }} component={Paper} display={'flex'} flexDirection={'column'}>
               <Typography textAlign={'center'}>Secundarios</Typography>
               <List sx={{ width: '100%' }}>
                 {secundarios?.map((secundario) => (

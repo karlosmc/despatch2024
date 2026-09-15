@@ -1,11 +1,8 @@
+import FavoritoToggle from '../components/FavoritoToggle';
+import { TIPOS_FAVORITO } from '../service/FavoritoService';
 import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import React, { useEffect, useState } from 'react'
 
-
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
 import StoreIcon from '@mui/icons-material/Store';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
@@ -15,6 +12,7 @@ import { puntoUbicacion } from '../types/puntoubicacion.interface';
 import ModalPuntoUbicacion from '../components/Puntos';
 import BuscarComponent from '../components/BuscarComponent';
 import { BuscarOpcionesInterface } from '../types/buscar.interface';
+import { PuntoUbicacionService } from '../service/PuntoUbicacionService';
 
 
 type ModalsProps = {
@@ -44,7 +42,7 @@ const opciones: BuscarOpcionesInterface[] = [
     codigo: 'ruc',
     valor: 'RUC'
   },
-  
+
   // {
   //   codigo: 'fav',
   //   valor: 'Favoritos'
@@ -59,8 +57,10 @@ const PuntoUbicacion = () => {
     title: "",
   });
 
-  const [inputQueryTemp, setInputQueryTemp] = useState<string>(''); // Valores temporales
-  const [searchFieldTemp, setSearchFieldTemp] = useState<string>('');
+
+  const [puntosUbicacion, setPuntosUbicacion] = useState<puntoUbicacion[]>([])
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const [inputQuery, setInputQuery] = useState<string>('')
 
@@ -78,17 +78,19 @@ const PuntoUbicacion = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    setPage(0)
+    getPuntosUbicacion()
   }
 
   const handleSearchParams = (field: string, query: string) => {
-    setSearchFieldTemp(field);  // Guarda en los estados temporales
-    setInputQueryTemp(query);
+    setInputQuery(query)
+    setSearchField(field)
   };
 
   // Ejecutar búsqueda al presionar "Buscar"
   const handleSearch = () => {
-    setSearchField(searchFieldTemp); // Actualiza los estados definitivos
-    setInputQuery(inputQueryTemp);
+    getPuntosUbicacion()
+    setPage(0)
   };
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -106,32 +108,40 @@ const PuntoUbicacion = () => {
 
   // const [edit, setEdit] = useState<boolean>(false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  // const fetcher = () => clienteAxios('/api/puntos', {
-  //   headers: {
-  //     Authorization: `Bearer ${token}`
-  //   }
-  // })
 
-  const fetcher = () => {
-    let url = '/api/puntos';
+
+  const getPuntosUbicacion = async () => {
+
+    setIsLoading(true)
+    const params = new URLSearchParams();
     if (searchField && inputQuery) {
-      url += `/buscar?${searchField}=${inputQuery}`; // Agrega los parámetros si existen
+      params.append(searchField, inputQuery);
     }
-    return clienteAxios(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+
+    try {
+      const { data } = await PuntoUbicacionService.get(params.toString());
+
+      setPuntosUbicacion(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+
   }
 
-  const { data,  isLoading } = useSWR(['/api/puntos',searchField,inputQuery], fetcher);
+  useEffect(() => {
+
+    getPuntosUbicacion();
+
+  }, [])
+
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:puntoUbicacion) => {
+  puntosUbicacion?.forEach((fil: puntoUbicacion) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -142,8 +152,8 @@ const PuntoUbicacion = () => {
         <TableCell align="left">{fil.direccion}</TableCell>
         <TableCell align="left">{fil.fullubigeo}</TableCell>
         <TableCell align="left">{fil.rznSocial}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
-        <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.punto} id={fil.id} fav={fil.fav} /></TableCell>
+        <TableCell align="left"><Icon color={fil.isCompany ? 'info' : 'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditPunto(fil.id)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
@@ -153,7 +163,7 @@ const PuntoUbicacion = () => {
 
   const handleEditPunto = (id: number) => {
     // setEdit(false);
-    const selectedPunto = data.data.data.find(item => item.id === id);
+    const selectedPunto = puntosUbicacion?.find(item => item.id === id);
     handleOpenModalForm(
       <ModalPuntoUbicacion initialValue={selectedPunto} edit={true} onConfirm={handleConfirm} />,
       'Editar Punto de Ubicacion'

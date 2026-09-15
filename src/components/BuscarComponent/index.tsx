@@ -1,5 +1,5 @@
 import {  FormControl, InputLabel, Select, TextField, MenuItem } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useState,useTransition } from 'react'
 import { BuscarOpcionesInterface } from '../../types/buscar.interface'
 
 
@@ -16,6 +16,8 @@ const BuscarComponent = ({ opciones, onSearchChange }: BuscarProps) => {
   const [inputQuery, setInputQuery] = useState<string>('');
 
   const [typeInput, setTypeInput] = useState('text')
+
+  const [_, startTransition] = useTransition();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -34,9 +36,11 @@ const BuscarComponent = ({ opciones, onSearchChange }: BuscarProps) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // setInputQuery(event.target.value as string);
 
-    const newQuery = event.target.value as string;
+     const newQuery = (event.target.value).toUpperCase() as string;
     setInputQuery(newQuery);
-    onSearchChange(searchField, newQuery);
+    startTransition(() => {
+      onSearchChange(searchField, newQuery);
+    });
   }
 
   return (

@@ -1,17 +1,16 @@
-import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import FavoritoToggle from '../components/FavoritoToggle';
+import { TIPOS_FAVORITO } from '../service/FavoritoService';
+import { Box, Button, CircularProgress, Container, Fab, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import ModalProducto from '../components/Producto';
 import { Producto } from '../types/producto.interface';
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
 
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
 import BuscarComponent from '../components/BuscarComponent';
 import { BuscarOpcionesInterface } from '../types/buscar.interface';
+import { ProductoService } from '../service/ProductoService';
 
 
 type ModalsProps = {
@@ -32,7 +31,7 @@ const opciones: BuscarOpcionesInterface[] = [
   {
     codigo: 'nombreCorto',
     valor: 'Nombre Corto'
-  },   
+  },
   // {
   //   codigo: 'fav',
   //   valor: 'Favoritos'
@@ -48,10 +47,13 @@ const Productos = () => {
     title: "",
   });
 
-  const [inputQueryTemp, setInputQueryTemp] = useState<string>(''); // Valores temporales
-  const [searchFieldTemp, setSearchFieldTemp] = useState<string>('');
+
 
   const [inputQuery, setInputQuery] = useState<string>('')
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const [productos, setProductos] = useState<Producto[]>([])
 
   const [searchField, setSearchField] = useState<string>('')
 
@@ -68,6 +70,9 @@ const Productos = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    setPage(0)
+    getProductos();
+    
   }
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -89,40 +94,68 @@ const Productos = () => {
   // }
 
   const handleSearchParams = (field: string, query: string) => {
-    setSearchFieldTemp(field);  // Guarda en los estados temporales
-    setInputQueryTemp(query);
+    setSearchField(field);
+    setInputQuery(query);
   };
 
   // Ejecutar búsqueda al presionar "Buscar"
   const handleSearch = () => {
-    setSearchField(searchFieldTemp); // Actualiza los estados definitivos
-    setInputQuery(inputQueryTemp);
+    // setSearchField(searchFieldTemp); // Actualiza los estados definitivos
+    // setInputQuery(inputQueryTemp);
+    getProductos()
+    setPage(0)
   };
 
 
   // const [edit, setEdit] = useState<boolean>(false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  // const token = localStorage.getItem('AUTH_TOKEN');
 
-  const fetcher = () => {
-    let url = '/api/productos';
+
+  // const fetcher = () => {
+  //   let url = '/api/productos';
+  //   if (searchField && inputQuery) {
+  //     url += `/buscar?${searchField}=${inputQuery}`; // Agrega los parámetros si existen
+  //   }
+  //   return clienteAxios(url, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`
+  //     }
+  //   })
+  // }
+
+  const getProductos = async () => {
+    setIsLoading(true)
+    const params = new URLSearchParams();
     if (searchField && inputQuery) {
-      url += `/buscar?${searchField}=${inputQuery}`; // Agrega los parámetros si existen
+      params.append(searchField, inputQuery);
     }
-    return clienteAxios(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+
+    try {
+      const { data } = await ProductoService.get(params.toString());
+
+      setProductos(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  const { data, isLoading } = useSWR(['/api/productos', searchField, inputQuery], fetcher);
+  useEffect(() => {
+
+    getProductos();
+
+  }, [])
+
+
+  // const { data, isLoading } = useSWR(['/api/productos', searchField, inputQuery], fetcher);
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil: Producto) => {
+  productos?.forEach((fil: Producto) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -131,7 +164,7 @@ const Productos = () => {
         <TableCell align="left">{fil.codigo}</TableCell>
         <TableCell align="left">{fil.descripcion}</TableCell>
         <TableCell align="left">{fil.unidad}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.producto} id={fil.id} fav={fil.fav} /></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditProduct(fil.id)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
@@ -139,7 +172,7 @@ const Productos = () => {
 
   const handleEditProduct = (id: number) => {
     // setEdit(false);
-    const selectedProducto = data.data.data.find(item => item.id === id);
+    const selectedProducto = productos?.find(item => item.id === id);
     handleOpenModalForm(
       <ModalProducto initialValue={selectedProducto} edit={true} onConfirm={handleConfirm} />,
       'Editar Producto'

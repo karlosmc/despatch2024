@@ -1,9 +1,8 @@
+import FavoritoToggle from '../FavoritoToggle';
+import { TIPOS_FAVORITO } from '../../service/FavoritoService';
 import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box,  Select, Button, TextField, TablePagination, CircularProgress } from '@mui/material'
 import React, { useState } from 'react'
-import clienteAxios from '../../config/axios';
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
 
 import StoreIcon from '@mui/icons-material/Store';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
@@ -11,6 +10,7 @@ import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
 import { puntoUbicacion } from '../../types/puntoubicacion.interface';
+import { PuntoUbicacionService } from '../../service/PuntoUbicacionService';
 
 
 
@@ -20,7 +20,7 @@ interface SearchProductoProps {
 
 const SearchPuntos = ({ onCheck }: SearchProductoProps) => {
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const [foundPuntos, setfoundPuntos] = useState<puntoUbicacion[]>([])
 
@@ -44,21 +44,29 @@ const SearchPuntos = ({ onCheck }: SearchProductoProps) => {
   const handleSearch = async () => {
     try {
       setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/puntos/buscar?${searchField}=${inputQuery}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setfoundPuntos(data?.data)
-        setIsLoading(false)
-      }
-      // console.log(data)
+
+      const {data} = await PuntoUbicacionService.get(`${searchField}=${inputQuery}`);
+
+      setfoundPuntos(data)
+
+      // const { data, status } = await clienteAxios(`/api/puntos/buscar?${searchField}=${inputQuery}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      // if (status === 200) {
+      //   setfoundPuntos(data?.data)
+      //   setIsLoading(false)
+      // }
+      // // console.log(data)
 
 
     }
     catch (error) {
       console.log(error)
+    }
+    finally{
+      setIsLoading(false)
     }
   }
 
@@ -92,7 +100,7 @@ const SearchPuntos = ({ onCheck }: SearchProductoProps) => {
         <TableCell align="left">{fil.fullubigeo}</TableCell>
         <TableCell align="left">{fil.rznSocial}</TableCell>
         
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.punto} id={fil.id} fav={fil.fav} /></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         {/* <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditPunto(fil.id)} ><EditIcon /></Fab></TableCell> */}
         <TableCell align="center"><Fab color='success' size='small' onClick={()=>handleCheck(fil)}><PanToolAltIcon sx={{color:'white'}} /></Fab></TableCell>

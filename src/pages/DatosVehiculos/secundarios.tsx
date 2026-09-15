@@ -21,6 +21,8 @@ const VehiculoValues: EnvioVehiculo = {
 
 const VehiculosSecundarios = ({ vehiculos, onConfirm }: Props) => {
   // const [carro, setCarro] = useState<EnvioVehiculo>(VehiculoValues);
+
+  console.log(vehiculos);
   const [cars, setCars] = useState<EnvioVehiculo[]>(vehiculos || []);
 
   const { getError } = useNotification()

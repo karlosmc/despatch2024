@@ -23,12 +23,13 @@ import ButtonSearch from "../../components/ButtonSearch";
 import {  persona, searchPersona } from "../../types/persona.interface";
 
 import { AddDocSchema } from "../../utils/validateGuiaRemision";
-import clienteAxios from "../../config/axios";
+
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { ChipInterface } from "../../types/general.interface";
 import { useNotification } from "../../context/notification.context";
 import SearchPersona from "../../components/Persona/SearchPersona";
 import { DialogComponentCustom } from "../../components";
+import { PersonaService } from "../../service/PersonaService";
 
 // import MaskedInput from "react-text-mask";
 
@@ -72,7 +73,7 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
 
   const {getError} = useNotification()
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -83,19 +84,16 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
   const filterFav = async () => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/clientes/buscar?fav=1`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setIsLoading(false)
-        setDataFilter(data?.data)
-      }
+     const {data} = await PersonaService.get('fav=1');
+     setDataFilter(data)
+
     }
     catch (error) {
       console.log(error)
     }
+    finally{
+      setIsLoading(false)
+    } 
   }
 
 
@@ -123,6 +121,20 @@ const DocumentoAdicional = ({ onNewAddDoc }: AddDocFormProps) => {
       values.tipoDesc = tipoDesc;
       // console.log(values);
       // onChange(values);
+      if(values.tipo === '01') {
+        
+        if(!values.nro.startsWith('F') && !values.nro.startsWith('E')){
+          getError('El número de comprobante no corresponde al tipo FACTURA');
+          return;
+        }
+      }
+      if(values.tipo === '03') {
+        // Do something specific for tipo '03'
+        if(!values.nro.includes('B')){
+          getError('El número de comprobante no corresponde al tipo BOLETA');
+          return;
+        }
+      }
 
       const newValues:AddDoc={
         ...values,

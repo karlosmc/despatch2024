@@ -4,25 +4,29 @@ import { useFormik } from 'formik';
 import { DatosGenerales, EnvioVehiculo } from '../../types/guias/guiaremision.interface';
 import { useEffect, useState } from 'react';
 import { DatosGeneralesSchema } from '../../utils/validateGuiaRemision';
-import clienteAxios from '../../config/axios';
 import { numeracion } from '../../types/numeracion.interface';
+import { NumeracionService } from '../../service/NumeracionService';
 
 
 
 
 interface DatosGeneralesFormProps {
   onChange: (datosGenerales: DatosGenerales) => void;
-  puntoEmision:number;
+  puntoEmision: number;
   datosGeneralesValues: DatosGenerales;
-  onSelectSerie: (vehiculo:EnvioVehiculo)=>void;
+  onSelectSerie: (vehiculo: EnvioVehiculo) => void;
+  editMode?: boolean;
 }
 
-const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision,onSelectSerie }: DatosGeneralesFormProps) => {
+const DatosGeneralesForm = ({ onChange, datosGeneralesValues, puntoEmision, onSelectSerie, editMode = false }: DatosGeneralesFormProps) => {
 
   // console.log(puntosEmision)
-  const token = localStorage.getItem('AUTH_TOKEN');
 
   const [numeracion, setNumeracion] = useState<numeracion[]>([])
+
+  const fechaActual = new Date();
+  const minDate = new Date(fechaActual.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const maxDate = new Date(fechaActual.getTime() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
   const formik = useFormik({
     initialValues: datosGeneralesValues,
@@ -40,19 +44,8 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision,onSele
   const getSeries = async () => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/numeracion/actualbypunto?id_puntoemision=${puntoEmision}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      // console.log(data)
-      if (status === 200) {
-        setNumeracion(data?.data)
-        // console.log(data)
-
-      }
-      // console.log(data)
-
+      const { data } = await NumeracionService.getNumeracionByIdPuntoEmision(puntoEmision);
+      setNumeracion(data);
 
     }
     catch (error) {
@@ -61,46 +54,54 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision,onSele
   }
 
 
-  useEffect(()=>{
-    if(puntoEmision){
+  useEffect(() => {
+    if(editMode) return;
+    if (puntoEmision) {
       getSeries()
-      formik.setFieldValue('serie','');
-      formik.setFieldValue('correlativo',0)
+      formik.setFieldValue('serie', '');
+      formik.setFieldValue('correlativo', 0)
     }
-    
-  },[puntoEmision])
 
-  useEffect(()=>{
-    if(formik.values.serie!==''){
-      const correlativo = numeracion.find(it=> it.serie===formik.values.serie);
+  }, [puntoEmision])
 
-      if(correlativo){
+  useEffect(() => {
 
-        
-        
-        formik.setFieldValue('correlativo',correlativo.numeroActual+1)
+    if(editMode) return;
+    if (formik.values.serie !== '') {
+      const correlativo = numeracion.find(it => it.serie === formik.values.serie);
 
-        if(!correlativo.primario){
-          onSelectSerie({placa:'',codEmisor:'',id:0,nroAutorizacion:'',nroCirculacion:'',secundarios:[]})
+      if (correlativo) {
+        formik.setFieldValue('correlativo', correlativo.numeroActual + 1)
+
+        if (!correlativo.primario) {
+          onSelectSerie({ placa: '', codEmisor: '', id: 0, nroAutorizacion: '', nroCirculacion: '', secundarios: [] })
           return
         }
-        const Vehiculo:EnvioVehiculo={
+        const Vehiculo: EnvioVehiculo = {
           ...correlativo.primario,
-          secundarios:correlativo.secundario
+          secundarios: correlativo.secundario
         }
         onSelectSerie(Vehiculo)
       }
-      else{
-        formik.setFieldValue('correlativo',0)
+      else {
+        formik.setFieldValue('correlativo', 0)
       }
     }
-  },[formik.values.serie])
+  }, [formik.values.serie])
 
+
+  useEffect(() => {
+    if (editMode) {
+      formik.setFieldValue('serie', datosGeneralesValues.serie);
+      formik.setFieldValue('correlativo', datosGeneralesValues.correlativo);
+      formik.setFieldValue('fechaEmision', datosGeneralesValues.fechaEmision);
+    }
+  }, [editMode, datosGeneralesValues]);
 
   return (
     <Box
       display={"grid"}
-      
+
       gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }}
       gap={1}
     >
@@ -121,34 +122,56 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision,onSele
         </Select>
       </FormControl>
 
-      <FormControl fullWidth size="small" error={formik.touched.serie && Boolean(formik.errors.serie)}>
-        <InputLabel id="demo-simple-select-label">
-          Serie
-        </InputLabel>
-        <Select
-          fullWidth
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={formik.values.serie}
-          label="Serie"
-          onChange={formik.handleChange}
-          error={
-            formik.touched.serie && Boolean(formik.errors.serie)
-          }
-          onBlur={formik.handleBlur}
-          name="serie"
-        >
-          <MenuItem value={""}>...Debe Elegir una serie...</MenuItem>
-          {
-            numeracion?.map(num=>(
-              <MenuItem value={num.serie} key={num.id}>{num.serie}</MenuItem>
-            ))
+      {
+        editMode ?
+          <TextField
+            size="small"
+            fullWidth
+            name="correlativo"
+            value={formik.values.serie}
+            type="text"
+            label="Número Documento"
+            InputProps={{ readOnly: true }}
+            error={
+              formik.touched.serie &&
+              Boolean(formik.errors.serie)
+            }
+            onBlur={formik.handleBlur}
+            helperText={
+              formik.touched.serie && formik.errors.serie
+            }
+            onChange={formik.handleChange}
+          />
+          :
+          <FormControl fullWidth size="small" error={formik.touched.serie && Boolean(formik.errors.serie)}>
+            <InputLabel id="demo-simple-select-label">
+              Serie
+            </InputLabel>
+            <Select
+              fullWidth
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={formik.values.serie}
+              label="Serie"
+              onChange={formik.handleChange}
+              error={
+                formik.touched.serie && Boolean(formik.errors.serie)
+              }
+              onBlur={formik.handleBlur}
+              name="serie"
+            >
+              <MenuItem value={""}>...Debe Elegir una serie...</MenuItem>
+              {
+                numeracion?.map(num => (
+                  <MenuItem value={num.serie} key={num.id}>{num.serie}</MenuItem>
+                ))
 
-          }
-          
-        </Select>
-        <FormHelperText>{formik.touched.serie && formik.errors.serie}</FormHelperText>
-      </FormControl>
+              }
+
+            </Select>
+            <FormHelperText>{formik.touched.serie && formik.errors.serie}</FormHelperText>
+          </FormControl>
+      }
 
       <TextField
         size="small"
@@ -176,6 +199,11 @@ const DatosGeneralesForm = ({ onChange, datosGeneralesValues,puntoEmision,onSele
         label="Fecha de Emision"
         name="fechaEmision"
         type="date"
+        inputProps={{
+          min: minDate,
+          max: maxDate
+        }}
+        InputProps={{ readOnly: editMode }}
         value={formik.values.fechaEmision}
         style={{ colorScheme: "dark" }}
         InputLabelProps={{

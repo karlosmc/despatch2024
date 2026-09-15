@@ -23,9 +23,10 @@ import ModalTransportista from "../../components/Transportista";
 import { DialogComponentCustom } from "../../components";
 import SearchTransportista from "../../components/Transportista/SearchTransportista";
 import { Transportista } from "../../types/guias/guiaremision.interface";
-import clienteAxios from "../../config/axios";
+
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { ChipInterface } from "../../types/general.interface";
+import { TransportistaService } from "../../service/TransportistaService";
 
 const TransportistaValues: Transportista = {
   id: 0,
@@ -78,11 +79,6 @@ const DatosTransportista = ({
 
   const [isLoading, setIsLoading] = useState(true)
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-
-  
-
-
   // console.log('initialvalues',initialValue)
   // const [dataTransportista, setDataTransportista] = useState<EnvioTransportista | null>(initialValue || TransportistaValues);
 
@@ -104,18 +100,25 @@ const DatosTransportista = ({
   const filterFav = async () => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/transportistas/buscar?fav=1`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setIsLoading(false)
-        setDataFilter(data?.data)
-      }
+      const {data} = await TransportistaService.get("fav=1");
+
+      setDataFilter(data)
+
+      // const { data, status } = await clienteAxios(`/api/transportistas/buscar?fav=1`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      // if (status === 200) {
+      //   setIsLoading(false)
+      //   setDataFilter(data?.data)
+      // }
     }
     catch (error) {
       console.log(error)
+    }
+    finally{
+      setIsLoading(false)
     }
   }
 

@@ -1,11 +1,10 @@
+import FavoritoToggle from '../components/FavoritoToggle';
+import { TIPOS_FAVORITO } from '../service/FavoritoService';
 import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import React, { useEffect, useState } from 'react'
 
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
+
 import StoreIcon from '@mui/icons-material/Store';
 import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
 
@@ -14,6 +13,7 @@ import { DialogComponentCustom } from '../components';
 
 import { vehiculo } from '../types/vehiculo.interface';
 import ModalVehiculo from '../components/Vehiculo';
+import { VehiculoService } from '../service/VehiculoService';
 
 
 type ModalsProps = {
@@ -30,6 +30,9 @@ const Vehiculos = () => {
     title: "",
   });
 
+  const [listaVehiculos, setListaVehiculos] = useState<vehiculo[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -42,6 +45,8 @@ const Vehiculos = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    getVehiculos()
+    setPage(0)
   }
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -57,22 +62,34 @@ const Vehiculos = () => {
   };
 
 
-  // const [edit, setEdit] = useState<boolean>(false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/vehiculos', {
-    headers: {
-      Authorization: `Bearer ${token}`
+  const getVehiculos = async() =>{
+    try {
+      setIsLoading(true)
+      const {data} = await VehiculoService.get('');
+      setListaVehiculos(data)
+
+    } catch (error) {
+      console.log(error);
     }
-  })
+    finally {
+      setIsLoading(false)
+    }
+  }
 
-  const { data,  isLoading } = useSWR('/api/vehiculos', fetcher);
+  useEffect(()=>{
+
+    getVehiculos()
+
+  },[])
+
+  
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:vehiculo) => {
+  listaVehiculos?.forEach((fil:vehiculo) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -81,7 +98,7 @@ const Vehiculos = () => {
         <TableCell align="left">{fil.placa}</TableCell>
         <TableCell align="left">{fil.nombreCorto}</TableCell>
         <TableCell align="left">{fil.nroCirculacion}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.vehiculo} id={fil.id} fav={fil.fav} /></TableCell>
         <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditVehiculo(fil)} ><EditIcon /></Fab></TableCell>
       </TableRow>

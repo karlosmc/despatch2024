@@ -3,7 +3,7 @@ import {  useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
+
 
 
 
@@ -15,6 +15,7 @@ import { puntoEmision } from '../../types/puntoemision.interface';
 import SearchUser from '../User/SearchUser';
 import { User } from '../../types/user.interface';
 import { DialogComponentCustom } from '..';
+import { PuntoEmisionService } from '../../service/PuntoEmisionService';
 
 
 
@@ -43,7 +44,7 @@ type ModalsProps = {
 const ModalPuntoEmision = ({ initialValue, onConfirm, edit }: PuntoEmisionFormProps) => {
 
 
-  const { getError } = useNotification()
+  const { getError, getSuccess } = useNotification()
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -51,7 +52,6 @@ const ModalPuntoEmision = ({ initialValue, onConfirm, edit }: PuntoEmisionFormPr
     title: "",
   });
 
-  const token = localStorage.getItem('AUTH_TOKEN');
 
   const [userList, setUserList] = useState<User[]>( initialValue?.users||[])
 
@@ -60,57 +60,59 @@ const ModalPuntoEmision = ({ initialValue, onConfirm, edit }: PuntoEmisionFormPr
 
 
     try {
-      const { data, status } = await clienteAxios.post('/api/puntoemision', {
-        codigo:values.codigo,
-        nombre:values.nombre,
-        codLocal:values.codLocal,
-        direccion:values.direccion,
-        users:userList,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        onConfirm(data.puntoemision);
-      }
+
+      values.users = userList;
+      const response = await PuntoEmisionService.save(values)
+      onConfirm(response)
+      getSuccess('Punto de emisión guardado con éxito')
+      
+    } catch (error) {
+      console.log(error || 'Hubo un error al guardar el punto de emisión');
+      getError(error || 'Hubo un error al guardar el punto de emisión');
     }
-    catch (error) {
-      // console.log(error)
-
-      getError(error?.response?.data?.message)
 
 
-    }
+    // try {
+    //   const { data, status } = await clienteAxios.post('/api/puntoemision', {
+    //     codigo:values.codigo,
+    //     nombre:values.nombre,
+    //     codLocal:values.codLocal,
+    //     direccion:values.direccion,
+    //     users:userList,
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   //  console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.puntoemision);
+    //   }
+    // }
+    // catch (error) {
+    //   // console.log(error)
+
+    //   getError(error?.response?.data?.message)
+
+
+    // }
 
 
 
   }
 
   const updatePuntoEmision = async (values: puntoEmision) => {
-    try {
-      const { data, status } = await clienteAxios.put(`/api/puntoemision/${values.id}`, {
-        codigo:values.codigo,
-        nombre:values.nombre,
-        codLocal:values.codLocal,
-        direccion:values.direccion,
-        users:userList,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      try {
 
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.puntoemision);
-      }
+      values.users = userList;
+      const response = await PuntoEmisionService.update(values)
+      onConfirm(response)
+      getSuccess('Punto de emisión guardado con éxito')
+      
+    } catch (error) {
+      console.log(error || 'Hubo un error al guardar el punto de emisión');
+      getError(error || 'Hubo un error al guardar el punto de emisión');
     }
-    catch (error) {
-      console.log(error)
-    }
-    // onConfirm();
   }
 
 
@@ -243,7 +245,7 @@ const ModalPuntoEmision = ({ initialValue, onConfirm, edit }: PuntoEmisionFormPr
           type="text"
           label="Dirección"
 
-          value={formik.values.direccion.toUpperCase() || ''}
+          value={formik.values?.direccion?.toUpperCase() || ''}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.direccion && formik.errors.direccion}

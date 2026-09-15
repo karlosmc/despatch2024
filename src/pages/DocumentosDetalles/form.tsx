@@ -11,9 +11,10 @@ import { DialogComponentCustom } from "../../components";
 import ModalProducto from "../../components/Producto";
 import SearchProducto from "../../components/Producto/SearchProducto";
 import { Producto } from "../../types/producto.interface";
-import clienteAxios from "../../config/axios";
+
 import { ChipInterface } from "../../types/general.interface";
 import ChipFavoritos from "../../components/ChipFavoritos";
+import { ProductoService } from "../../service/ProductoService";
 
 interface DetailFormProps {
   onNewDetail: (newDetail: Detail) => void;
@@ -370,23 +371,30 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
 
   const [isLoading, setIsLoading] = useState(true)
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const filterFav = async () => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/productos/buscar?fav=1`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setIsLoading(false)
-        setDataFilter(data?.data)
-      }
+      const {data} = await ProductoService.get('fav=1');
+
+      setDataFilter(data);
+
+      // const { data, status } = await clienteAxios(`/api/productos/buscar?fav=1`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      // if (status === 200) {
+      //   setIsLoading(false)
+      //   setDataFilter(data?.data)
+      // }
     }
     catch (error) {
       console.log(error)
+    }
+    finally {
+      setIsLoading(false)
     }
   }
 
@@ -505,13 +513,14 @@ const DocumentoDetalle = ({ onNewDetail }: DetailFormProps) => {
             name="cantidad"
             label="Cantidad"
             value={formik.values.cantidad}
-            // InputProps={{ inputProps: { min: 1 } }}
-            inputProps={{step: "0.0000000001"}}
+            inputProps={{
+              step: "0.0000000001",
+              onWheel: (e: React.WheelEvent<HTMLInputElement>) => e.currentTarget.blur()
+            }}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched.cantidad && formik.errors.cantidad}
             error={formik.touched.cantidad && Boolean(formik.errors.cantidad)}
-
           />
         </Box>
         <Box display={{ xs: 'block', md: 'flex' }} columnGap={2}>

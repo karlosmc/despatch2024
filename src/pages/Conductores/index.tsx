@@ -13,9 +13,10 @@ import { DialogComponentCustom } from "../../components";
 import ModalConductor from "../../components/Conductor";
 import { conductor } from "../../types/conductor.interface";
 import SearchConductor from "../../components/Conductor/SerachConductor";
-import clienteAxios from "../../config/axios";
+
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { ChipInterface } from "../../types/general.interface";
+import { ConductoresService } from "../../service/ConductoresServices";
 
 
 
@@ -62,7 +63,6 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
   // const [chofer, setChofer] = useState<EnvioChoferes>(ChoferValues);
 
 
-
   const [listaChoferes, setListaChoferes] = useState<EnvioChoferes[]>(choferes);
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -92,24 +92,21 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
 
   const [isLoading, setIsLoading] = useState(true)
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const filterFav = async (tipo: string) => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/conductor/buscar?${tipo}=1`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setIsLoading(false)
-        setDataFilter(data?.data)
-      }
+      const {data} = await ConductoresService.get(`${tipo}=1`);
+      setDataFilter(data)
     }
     catch (error) {
       console.log(error)
     }
+    finally{
+      setIsLoading(false)
+    }
+
   }
 
   const handleNewChofer = (newChofer: EnvioChoferes): void => {
@@ -166,12 +163,11 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-
   const renderList = (): JSX.Element[] => {
-    return listaChoferes.map((driver, index) => {
+    return listaChoferes.map((driver) => {
       return (
         <TableRow
-          key={index}
+          key={driver.id}
         >
           <TableCell align="left">{driver.id}</TableCell>
           <TableCell align="left">{driver.tipo}</TableCell>
@@ -185,11 +181,10 @@ const Conductores = ({ choferes, onConfirm }: Props) => {
     });
   };
 
-
   useEffect(() => {
     filterFav('fav')
-
   }, [])
+
   return (
     <>
       <ChipFavoritos isLoading={isLoading} items={dataFilter} onPick={handleSetFavorite} title="Choferes favoritos" />

@@ -1,9 +1,10 @@
+import { FavoritoService, TIPOS_FAVORITO, favoritoVigente } from '../../service/FavoritoService';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
+
 
 
 import { ConductorSchema } from '../../utils/validateForm';
@@ -11,6 +12,7 @@ import { useNotification } from '../../context/notification.context';
 import { conductor } from '../../types/conductor.interface';
 import ButtonSearch from '../ButtonSearch';
 import { searchPersona } from '../../types/persona.interface';
+import { ConductoresService } from '../../service/ConductoresServices';
 
 
 
@@ -35,42 +37,58 @@ interface ConductorFormProps {
 const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) => {
 
   // console.log(initialValue)
-  const { getError } = useNotification()
+  const { getError, getSuccess } = useNotification()
 
-  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
+  const [fav, setFav] = useState<boolean>(favoritoVigente(TIPOS_FAVORITO.conductor, initialValue?.id, initialValue?.fav));
   const [isCompany, setIsCompany] = useState<boolean>(initialValue?.isCompany || false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const storeConductor = async (values: conductor) => {
 
 
+    // try {
+    //   const { data, status } = await clienteAxios.post('/api/conductor', {
+    //     nroDoc: values.nroDoc,
+    //     nombres: values.nombres,
+    //     fav: values.fav,
+    //     isCompany: values.isCompany,
+    //     apellidos: values.apellidos,
+    //     nombreCorto: values.nombreCorto,
+    //     licencia: values.licencia,
+    //     tipoDoc: values.tipoDoc,
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   //  console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.conductor);
+    //   }
+    // }
+    // catch (error) {
+    //   // console.log(error)
+
+    //   getError(error?.response?.data?.message)
+
+
+    // }
+
     try {
-      const { data, status } = await clienteAxios.post('/api/conductor', {
-        nroDoc: values.nroDoc,
-        nombres: values.nombres,
-        fav: values.fav,
-        isCompany: values.isCompany,
-        apellidos: values.apellidos,
-        nombreCorto: values.nombreCorto,
-        licencia: values.licencia,
-        tipoDoc: values.tipoDoc,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        onConfirm(data.conductor);
+      const response = await ConductoresService.save(values);
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.conductor, response?.id, values.fav, false);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
-    }
-    catch (error) {
-      // console.log(error)
-
-      getError(error?.response?.data?.message)
-
-
+      onConfirm(response)
+      getSuccess('Conductor guardado con éxito')
+      
+    } catch (error) {
+      console.log(error);
+      getError(error || 'Hubo un error al guardar al conductor')      
     }
 
 
@@ -78,32 +96,22 @@ const ModalConductor = ({ initialValue, onConfirm, edit }: ConductorFormProps) =
   }
 
   const updateConductor = async (values: conductor) => {
+    
     try {
-      const { data, status } = await clienteAxios.put(`/api/conductor/${values.id}`, {
-
-        nroDoc: values.nroDoc,
-        nombres: values.nombres,
-        fav: values.fav,
-        isCompany: values.isCompany,
-        apellidos: values.apellidos,
-        nombreCorto: values.nombreCorto,
-        licencia: values.licencia,
-        tipoDoc: values.tipoDoc,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.conductor);
+      const response = await ConductoresService.update(values);
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.conductor, response?.id ?? values.id, values.fav, true);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
+      onConfirm(response)
+      getSuccess('Conductor actualizado con éxito')
+      
+    } catch (error) {
+      console.log(error);
+      getError(error || 'Hubo un error al actualizar al conductor')      
     }
-    catch (error) {
-      console.log(error)
-    }
-    // onConfirm();
   }
 
 

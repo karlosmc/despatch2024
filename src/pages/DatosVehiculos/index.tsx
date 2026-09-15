@@ -21,12 +21,13 @@ import { useFormik } from "formik";
 import { VehiculoSchema } from "../../utils/validateGuiaRemision";
 import { useEffect, useState } from "react";
 import { vehiculo } from "../../types/vehiculo.interface";
-import clienteAxios from "../../config/axios";
+
 import ChipFavoritos from "../../components/ChipFavoritos";
 import { DialogComponentCustom } from "../../components";
 import { ChipInterface } from "../../types/general.interface";
 import ModalVehiculo from "../../components/Vehiculo";
 import SearchVehiculo from "../../components/Vehiculo/SearchVehiculo";
+import { VehiculoService } from "../../service/VehiculoService";
 
 
 const VehiculoValues: Vehiculo = {
@@ -135,6 +136,8 @@ interface VehiculoFormProps {
 
 const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
 
+  
+
 
   const [modalsForm, setModalsForms] = useState<ModalsProps>({
     open: false,
@@ -146,8 +149,6 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
 
   const [isLoading, setIsLoading] = useState(true)
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-
   const [criterio, setCriterio] = useState('isCompany');
 
   const handleChangeCriterio = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,18 +159,25 @@ const DatosVehiculo = ({ onChange, initialValue }: VehiculoFormProps) => {
   const filterFav = async () => {
     try {
 
-      const { data, status } = await clienteAxios(`/api/vehiculos/buscar?${criterio}=1`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setIsLoading(false)
-        setDataFilter(data?.data)
-      }
+      const {data} = await VehiculoService.get(`${criterio}=1`);
+
+      setDataFilter(data)
+
+      // const { data, status } = await clienteAxios(`/api/vehiculos/buscar?${criterio}=1`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      // if (status === 200) {
+      //   setIsLoading(false)
+      //   setDataFilter(data?.data)
+      // }
     }
     catch (error) {
       console.log(error)
+    }
+    finally {
+      setIsLoading(false)
     }
   }
 

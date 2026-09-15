@@ -1,7 +1,5 @@
 import { Box, Button, CircularProgress, Container, Fab,  Paper, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Theme, Typography, useMediaQuery, useTheme } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import React, { useEffect, useState } from 'react'
 
 
 
@@ -10,6 +8,7 @@ import { DialogComponentCustom } from '../components';
 
 import { numeracion } from '../types/numeracion.interface';
 import ModalNumeracion from '../components/Numeracion';
+import { NumeracionService } from '../service/NumeracionService';
 
 
 type ModalsProps = {
@@ -25,6 +24,10 @@ const Numeracion = () => {
     form: null,
     title: "",
   });
+
+  const [listaNumeracion, setListaNumeracion] = useState<numeracion[]>([])
+
+  const [isLoading, setIsLoading] = useState(false)
 
   const theme = useTheme()
 
@@ -50,6 +53,8 @@ const Numeracion = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    getNumeracion()
+    setPage(0)
   }
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -65,27 +70,36 @@ const Numeracion = () => {
 
   // const [edit, setEdit] = useState<boolean>(false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/numeracion', {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
 
-  const { data,  isLoading } = useSWR('/api/numeracion', fetcher);
 
   const TableCellStyles = {
-    // padding: '8px',
     fontSize: !isMobile?'0.875rem':'0.60rem', // Adjust font size here
+  }
 
+  
+  const getNumeracion = async() =>{
+    try {
+
+      setIsLoading(true)
+      const {data} = await NumeracionService.get();
+      setListaNumeracion(data)
+    } catch (error) {
+      console.log(error || 'Hubo un error al obtener la numeración');      
+    }
+    finally{
+      setIsLoading(false)
+    }
 
   }
 
-  // if (isLoading) return <div>Cargando</div>
+  useEffect(()=>{
+    getNumeracion()
+  },[])
+
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:numeracion) => {
+  listaNumeracion?.forEach((fil:numeracion) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -124,7 +138,7 @@ const Numeracion = () => {
           onClick={() => {
             handleOpenModalForm(
               <ModalNumeracion initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
-              'Nuevo numeración'
+              'Nueva numeración'
             )
           }}
           variant='outlined'>

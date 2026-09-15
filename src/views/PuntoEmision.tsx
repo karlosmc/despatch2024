@@ -1,7 +1,6 @@
-import { Box, Button, CircularProgress, Container, Fab,  Paper, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Theme, Typography, useMediaQuery, useTheme } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import { Box, Button, CircularProgress, Container, Fab, Paper, SxProps, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Theme, Typography, useMediaQuery, useTheme } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+
 
 
 import EditIcon from '@mui/icons-material/Edit';
@@ -9,6 +8,7 @@ import { DialogComponentCustom } from '../components';
 
 import { puntoEmision } from '../types/puntoemision.interface';
 import ModalPuntoEmision from '../components/PuntoEmision';
+import { PuntoEmisionService } from '../service/PuntoEmisionService';
 
 
 type ModalsProps = {
@@ -25,6 +25,9 @@ const PuntoEmision = () => {
     title: "",
   });
 
+  const [listaPuntosEmision, setListaPuntosEmision] = useState<puntoEmision[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
   const theme = useTheme()
 
   const colorStyles = theme.palette['primary'];
@@ -40,7 +43,7 @@ const PuntoEmision = () => {
     setModalsForms({ open: true, form, title });
   };
 
-  
+
 
   const handleCloseModalForm = () => {
     // Cierra el modal en la posición especificada
@@ -49,6 +52,8 @@ const PuntoEmision = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    getPuntosEmision()
+    setPage(0)
   }
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -62,29 +67,37 @@ const PuntoEmision = () => {
     setPage(0);
   };
 
-  // const [edit, setEdit] = useState<boolean>(false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/puntoemision', {
-    headers: {
-      Authorization: `Bearer ${token}`
+
+  const getPuntosEmision = async () => {
+
+    try {
+      setIsLoading(true)
+      const { data } = await PuntoEmisionService.get('');
+      setListaPuntosEmision(data)
+
+    } catch (error) {
+      console.log(error);
     }
-  })
-
-  const { data,  isLoading } = useSWR('/api/puntoemision', fetcher);
-
-  const TableCellStyles = {
-    // padding: '8px',
-    fontSize: !isMobile?'0.875rem':'0.60rem', // Adjust font size here
-
-
+    finally {
+      setIsLoading(false)
+    }
   }
+
+  useEffect(()=>{
+    getPuntosEmision()
+
+  },[])
 
   // if (isLoading) return <div>Cargando</div>
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:puntoEmision) => {
+  const TableCellStyles = {
+    fontSize: !isMobile?'0.875rem':'0.60rem', // Adjust font size here
+  }
+
+  listaPuntosEmision?.forEach((fil: puntoEmision) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -100,8 +113,8 @@ const PuntoEmision = () => {
 
 
 
-  const handleEditPuntoEmision = (puntoemision:puntoEmision) => {
-    
+  const handleEditPuntoEmision = (puntoemision: puntoEmision) => {
+
     handleOpenModalForm(
       <ModalPuntoEmision initialValue={puntoemision} edit={true} onConfirm={handleConfirm} />,
       'Editar PuntoEmision'
@@ -112,8 +125,8 @@ const PuntoEmision = () => {
 
   return (
     <Container>
-      <Box my={3} display='flex' component='div' justifyContent='space-between' flexDirection={{sm:'row',xs:'column'}}>
-        <Typography variant='h5' textAlign={{sm:'left',xs:'center'}} mb={{sm:0,xs:1}}>
+      <Box my={3} display='flex' component='div' justifyContent='space-between' flexDirection={{ sm: 'row', xs: 'column' }}>
+        <Typography variant='h5' textAlign={{ sm: 'left', xs: 'center' }} mb={{ sm: 0, xs: 1 }}>
           Punto de Emision
         </Typography>
         <Button
@@ -133,12 +146,12 @@ const PuntoEmision = () => {
         <Table aria-label="simple table" size='small'>
           <TableHead sx={customTableHeader}>
             <TableRow>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'5%'}>Id</TableCell>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Codigo</TableCell>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'25%'} align="left">Nombre</TableCell>
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'30%'} align="left">Dirección</TableCell>
-              
-              <TableCell sx={{...TableCellStyles,fontWeight:'bold',color:'whitesmoke'}} width={'10%'} align="left">Editar</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'5%'}>Id</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'10%'} align="left">Codigo</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'25%'} align="left">Nombre</TableCell>
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'30%'} align="left">Dirección</TableCell>
+
+              <TableCell sx={{ ...TableCellStyles, fontWeight: 'bold', color: 'whitesmoke' }} width={'10%'} align="left">Editar</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

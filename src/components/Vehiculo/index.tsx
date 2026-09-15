@@ -1,14 +1,16 @@
+import { FavoritoService, TIPOS_FAVORITO, favoritoVigente } from '../../service/FavoritoService';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
+
 
 
 import { VehiculoSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 import { vehiculo } from '../../types/vehiculo.interface';
+import { VehiculoService } from '../../service/VehiculoService';
 
 
 
@@ -104,69 +106,75 @@ const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => 
   // console.log(initialValue)
 
   // console.log(initialValue)
-  const { getError } = useNotification()
+  const { getError,getSuccess } = useNotification()
 
-  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
+  const [fav, setFav] = useState<boolean>(favoritoVigente(TIPOS_FAVORITO.vehiculo, initialValue?.id, initialValue?.fav));
   const [isCompany, setIsCompany] = useState<boolean>(initialValue?.isCompany || false);
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const storeVehiculo = async (values: vehiculo) => {
 
 
     try {
-      const { data, status } = await clienteAxios.post('/api/vehiculos', {
-        placa: values.placa,
-        nroCirculacion: values.nroCirculacion,
-        nroAutorizacion: values.nroAutorizacion,
-        codEmisor: values.codEmisor,
-        fav: values.fav,
-        isCompany: values.isCompany,
-        nombreCorto: values.nombreCorto,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        onConfirm(data.vehiculo);
+      const response = await VehiculoService.save(values);
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.vehiculo, response?.id, values.fav, false);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
+      onConfirm(response)
+      getSuccess('Vehiculo guardado con éxito')
+    } catch (error) {
+      console.log(error || 'Hubo un error al guadar el vehiculo');
+      getError(error || 'Hubo un error al guadar el vehiculo')
+      
     }
-    catch (error) {
-      // console.log(error)
 
-      getError(error?.response?.data?.message)
-    }
+    // try {
+    //   const { data, status } = await clienteAxios.post('/api/vehiculos', {
+    //     placa: values.placa,
+    //     nroCirculacion: values.nroCirculacion,
+    //     nroAutorizacion: values.nroAutorizacion,
+    //     codEmisor: values.codEmisor,
+    //     fav: values.fav,
+    //     isCompany: values.isCompany,
+    //     nombreCorto: values.nombreCorto,
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   //  console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.vehiculo);
+    //   }
+    // }
+    // catch (error) {
+    //   // console.log(error)
+
+    //   getError(error?.response?.data?.message)
+    // }
 
   }
 
   const updateVehiculo = async (values: vehiculo) => {
-    try {
-      const { data, status } = await clienteAxios.put(`/api/vehiculos/${values.id}`, {
-
-        placa: values.placa,
-        nroCirculacion: values.nroCirculacion,
-        nroAutorizacion: values.nroAutorizacion,
-        codEmisor: values.codEmisor,
-        fav: values.fav,
-        isCompany: values.isCompany,
-        nombreCorto: values.nombreCorto,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.vehiculo);
+       try {
+      const response = await VehiculoService.update(values);
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.vehiculo, response?.id ?? values.id, values.fav, true);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
+      onConfirm(response)
+      getSuccess('Vehiculo actualizado con éxito')
+    } catch (error) {
+      console.log(error || 'Hubo un error al actualizar el vehiculo');
+      getError(error || 'Hubo un error al actualizar el vehiculo')
+      
     }
-    catch (error) {
-      console.log(error)
-    }
-    // onConfirm();
   }
 
 

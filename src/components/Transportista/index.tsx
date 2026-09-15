@@ -1,17 +1,19 @@
+import { FavoritoService, TIPOS_FAVORITO, favoritoVigente } from '../../service/FavoritoService';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
 
 
-import {  TransportistaSchema } from '../../utils/validateForm';
+
+import { TransportistaSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 
 import { transportista } from '../../types/transportista.interface';
 import ButtonSearch from '../ButtonSearch';
 import { searchPersona } from '../../types/persona.interface';
+import { TransportistaService } from '../../service/TransportistaService';
 
 
 
@@ -20,8 +22,8 @@ const TransportistaInitialValues: transportista = {
   nombreCorto: '',
   tipoDoc: '6',
   fav: false,
-  rznSocial:'',
-  nroMtc:'',
+  rznSocial: '',
+  nroMtc: '',
   id: 0,
 }
 
@@ -33,41 +35,61 @@ interface TransportistaFormProps {
 
 const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaFormProps) => {
 
-// console.log(initialValue)
-  const { getError } = useNotification()
+  // console.log(initialValue)
+  const { getError, getSuccess } = useNotification()
 
-  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
+  const [fav, setFav] = useState<boolean>(favoritoVigente(TIPOS_FAVORITO.transportista, initialValue?.id, initialValue?.fav));
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const storeTransportista = async (values: transportista) => {
 
 
     try {
-      const { data, status } = await clienteAxios.post('/api/transportistas', {
-        numDoc: values.numDoc,
-        rznSocial: values.rznSocial,
-        fav: values.fav,
-        nombreCorto: values.nombreCorto,
-        nroMtc: values.nroMtc,
-        tipoDoc: values.tipoDoc,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        onConfirm(data.conductor);
+
+      const response = await TransportistaService.save(values);
+
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.transportista, response?.id, values.fav, false);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
+      onConfirm(response)
+      getSuccess('Transportista guardado con éxito');
+
+
+    } catch (error) {
+      console.log(error);
+      getError(error || 'Hubo un error al guardar el transportista')
+
     }
-    catch (error) {
-      // console.log(error)
 
-      getError(error?.response?.data?.message)
+    // try {
+    //   const { data, status } = await clienteAxios.post('/api/transportistas', {
+    //     numDoc: values.numDoc,
+    //     rznSocial: values.rznSocial,
+    //     fav: values.fav,
+    //     nombreCorto: values.nombreCorto,
+    //     nroMtc: values.nroMtc,
+    //     tipoDoc: values.tipoDoc,
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   //  console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.transportista);
+    //   }
+    // }
+    // catch (error) {
+    //   // console.log(error)
+
+    //   getError(error?.response?.data?.message)
 
 
-    }
+    // }
 
 
 
@@ -75,26 +97,23 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
 
   const updateTransportista = async (values: transportista) => {
     try {
-      const { data, status } = await clienteAxios.put(`/api/transportistas/${values.id}`, {
-        numDoc: values.numDoc,
-        rznSocial: values.rznSocial,
-        fav: values.fav,
-        nombreCorto: values.nombreCorto,
-        nroMtc: values.nroMtc,
-        tipoDoc: values.tipoDoc,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
 
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.conductor);
+      const response = await TransportistaService.update(values);
+
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.transportista, response?.id ?? values.id, values.fav, true);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
-    }
-    catch (error) {
-      console.log(error)
+      onConfirm(response)
+      getSuccess('Transportista actualizado con éxito');
+
+
+    } catch (error) {
+      console.log(error);
+      getError(error || 'Hubo un error al actualizar el transportista')
+
     }
     // onConfirm();
   }
@@ -107,11 +126,11 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
     validationSchema: TransportistaSchema,
     onSubmit: (values) => {
 
-      const newValues:transportista={
+      const newValues: transportista = {
         ...values,
-        rznSocial:values.rznSocial.toUpperCase(),
-        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
-        nroMtc:values?.nroMtc?.toUpperCase()||'',
+        rznSocial: values.rznSocial.toUpperCase(),
+        nombreCorto: values?.nombreCorto?.toUpperCase() || '',
+        nroMtc: values?.nroMtc?.toUpperCase() || '',
       }
 
       if (edit) {
@@ -125,7 +144,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
 
   const handleSearch = (searchPerson: searchPersona): void => {
 
-    if (!searchPerson){
+    if (!searchPerson) {
       getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
       return;
     }
@@ -158,11 +177,11 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
               error={formik.touched.tipoDoc && Boolean(formik.errors.tipoDoc)}
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-              
+
               name="tipoDoc"
             >
               <MenuItem value={"6"}>RUC</MenuItem>
-              
+
             </Select>
           </FormControl>
           <TextField
@@ -191,7 +210,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
           type="text"
           label="Razón Social"
           sx={{ my: 1.5 }}
-          
+
           value={formik.values?.rznSocial?.toUpperCase()}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
@@ -211,7 +230,7 @@ const ModalTransportista = ({ initialValue, onConfirm, edit }: TransportistaForm
             label="Nro. MTC"
             sx={{ my: 1.5 }}
 
-            value={formik.values?.nroMtc?.toUpperCase()||''}
+            value={formik.values?.nroMtc?.toUpperCase() || ''}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             helperText={formik.touched?.nroMtc && formik.errors?.nroMtc}

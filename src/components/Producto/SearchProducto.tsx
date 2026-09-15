@@ -1,13 +1,14 @@
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Icon, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, CircularProgress, TablePagination } from '@mui/material'
+import FavoritoToggle from '../FavoritoToggle';
+import { TIPOS_FAVORITO } from '../../service/FavoritoService';
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Fab, FormControl, MenuItem, InputLabel, Box, Select, Button, TextField, CircularProgress, TablePagination } from '@mui/material'
 import React, { useState } from 'react'
-import clienteAxios from '../../config/axios';
+
 import { Producto } from '../../types/producto.interface';
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
 
 
 import PanToolAltIcon from '@mui/icons-material/PanToolAlt';
+import { ProductoService } from '../../service/ProductoService';
 
 
 interface SearchProductoProps {
@@ -16,7 +17,7 @@ interface SearchProductoProps {
 
 const SearchProducto = ({ onCheck }: SearchProductoProps) => {
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  
 
   const [foundProducts, setfoundProducts] = useState<Producto[]>([])
 
@@ -36,22 +37,19 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
 
   const handleSearch = async () => {
     try {
-      setIsLoading(true)
-      const { data, status } = await clienteAxios(`/api/productos/buscar?${searchField}=${inputQuery}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        setfoundProducts(data?.data)
-        setIsLoading(false)
-      }
-      // console.log(data)
 
+      setIsLoading(true)
+
+      const {data} = await ProductoService.get(`${searchField}=${inputQuery}`)
+
+      setfoundProducts(data)
 
     }
     catch (error) {
       console.log(error)
+    }
+    finally {
+      setIsLoading(false)
     }
   }
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -81,7 +79,7 @@ const SearchProducto = ({ onCheck }: SearchProductoProps) => {
                 <TableCell align="left">{fil.codigo}</TableCell>
                 <TableCell align="left">{fil.descripcion}</TableCell>
                 <TableCell align="left">{fil.unidad}</TableCell>
-                <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+                <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.producto} id={fil.id} fav={fil.fav} /></TableCell>
                 <TableCell align="center"><Fab color='success' size='small' onClick={() => handleCheck(fil)}><PanToolAltIcon sx={{ color: 'white' }} /></Fab></TableCell>
       </TableRow>
     )

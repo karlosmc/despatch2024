@@ -1,6 +1,4 @@
 import {
-
-
   Chip,
   FormControl,
   Grid,
@@ -8,24 +6,21 @@ import {
   MenuItem,
   Paper,
   Select,
-
   TextField,
   Tooltip,
-
 } from "@mui/material";
-import { MouseEvent, useEffect, useState } from "react";
-
+import {
+  MouseEvent,
+  useEffect,
+  useState,
+  useDeferredValue,
+  useRef,
+} from "react";
 
 import DirectionsCarFilledIcon from "@mui/icons-material/DirectionsCarFilled";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import TaxiAlertIcon from "@mui/icons-material/TaxiAlert";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-
-
-
-
-
-
 
 //import TextSearch from "../../components/TextSearch";
 //import DireccionFormChat from "../direction/formDirectionChatGpt";
@@ -33,9 +28,6 @@ import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import { useFormik } from "formik";
 import { Envio } from "../../types/guias/guiaremision.interface";
 import { EnvioSchema } from "../../utils/validateGuiaRemision";
-
-
-
 
 const _MOTIVO_TRASLADO = [
   { id: "01", valor: "Venta" },
@@ -52,7 +44,6 @@ const _MOTIVO_TRASLADO = [
   { id: "17", valor: "Traslado de bienes para transformación" },
   { id: "18", valor: "Traslado emisor itinerante CP" },
 ];
-
 
 type indicadoresType = {
   id: string;
@@ -100,10 +91,8 @@ const _MODALIDAD_TRASLADO = [
 
 const _UNIDAD_PESO_TOTAL = [
   { id: "KGM", valor: "KILOGRAMOS" },
-  { id: "TNL", valor: "TONELADAS" },
+  // { id: "TNL", valor: "TONELADAS" },
 ];
-
-
 
 interface EnvioFormProps {
   onChange: (envio: Envio) => void;
@@ -111,42 +100,80 @@ interface EnvioFormProps {
 }
 
 const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
-
-
+  // Referencia para evitar bucles infinitos
+  const lastSentValues = useRef<string>("");
 
   // const {getError,getSuccess } = useNotification();
 
   const formik = useFormik({
     initialValues: EnvioValues,
     validationSchema: EnvioSchema,
-    onSubmit: (_) => { }
+    enableReinitialize: true, // Permite que formik se reinicialice cuando cambien los valores iniciales
+    onSubmit: (_) => {},
   });
 
   const [indicadores, setIndicadores] = useState<indicadoresType[]>(
-    _INDICADORES_ESPECIALES
+    _INDICADORES_ESPECIALES,
   );
 
+  // Optimización con useDeferredValue para evitar re-renders frecuentes
+  const deferredFormikValues = useDeferredValue(formik.values);
 
   useEffect(() => {
     if (formik.values.codTraslado) {
-      const desTraslado = _MOTIVO_TRASLADO.find(item => item.id === formik.values.codTraslado).valor
-      formik.setFieldValue('desTraslado', desTraslado)
+      const motivoEncontrado = _MOTIVO_TRASLADO.find(
+        (item) => item.id === formik.values.codTraslado,
+      );
+      if (
+        motivoEncontrado &&
+        formik.values.desTraslado !== motivoEncontrado.valor
+      ) {
+        formik.setFieldValue("desTraslado", motivoEncontrado.valor);
+      }
     }
-  }, [formik.values.codTraslado])
+  }, [formik.values.codTraslado]);
 
   useEffect(() => {
-    // console.log(formik.values);
+    // Evitar bucles infinitos comparando con la última versión enviada
+    const currentValuesString = JSON.stringify(deferredFormikValues);
 
-    
-
-    onChange(formik.values);
-  }, [formik.values]);
+    if (lastSentValues.current !== currentValuesString) {
+      lastSentValues.current = currentValuesString;
+      onChange(deferredFormikValues);
+    }
+  }, [deferredFormikValues, onChange]);
 
   useEffect(() => {
-    const filterIndicadores = indicadores.filter(item => item.selected).map(filtrados => filtrados.id)
-    formik.setFieldValue('indicadores', filterIndicadores)
-  }, [indicadores])
+    const filterIndicadores = indicadores
+      .filter((item) => item.selected)
+      .map((filtrados) => filtrados.id);
+    formik.setFieldValue("indicadores", filterIndicadores);
+  }, [indicadores]);
 
+  // useEffect para sincronizar indicadores cuando se cargan datos desde edición
+  useEffect(() => {
+    if (EnvioValues.indicadores && EnvioValues.indicadores.length > 0) {
+      // Solo actualizar si realmente hay cambios
+      const currentSelectedIds = indicadores
+        .filter((ind) => ind.selected)
+        .map((ind) => ind.id);
+      const newSelectedIds = EnvioValues.indicadores;
+
+      // Comparar arrays para evitar actualizaciones innecesarias
+      const hasChanges =
+        currentSelectedIds.length !== newSelectedIds.length ||
+        !currentSelectedIds.every((id) => newSelectedIds.includes(id));
+
+      if (hasChanges) {
+        setIndicadores((prevIndicadores) =>
+          prevIndicadores.map((indicador) => ({
+            ...indicador,
+            selected: EnvioValues.indicadores.includes(indicador.id),
+          })),
+        );
+      }
+    }
+  }, [EnvioValues.indicadores]);
 
   const handleClickIndicator = (evt: MouseEvent<HTMLDivElement>) => {
     evt.preventDefault();
@@ -154,14 +181,13 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
 
     setIndicadores((prevState) =>
       prevState.map((indi) =>
-        indi.id === spanChip ? { ...indi, selected: !indi.selected } : indi
-      )
+        indi.id === spanChip ? { ...indi, selected: !indi.selected } : indi,
+      ),
     );
-  }
+  };
 
   return (
     <>
-
       <Grid container item xs={12} spacing={2}>
         <Grid item lg={6} xs={12}>
           <FormControl fullWidth size="small">
@@ -170,14 +196,14 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
               value={formik.values.codTraslado}
               name="codTraslado"
               label="Motivo de traslado"
-              error={formik.touched.codTraslado && Boolean(formik.errors.codTraslado)}
+              error={
+                formik.touched.codTraslado && Boolean(formik.errors.codTraslado)
+              }
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
             >
               {_MOTIVO_TRASLADO.map((motivo) => (
-
                 <MenuItem key={motivo.id} value={motivo.id}>
-
                   {motivo.valor}
                 </MenuItem>
               ))}
@@ -192,7 +218,9 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
               name="modTraslado"
               label="Modalidad de traslado"
               onChange={formik.handleChange}
-              error={formik.touched.modTraslado && Boolean(formik.errors.modTraslado)}
+              error={
+                formik.touched.modTraslado && Boolean(formik.errors.modTraslado)
+              }
               onBlur={formik.handleBlur}
             >
               {_MODALIDAD_TRASLADO.map((modalidad) => (
@@ -203,10 +231,9 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             </Select>
           </FormControl>
         </Grid>
-     
       </Grid>
       <Grid my={1} container item xs={12} spacing={2}>
-        <Grid item lg={5} xs={6}>
+        <Grid item lg={3} xs={6}>
           <TextField
             fullWidth
             size="small"
@@ -215,10 +242,34 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             onChange={formik.handleChange}
             label="Fecha de traslado"
             type="date"
+            
             style={{ colorScheme: "dark" }}
-            error={formik.touched.fecTraslado && Boolean(formik.errors.fecTraslado)}
+            error={
+              formik.touched.fecTraslado && Boolean(formik.errors.fecTraslado)
+            }
             onBlur={formik.handleBlur}
             helperText={formik.touched.fecTraslado && formik.errors.fecTraslado}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </Grid>
+        <Grid item lg={3} xs={6}>
+          <TextField
+            fullWidth
+            size="small"
+            value={formik.values.fecInicioTrasladoBienes}
+            name="fecInicioTrasladoBienes"
+            onChange={formik.handleChange}
+            label="F. inicio de traslado de bienes"
+            disabled={formik.values.modTraslado === "02"} // Deshabilitar si es transporte privado
+            type="date"
+            style={{ colorScheme: "dark" }}
+            error={
+              formik.touched.fecInicioTrasladoBienes && Boolean(formik.errors.fecInicioTrasladoBienes)
+            }
+            onBlur={formik.handleBlur}
+            helperText={formik.touched.fecInicioTrasladoBienes && formik.errors.fecInicioTrasladoBienes}
             InputLabelProps={{
               shrink: true,
             }}
@@ -228,15 +279,14 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
           <TextField
             fullWidth
             size="small"
-
             value={formik.values.pesoTotal}
             name="pesoTotal"
             onChange={formik.handleChange}
-
             label="Peso Total"
             type="number"
             error={formik.touched.pesoTotal && Boolean(formik.errors.pesoTotal)}
             onBlur={formik.handleBlur}
+            helperText={formik.touched.pesoTotal && formik.errors.pesoTotal}
           />
         </Grid>
         <Grid item lg={2} xs={6}>
@@ -252,7 +302,7 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
             onBlur={formik.handleBlur}
           />
         </Grid>
-        <Grid item lg={3} xs={6}>
+        <Grid item lg={2} xs={6}>
           <FormControl fullWidth size="small">
             <InputLabel>Unidad de Peso Total</InputLabel>
             <Select
@@ -260,7 +310,10 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
               name="undPesoTotal"
               label="Unidad de Peso Total"
               onChange={formik.handleChange}
-              error={formik.touched.undPesoTotal && Boolean(formik.errors.undPesoTotal)}
+              error={
+                formik.touched.undPesoTotal &&
+                Boolean(formik.errors.undPesoTotal)
+              }
               onBlur={formik.handleBlur}
             >
               {_UNIDAD_PESO_TOTAL.map((unidad, index) => (
@@ -272,7 +325,6 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
           </FormControl>
         </Grid>
       </Grid>
-
 
       <Paper
         elevation={15}
@@ -315,7 +367,6 @@ const EnvioForm = ({ onChange, EnvioValues }: EnvioFormProps) => {
           );
         })}
       </Paper>
-
     </>
   );
 };

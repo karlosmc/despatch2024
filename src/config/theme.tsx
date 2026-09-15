@@ -1,8 +1,4 @@
-
-
 import { PaletteMode } from '@mui/material'
-
-
 
 export enum themePalette {
   BG = "#272b30",
@@ -27,86 +23,97 @@ export enum themePalette {
   dark_dark = "#adafae"
 }
 
-const theme  =(mode:PaletteMode='dark') => ({
-  
-  palette: {
-    mode:mode,
-    primary: {
-      main: themePalette.dark_primary,
-      light: themePalette.light_primary,
-      dark: themePalette.dark_primary,
-    },
-    secondary: {
-      main: themePalette.dark_secondary,
-      light: themePalette.dark_secondary_light,
-      dark: themePalette.dark_secondary,
-      
-      // dark:themePalette.dark_dark
-    },
-    info: {
-      main: themePalette.dark_info,
-      dark: themePalette.dark_info,
-      light: themePalette.dark_info,
-    },
-    // error:{
-    //     main:themePalette.dark_error
-    // },
-    success: {
-      main: themePalette.dark_success,
-      light: themePalette.dark_success,
-      dark: themePalette.dark_success,
-      contrastText: '#fff'
-    },
-    warning: {
-      main: themePalette.dark_warning,
-      dark: themePalette.dark_warning,
-      light: themePalette.dark_warning
-    },
-    
-  },
-  typography: {
-    fontFamily: themePalette.FONT_GLOBAL,
-    h6: {
-      fontSize: '1rem'
-    },
-    h7: {
-      fontSize: '0.8rem'
-    },
-    h8: {
-      fontSize: '0.7rem'
-    },
-  },
-  // components: {
-  //   MuiButton: {
-  //     defaultProps: {
-  //       style: {
-  //         textTransform: "none",
-  //         boxShadow: 'none',
-  //         borderRadius: '0.5em'
-  //       }
-  //     }
-  //   },
-  //   MuiAlert: {
-  //     defaultProps: {
-  //       style: {
-  //         borderRadius: '0.8em',
-  //         fontSize: '1em'
-  //       }
-  //     },
-  //     styleOverrides: {
-  //       standardError: {
-  //         border: `1px solid ${themePalette.ERROR_MAIN}`,
-  //         background: themePalette.BG_ERROR_MAIN
-  //       },
-  //       standardSuccess: {
-  //         border: `1px solid ${themePalette.SUCCESS_MAIN}`,
-  //         background: themePalette.BG_SUCCESS_MAIN
-  //       }
-  //     }
-  //   }
-  // },
+/**
+ * Tema de la aplicación. Mantiene la paleta de marca y agrega fondos, bordes y
+ * formas consistentes para claro y oscuro.
+ */
+const theme = (mode: PaletteMode = 'dark') => {
+  const oscuro = mode === 'dark';
+  const divider = oscuro ? 'rgba(255,255,255,0.09)' : 'rgba(15,23,42,0.09)';
 
-})
+  return {
+    palette: {
+      mode: mode,
+      primary: {
+        main: themePalette.dark_primary,
+        light: themePalette.light_primary,
+        dark: themePalette.dark_primary,
+        contrastText: '#fff',
+      },
+      secondary: {
+        main: themePalette.dark_secondary,
+        light: themePalette.dark_secondary_light,
+        dark: themePalette.dark_secondary,
+      },
+      info: {
+        main: themePalette.dark_info,
+        dark: themePalette.dark_info,
+        light: themePalette.dark_info,
+      },
+      success: {
+        main: themePalette.dark_success,
+        light: themePalette.dark_success,
+        dark: themePalette.dark_success,
+        contrastText: '#fff'
+      },
+      warning: {
+        main: themePalette.dark_warning,
+        dark: themePalette.dark_warning,
+        light: themePalette.dark_warning
+      },
+      background: oscuro
+        ? { default: '#101318', paper: '#181c22' }
+        : { default: '#f4f6fa', paper: '#ffffff' },
+      divider,
+    },
+    shape: {
+      borderRadius: 10,
+    },
+    typography: {
+      fontFamily: themePalette.FONT_GLOBAL,
+      button: {
+        textTransform: 'none' as const,
+        fontWeight: 600,
+      },
+      h6: {
+        fontSize: '1rem'
+      },
+      h7: {
+        fontSize: '0.8rem'
+      },
+      h8: {
+        fontSize: '0.7rem'
+      },
+    },
+    components: {
+      MuiButton: {
+        defaultProps: { disableElevation: true },
+      },
+      MuiPaper: {
+        // El modo oscuro de MUI aclara el papel con un degradado: se quita para que
+        // tarjetas y diálogos respeten el fondo definido arriba.
+        styleOverrides: { root: { backgroundImage: 'none' } },
+      },
+      MuiCard: {
+        defaultProps: { elevation: 0 },
+        styleOverrides: { root: { border: `1px solid ${divider}`, borderRadius: 14 } },
+      },
+      MuiAppBar: {
+        defaultProps: { elevation: 0 },
+      },
+      MuiTableCell: {
+        styleOverrides: { head: { fontWeight: 700 } },
+      },
+      MuiChip: {
+        styleOverrides: { label: { fontWeight: 600 } },
+      },
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: { WebkitFontSmoothing: 'antialiased' },
+        },
+      },
+    },
+  }
+}
 
-export default theme ;
-
+export default theme;

@@ -1,15 +1,17 @@
+import { FavoritoService, TIPOS_FAVORITO, favoritoVigente } from '../../service/FavoritoService';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { useEffect, useState } from 'react'
 
 
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
+
 
 
 import { persona, searchPersona } from '../../types/persona.interface';
 import { PersonaSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 import ButtonSearch from '../ButtonSearch';
+import { PersonaService } from '../../service/PersonaService';
 
 
 
@@ -34,15 +36,15 @@ interface PersonaFormProps {
 const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
 
 
-  const { getError } = useNotification()
+  const { getError, getSuccess } = useNotification()
 
-  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
+  const [fav, setFav] = useState<boolean>(favoritoVigente(TIPOS_FAVORITO.cliente, initialValue?.id, initialValue?.fav));
 
-  const token = localStorage.getItem('AUTH_TOKEN');
 
+  
   const handleSearch = (searchPerson: searchPersona): void => {
-
-    if (!searchPerson){
+    console.log(searchPerson);
+    if (!searchPerson) {
       getError('Tiempo de espera terminado, intentelo otra vez o verifica el número')
       return;
     }
@@ -56,64 +58,73 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
 
   const storePersona = async (values: persona) => {
 
-
     try {
-      const { data, status } = await clienteAxios.post('/api/clientes', {
-        numDoc: values.numDoc,
-        rznSocial: values.rznSocial,
-        fav: values.fav,
-        isCompany: values.isCompany,
-        email: values.email,
-        nombreCorto: values.nombreCorto,
-        telephone: values.telephone,
-        tipoDoc: values.tipoDoc,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      //  console.log(data)
-      if (status === 200) {
-        onConfirm(data.persona);
+      const response = await PersonaService.save(values);
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.cliente, response?.id, values.fav, false);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
+      onConfirm(response);
+      getSuccess('Se ha guardado la Persona con éxito')
+
+    } catch (error) {
+      console.log(error);
+      getSuccess(error || 'Hubo un error al guardar a la persona')
+
     }
-    catch (error) {
-      // console.log(error)
 
-      getError(error?.response?.data?.message)
+    // try {
+    //   const { data, status } = await clienteAxios.post('/api/clientes', {
+    //     numDoc: values.numDoc,
+    //     rznSocial: values.rznSocial,
+    //     fav: values.fav,
+    //     isCompany: values.isCompany,
+    //     email: values.email,
+    //     nombreCorto: values.nombreCorto,
+    //     telephone: values.telephone,
+    //     tipoDoc: values.tipoDoc,
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   //  console.log(data)
+    //   if (status === 200) {
+    //     onConfirm(data.persona);
+    //   }
+    // }
+    // catch (error) {
+    //   // console.log(error)
+
+    //   getError(error?.response?.data?.message)
 
 
-    }
+    // }
 
 
 
   }
 
   const updatePersona = async (values: persona) => {
-    try {
-      const { data, status } = await clienteAxios.put(`/api/clientes/${values.id}`, {
-        numDoc: values.numDoc,
-        rznSocial: values.rznSocial,
-        fav: values.fav,
-        email: values.email,
-        nombreCorto: values.nombreCorto,
-        telephone: values.telephone,
-        tipoDoc: values.tipoDoc,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
 
-      // console.log(data)
-      if (status === 200) {
-        onConfirm(data.cliente);
+
+    try {
+      const response = await PersonaService.update(values);
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.cliente, response?.id ?? values.id, values.fav, true);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
+      onConfirm(response);
+      getSuccess('Se ha actualizado la Persona con éxito')
+
+    } catch (error) {
+      console.log(error);
+      getSuccess(error || 'Hubo un error al actualizar a la persona')
     }
-    catch (error) {
-      console.log(error)
-    }
-    // onConfirm();
   }
 
   const formik = useFormik({
@@ -121,10 +132,10 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
     validationSchema: PersonaSchema,
     onSubmit: (values) => {
 
-      const newValues:persona={
+      const newValues: persona = {
         ...values,
-        rznSocial:values.rznSocial.toUpperCase(),
-        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
+        rznSocial: values.rznSocial.toUpperCase(),
+        nombreCorto: values?.nombreCorto?.toUpperCase() || '',
       }
 
       if (edit) {
@@ -194,12 +205,12 @@ const ModalPersona = ({ initialValue, onConfirm, edit }: PersonaFormProps) => {
           label="Razón social"
           sx={{ my: 1.5 }}
 
-          value={formik.values?.rznSocial?.toUpperCase()||''}
+          value={formik.values?.rznSocial?.toUpperCase() || ''}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
           helperText={formik.touched.rznSocial && formik.errors.rznSocial}
           error={formik.touched.rznSocial && Boolean(formik.errors.rznSocial)}
-          
+
         />
         <TextField
           margin="normal"

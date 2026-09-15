@@ -1,3 +1,4 @@
+import { FavoritoService, TIPOS_FAVORITO, favoritoVigente } from '../../service/FavoritoService';
 import { Box, Button, FormControl, InputLabel, Select, TextField } from '@mui/material';
 import { useEffect, useState } from 'react'
 import { MenuItem } from '@mui/material';
@@ -5,7 +6,10 @@ import { ProductoSchema } from '../../utils/validateForm';
 
 import { Producto } from '../../types/producto.interface'
 import { useFormik } from 'formik';
-import clienteAxios from '../../config/axios';
+
+
+import { useNotification } from '../../context/notification.context';
+import { ProductoService } from '../../service/ProductoService';
 
 
 type UnidadMedidaType = {
@@ -24,7 +28,7 @@ const _UNIDAD_MEDIDA: UnidadMedidaType[] = [
   ,
   {
     codigo: 'KGM',
-    descripcion: 'KGM:UNIDAD (SERVICIOS)',
+    descripcion: 'KGM:KILOGRAMOS',
   },
   {
     codigo: 'LTR',
@@ -33,7 +37,16 @@ const _UNIDAD_MEDIDA: UnidadMedidaType[] = [
   {
     codigo: 'GLL',
     descripcion: 'GLL:US GALON (3,7843 L)',
+  },
+  {
+    codigo:'BJ',
+    descripcion:'BJ:BALDE'
+  },
+  {
+    codigo:'BG',
+    descripcion:'BG:BOLSA'
   }
+
 ]
 
 
@@ -55,33 +68,45 @@ interface ProductoFormProps {
 
 const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => {
 
-  const [fav, setFav] = useState<boolean>(initialValue?.fav || false);
+  const [fav, setFav] = useState<boolean>(favoritoVigente(TIPOS_FAVORITO.producto, initialValue?.id, initialValue?.fav));
 
-  const token = localStorage.getItem('AUTH_TOKEN');
+  const {getError,getSuccess} = useNotification()
+
 
   const storeProducto = async (values: Producto) => {
 
     try {
-      const { data, status } = await clienteAxios.post('/api/productos', {
-        codigo: values.codigo,
-        descripcion: values.descripcion,
-        fav: values.fav,
-        unidad: values.unidad,
-        codProdSunat: values.codProdSunat,
-        nombreCorto: values.nombreCorto,
+      // const { data, status } = await clienteAxios.post('/api/productos', {
+      //   codigo: values.codigo,
+      //   descripcion: values.descripcion,
+      //   fav: values.fav,
+      //   unidad: values.unidad,
+      //   codProdSunat: values.codProdSunat,
+      //   nombreCorto: values.nombreCorto,
 
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      // }, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
       
-      if (status === 200) {
-        onConfirm(data.producto);
+      // if (status === 200) {
+      //   onConfirm(data.producto);
+      // }
+
+      const response = await ProductoService.save(values);
+      getSuccess('Producto guardado con éxito')
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.producto, response?.id, values.fav, false);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
       }
+      onConfirm(response)
     }
     catch (error) {
       console.log(error)
+      getError(error || 'Hubo un error al guardar el producto')
     }
 
 
@@ -91,27 +116,61 @@ const ModalProducto = ({ initialValue, onConfirm, edit }: ProductoFormProps) => 
   const updateProducto = async (values: Producto) => {
 
 
-    try {
-      const { data ,status} = await clienteAxios.put(`/api/productos/${values.id}`, {
-        descripcion: values.descripcion,
-        fav: values.fav,
-        unidad: values.unidad,
-        codProdSunat: values.codProdSunat || '',
-        nombreCorto: values.nombreCorto || '',
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      if (status === 200) {
-        onConfirm(data.producto);
-      }
+    // try {
+    //   const { data ,status} = await clienteAxios.put(`/api/productos/${values.id}`, {
+    //     descripcion: values.descripcion,
+    //     fav: values.fav,
+    //     unidad: values.unidad,
+    //     codProdSunat: values.codProdSunat || '',
+    //     nombreCorto: values.nombreCorto || '',
+    //   }, {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`
+    //     }
+    //   })
+    //   if (status === 200) {
+    //     onConfirm(data.producto);
+    //   }
       
+    // }
+    // catch (error) {
+    //   console.log(error)
+    // }
+    // // onConfirm();
+
+     try {
+      // const { data, status } = await clienteAxios.post('/api/productos', {
+      //   codigo: values.codigo,
+      //   descripcion: values.descripcion,
+      //   fav: values.fav,
+      //   unidad: values.unidad,
+      //   codProdSunat: values.codProdSunat,
+      //   nombreCorto: values.nombreCorto,
+
+      // }, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`
+      //   }
+      // })
+      
+      // if (status === 200) {
+      //   onConfirm(data.producto);
+      // }
+
+      const response = await ProductoService.update(values);
+      getSuccess('Producto actualizado con éxito')
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.producto, response?.id ?? values.id, values.fav, true);
+      if (motivoFav) {
+        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
+        // usa el mismo snackbar y lo taparía.
+        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
+      }
+      onConfirm(response)
     }
     catch (error) {
       console.log(error)
+      getError(error || 'Hubo un error al actualizar el producto')
     }
-    // onConfirm();
   }
 
   const formik = useFormik({

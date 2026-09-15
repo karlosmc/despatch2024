@@ -1,198 +1,187 @@
+import { Dispatch, ReactNode, SetStateAction } from 'react'
 import { Menu, MenuItem, Sidebar } from 'react-pro-sidebar'
+import { Avatar, Box, Chip, Theme, Typography, alpha, useMediaQuery, useTheme } from '@mui/material'
+import { Link, useLocation } from 'react-router-dom'
 
+import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded'
+import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded'
+import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded'
+import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded'
+import EngineeringRoundedIcon from '@mui/icons-material/EngineeringRounded'
+import RecentActorsRoundedIcon from '@mui/icons-material/RecentActorsRounded'
+import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
+import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded'
+import PostAddRoundedIcon from '@mui/icons-material/PostAddRounded'
+import BarChartRoundedIcon from '@mui/icons-material/BarChartRounded'
+import SettingsApplicationsRoundedIcon from '@mui/icons-material/SettingsApplicationsRounded'
+import GpsFixedRoundedIcon from '@mui/icons-material/GpsFixedRounded'
+import NumbersRoundedIcon from '@mui/icons-material/NumbersRounded'
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PeopleIcon from '@mui/icons-material/People';
-import EngineeringIcon from '@mui/icons-material/Engineering';
-import RecentActorsIcon from '@mui/icons-material/RecentActors';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import SettingsApplicationsIcon from '@mui/icons-material/SettingsApplications';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import NumbersIcon from '@mui/icons-material/Numbers';
+import { useAuthStore } from '../../store/authStore'
+import { inicialesDe } from './AppHeader'
 
-// import { StyleOutlined } from '@mui/icons-material';
-
-
-import { Avatar, Box, SxProps, Theme, Typography, css, styled, useMediaQuery, useTheme } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../../hooks/useAuth';
-
-
-
-
-interface AppHeaderInterface {
+interface SideNavInterface {
   toggle: boolean;
-  setToggle: React.Dispatch<React.SetStateAction<Boolean>>
-
+  setToggle: Dispatch<SetStateAction<boolean>>
 }
 
+type Perfil = string | undefined
 
-const SideNav = ({ toggle, setToggle }: AppHeaderInterface) => {
+interface ItemMenu {
+  to: string;
+  label: string;
+  icon: ReactNode;
+  /** Por defecto la ruta exacta o cualquiera que cuelgue de ella. */
+  coincide?: (pathname: string) => boolean;
+}
 
-  // const {broken,collapseSidebar,toggleSidebar} = useProSidebar()
+interface SeccionMenu {
+  titulo: string;
+  visible?: (perfil: Perfil) => boolean;
+  items: ItemMenu[];
+}
 
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+const noOperador = (perfil: Perfil) => perfil !== 'operador'
+const soloAdmin = (perfil: Perfil) => perfil === 'admin'
 
-  const isMedium = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
+/** Mismas rutas y permisos que antes; lo más usado (guías) va primero. */
+const SECCIONES: SeccionMenu[] = [
+  {
+    titulo: 'General',
+    visible: noOperador,
+    items: [
+      { to: '/admin', label: 'Dashboard', icon: <DashboardRoundedIcon />, coincide: (p) => p === '/admin' },
+    ],
+  },
+  {
+    titulo: 'Guías',
+    items: [
+      { to: '/admin/guias', label: 'Panel de guías', icon: <SpaceDashboardRoundedIcon /> },
+      { to: '/admin/guiaremision/nueva', label: 'Emitir guía', icon: <AutoAwesomeRoundedIcon /> },
+      {
+        to: '/admin/guiaremision',
+        label: 'Emisión clásica',
+        icon: <PostAddRoundedIcon />,
+        coincide: (p) => p === '/admin/guiaremision' || p.startsWith('/admin/guiaremision/edit'),
+      },
+    ],
+  },
+  {
+    titulo: 'Catálogos',
+    visible: noOperador,
+    items: [
+      { to: '/admin/productos', label: 'Productos', icon: <InventoryRoundedIcon /> },
+      { to: '/admin/puntos', label: 'Puntos de ubicación', icon: <LocationOnRoundedIcon /> },
+      { to: '/admin/personas', label: 'Personas', icon: <PeopleRoundedIcon /> },
+      { to: '/admin/transportista', label: 'Transportistas', icon: <EngineeringRoundedIcon /> },
+      { to: '/admin/conductores', label: 'Conductores', icon: <RecentActorsRoundedIcon /> },
+      { to: '/admin/vehiculos', label: 'Vehículos', icon: <LocalShippingRoundedIcon /> },
+    ],
+  },
+  {
+    titulo: 'Reportes',
+    visible: noOperador,
+    items: [{ to: '/admin/reportes', label: 'Reportes', icon: <BarChartRoundedIcon /> }],
+  },
+  {
+    titulo: 'Configuración',
+    visible: soloAdmin,
+    items: [
+      { to: '/admin/puntoemision', label: 'Puntos de emisión', icon: <GpsFixedRoundedIcon /> },
+      { to: '/admin/numeracion', label: 'Numeración', icon: <NumbersRoundedIcon /> },
+      { to: '/admin/sunat', label: 'Parámetros SUNAT', icon: <SettingsApplicationsRoundedIcon /> },
+    ],
+  },
+]
 
+const estaActivo = (item: ItemMenu, pathname: string) =>
+  item.coincide ? item.coincide(pathname) : pathname === item.to || pathname.startsWith(`${item.to}/`)
 
+const SideNav = ({ toggle, setToggle }: SideNavInterface) => {
+  const theme = useTheme()
+  const location = useLocation()
+  const isMedium = useMediaQuery((t: Theme) => t.breakpoints.down('md'))
 
-  const theme = useTheme();
-  // const toolbarHeight = theme.mixins.toolbar;
-  const location = useLocation();
+  const user = useAuthStore(state => state.user)
+  const perfil: Perfil = user?.perfil
 
-  const { user } = useAuth({ middleware: '', url: '' })
+  const secciones = SECCIONES.filter((seccion) => !seccion.visible || seccion.visible(perfil))
 
-  // console.log(user)
-  const MyMenu = styled(MenuItem)(({ theme, hidden }) => ({
-    '& .ps-menu-button:hover': css({
-      background: `${theme.palette.secondary.main} !important`
-    }),
-    display: hidden ? 'none' : 'block'
-  }))
-
-
-  const ConditionalDiv = ({ hidden, textContent }) => (
-    <div style={{ flex: 1, marginBottom: '10px',display:hidden?'none':'block' }}>
-      <div style={{ padding: '0 24px', marginBottom: '8px' }}>
-        <Typography
-          variant="body2"
-          fontWeight={600}
-          style={{ opacity: 0.5, letterSpacing: '0.5px' }}
-        >
-          {textContent}
-        </Typography>
-      </div>
-    </div>
-
-  );
-
+  // En móvil el menú es un cajón: se cierra al elegir una opción.
+  const alNavegar = () => {
+    if (isMedium) setToggle(false)
+  }
 
   return (
     <Sidebar
-      style={{
-        height: '100%',
-        top: 'auto'
-      }}
-
+      style={{ height: '100%', top: 'auto', borderRightColor: theme.palette.divider }}
       onBackdropClick={() => setToggle(false)}
       breakPoint={isMedium ? 'all' : 'md'}
-      backgroundColor={isMobile || isMedium ? 'rgb(195,193,193)' : 'default'}
-
+      backgroundColor={theme.palette.background.paper}
       toggled={toggle}
-    // collapsed={sidebarCollapsed}
-
     >
-      <Box sx={avatarContainer}>
-        <Avatar sx={avatar} alt='avatar' src='/assets/img/avatars/avatar04.png' />
-        {
-          !isMobile ?
-            <Typography variant='body2' sx={yourChannel}>{user?.name}</Typography>
-            : null
-        }
-        {
-          !isMobile ?
-            <Typography variant='overline'>Guias Electrónicas</Typography>
-            : null
-        }
+      <Box display='flex' alignItems='center' gap={1.5} px={2.5} py={3}>
+        <Avatar sx={{ width: 42, height: 42, fontWeight: 700, bgcolor: 'primary.main' }}>
+          {inicialesDe(user?.name)}
+        </Avatar>
+        <Box minWidth={0}>
+          <Typography variant='body2' fontWeight={700} noWrap>{user?.name || 'Usuario'}</Typography>
+          <Typography variant='caption' color='text.secondary' noWrap display='block'>
+            Guías electrónicas
+          </Typography>
+          {perfil && (
+            <Chip size='small' label={perfil} sx={{ mt: 0.5, height: 20, fontSize: 11, textTransform: 'capitalize' }} />
+          )}
+        </Box>
       </Box>
+
       <Menu
         menuItemStyles={{
-          button: ({ active }) => {
-            return {
-              backgroundColor: active ? theme.palette.primary.main : undefined
-            }
-          }
+          button: ({ active }) => ({
+            margin: '2px 10px',
+            height: 42,
+            borderRadius: 10,
+            color: active ? theme.palette.primary.main : theme.palette.text.primary,
+            fontWeight: active ? 700 : 500,
+            backgroundColor: active ? alpha(theme.palette.primary.main, 0.14) : 'transparent',
+            '&:hover': {
+              backgroundColor: active
+                ? alpha(theme.palette.primary.main, 0.2)
+                : alpha(theme.palette.text.primary, 0.06),
+            },
+          }),
+          icon: ({ active }) => ({
+            color: active ? theme.palette.primary.main : theme.palette.text.secondary,
+          }),
+          label: { fontSize: 14 },
         }}
       >
-
-        <ConditionalDiv hidden={user?.perfil==='operador'} textContent={'Dashboard'}/>
-       
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/'} component={<Link to="/" />} icon={<DashboardIcon />}>
-          <Typography variant='body2'>Dashboard</Typography>
-        </MyMenu>
-
-        <ConditionalDiv hidden={user?.perfil==='operador'} textContent={'Tablas'}/>
-
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/productos'} component={<Link to="/admin/productos" />} icon={<InventoryIcon />}>
-          <Typography variant='body2'>Productos</Typography>
-        </MyMenu>
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/puntos'} component={<Link to="/admin/puntos" />} icon={<LocationOnIcon />}>
-          <Typography variant='body2'>Puntos de ubicación</Typography>
-        </MyMenu>
-
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/personas'} component={<Link to="/admin/personas" />} icon={<PeopleIcon />}>
-          <Typography variant='body2'>Personas</Typography>
-        </MyMenu>
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/transportista'} component={<Link to="/admin/transportista" />} icon={<EngineeringIcon />}>
-          <Typography variant='body2'>Transportistas</Typography>
-        </MyMenu>
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/conductores'} component={<Link to="/admin/conductores" />} icon={<RecentActorsIcon />}>
-          <Typography variant='body2'>Conductores</Typography>
-        </MyMenu>
-
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/vehiculos'} component={<Link to="/admin/vehiculos" />} icon={<LocalShippingIcon />}>
-          <Typography variant='body2'>Vehiculos</Typography>
-        </MyMenu>
-
-        <ConditionalDiv hidden={false} textContent={'Guias'}/>
-
-        <MyMenu hidden={false} active={location.pathname === '/admin/guias'} component={<Link to="/admin/guias" />} icon={<SpaceDashboardIcon />}>
-          <Typography variant='body2'>Panel Guias</Typography>
-        </MyMenu>
-
-        {/* <MyMenu active={location.pathname === '/gre/guiaremision'} component={<a href="/gre/guiaremision" target='_blank' rel='noopener noreferrer' />} icon={<SourceOutlined />}>
-          <Typography variant='body2'>Guias otra pestaña</Typography>
-        </MyMenu> */}
-
-        <MyMenu hidden={false} active={location.pathname === '/admin/guiaremision'} component={<Link to="/admin/guiaremision" />} icon={<PostAddIcon />}>
-          <Typography variant='body2'>Formulario Guías</Typography>
-        </MyMenu>
-        <ConditionalDiv hidden={user?.perfil==='operador'} textContent={'Reportes'}/>
-
-        <MyMenu hidden={user?.perfil==='operador'} active={location.pathname === '/admin/reportes'} component={<Link to="/admin/reportes" />} icon={<BarChartIcon />}>
-          <Typography variant='body2'>Reportes</Typography>
-        </MyMenu>
-
-        <ConditionalDiv hidden={user?.perfil!=='admin'} textContent={'Configuración'}/>
-
-        <MyMenu hidden={user?.perfil!=='admin'} active={location.pathname === '/admin/puntoemision'} component={<Link to="/admin/puntoemision" />} icon={<GpsFixedIcon />}>
-          <Typography variant='body2'>Puntos de emision</Typography>
-        </MyMenu>
-        <MyMenu hidden={user?.perfil!=='admin'} active={location.pathname === '/admin/numeracion'} component={<Link to="/admin/numeracion" />} icon={<NumbersIcon />}>
-          <Typography variant='body2'>Numeración</Typography>
-        </MyMenu>
-        <MyMenu hidden={user?.perfil!=='admin'} active={location.pathname === '/admin/sunat'} component={<Link to="/admin/sunat" />} icon={<SettingsApplicationsIcon />}>
-          <Typography variant='body2'>Sunat</Typography>
-        </MyMenu>
-
-
+        {secciones.map((seccion) => (
+          <Box key={seccion.titulo} mb={1.5}>
+            <Typography
+              variant='overline'
+              color='text.secondary'
+              sx={{ px: 3, display: 'block', opacity: 0.7, letterSpacing: 1, lineHeight: 2.2 }}
+            >
+              {seccion.titulo}
+            </Typography>
+            {seccion.items.map((item) => (
+              <MenuItem
+                key={item.to}
+                active={estaActivo(item, location.pathname)}
+                component={<Link to={item.to} />}
+                icon={item.icon}
+                onClick={alNavegar}
+              >
+                {item.label}
+              </MenuItem>
+            ))}
+          </Box>
+        ))}
       </Menu>
-
     </Sidebar>
   )
 }
 
 export default SideNav
-
-
-const avatarContainer: SxProps<Theme> = {
-  display: 'flex',
-  alignItems: 'center',
-  flexDirection: 'column',
-  my: 5,
-}
-
-const avatar: SxProps<Theme> = {
-  width: '30%',
-  height: 'auto',
-}
-
-const yourChannel: SxProps<Theme> = {
-  mt: 1
-}

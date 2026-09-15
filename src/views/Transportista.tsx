@@ -1,17 +1,17 @@
-import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import useSWR from 'swr';
-import clienteAxios from '../config/axios';
+import FavoritoToggle from '../components/FavoritoToggle';
+import { TIPOS_FAVORITO } from '../service/FavoritoService';
+import { Box, Button, CircularProgress, Container, Fab, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 
 
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import GradeIcon from '@mui/icons-material/Grade';
+
 
 import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
 
 import { transportista } from '../types/transportista.interface';
 import ModalTransportista from '../components/Transportista';
+import { TransportistaService } from '../service/TransportistaService';
 
 
 type ModalsProps = {
@@ -28,6 +28,10 @@ const Transportistas = () => {
     title: "",
   });
 
+  const [listaTransportista, setListaTransportistas] = useState<transportista[]>([]);
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
@@ -40,6 +44,8 @@ const Transportistas = () => {
 
   const handleConfirm = (): void => {
     handleCloseModalForm()
+    setPage(0)
+    getTransportistas()
   }
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -55,22 +61,29 @@ const Transportistas = () => {
   };
 
 
-  // const [edit, setEdit] = useState<boolean>(false);
+  const getTransportistas = async () => {
+    setIsLoading(true)
+    try {
+      const {data} = await TransportistaService.get('');
+      setListaTransportistas(data)
+    } catch (error) {
 
-  const token = localStorage.getItem('AUTH_TOKEN');
-  const fetcher = () => clienteAxios('/api/transportistas', {
-    headers: {
-      Authorization: `Bearer ${token}`
+      console.log(error);
     }
-  })
+    finally {
+      setIsLoading(false)
+    }
 
-  const { data,  isLoading } = useSWR('/api/transportistas', fetcher);
+  }
+  useEffect(() => {
+    getTransportistas()
+  }, [])
 
-  // if (isLoading) return <div>Cargando</div>
+
 
   const rows = [];
 
-  data?.data?.data.forEach((fil:transportista) => {
+  listaTransportista?.forEach((fil: transportista) => {
     rows.push(
       <TableRow
         key={fil.id}
@@ -79,7 +92,7 @@ const Transportistas = () => {
         <TableCell align="left">{fil.numDoc}</TableCell>
         <TableCell align="left">{fil.rznSocial}</TableCell>
         <TableCell align="left">{fil.tipodocumento}</TableCell>
-        <TableCell align="left"><Icon color='warning' >{fil.fav ? <GradeIcon /> : <StarOutlineIcon />}</Icon></TableCell>
+        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.transportista} id={fil.id} fav={fil.fav} /></TableCell>
         <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditTransportista(fil)} ><EditIcon /></Fab></TableCell>
       </TableRow>
     )
@@ -87,7 +100,7 @@ const Transportistas = () => {
 
 
 
-  const handleEditTransportista = (transportista:transportista) => {
+  const handleEditTransportista = (transportista: transportista) => {
     // setEdit(false);
     // const selectedPunto = data.data.data.find(item => item.id === id);
     handleOpenModalForm(
