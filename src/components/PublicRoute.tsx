@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { CircularProgress, Box, Typography } from '@mui/material';
 
 interface PublicRouteProps {
   children: React.ReactNode;
@@ -10,31 +9,18 @@ interface PublicRouteProps {
 
 const PublicRoute: React.FC<PublicRouteProps> = ({ 
   children, 
-  redirectTo = '/admin' 
+  redirectTo = '/admin/guias' 
 }) => {
-  const { user, isAuthenticated, loading, checkAuth } = useAuthStore();
+  const { user, isAuthenticated, checkAuth } = useAuthStore();
 
   useEffect(() => {
     // Verificar autenticación al montar el componente
     checkAuth();
   }, [checkAuth]);
 
-  // Mostrar loading mientras se verifica la autenticación
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-        gap={2}
-      >
-        <CircularProgress size={60} />
-        <Typography variant="h6">Verificando autenticación...</Typography>
-      </Box>
-    );
-  }
+  // Sin pantalla de "verificando" aquí: `loading` también se activa durante el
+  // login, y reemplazar el formulario lo desmontaba y perdía el mensaje de error.
+  // checkAuth es síncrono, así que no hace falta esperar.
 
   // Si ya está autenticado, redirigir a la página principal
   if (isAuthenticated && user) {

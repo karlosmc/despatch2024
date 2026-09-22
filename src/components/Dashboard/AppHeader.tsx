@@ -27,6 +27,7 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 
 import { useThemeContext } from '../../context/themeProvider'
+import DatosTrabajo from './DatosTrabajo'
 import { useAuthStore } from '../../store/authStore'
 
 interface AppHeaderInterface {
@@ -39,6 +40,7 @@ const TITULOS: [string, string][] = [
   ['/admin/guiaremision/nueva/', 'Editar guía'],
   ['/admin/guiaremision/nueva', 'Emitir guía'],
   ['/admin/guiaremision/edit', 'Editar guía'],
+  ['/admin/guiaremision/rapida', 'Guía rápida'],
   ['/admin/guiaremision', 'Emisión clásica'],
   ['/admin/guias', 'Panel de guías'],
   ['/admin/productos', 'Productos'],
@@ -51,6 +53,7 @@ const TITULOS: [string, string][] = [
   ['/admin/puntoemision', 'Puntos de emisión'],
   ['/admin/numeracion', 'Numeración'],
   ['/admin/sunat', 'Parámetros SUNAT'],
+  ['/admin/favoritos/clonar', 'Clonar favoritos'],
   ['/admin/migraciones', 'Migraciones'],
   ['/admin', 'Dashboard'],
 ];
@@ -103,24 +106,27 @@ const AppHeader = ({ toggle, setToggle }: AppHeaderInterface) => {
           <MenuRoundedIcon />
         </IconButton>
 
+        {/* En celular el logo no entra: va en el menú lateral. */}
         <Box
           component='img'
           alt='Logo de la empresa'
           src={`/assets/img/${logo}`}
           onClick={() => navigate('/')}
-          sx={{ borderRadius: 2, height: { xs: 32, sm: 38 }, cursor: 'pointer', ml: 0.5 }}
+          sx={{ display: { xs: 'none', sm: 'block' }, borderRadius: 2, height: 38, cursor: 'pointer', ml: 0.5 }}
         />
 
         {titulo && (
           <>
             <Divider orientation='vertical' flexItem sx={{ mx: 1, my: 1.5, display: { xs: 'none', sm: 'block' } }} />
-            <Typography variant='subtitle1' fontWeight={700} noWrap sx={{ display: { xs: 'none', sm: 'block' } }}>
+            <Typography variant='subtitle1' fontWeight={700} noWrap sx={{ minWidth: 0 }}>
               {titulo}
             </Typography>
           </>
         )}
 
         <Box sx={{ flexGrow: 1 }} />
+
+        <DatosTrabajo />
 
         <Tooltip title={mode === 'dark' ? 'Cambiar a colores claros' : 'Cambiar a colores oscuros'}>
           <IconButton onClick={toggleColorMode} aria-label='Cambiar tema'>

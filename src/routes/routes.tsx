@@ -7,7 +7,6 @@ import Inicio from "../views/Inicio";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginForm from "../views/LoginForm";
 import AdminLayout from "../layouts/AdminLayout";
-import Dashboard from "../views/Dashboard";
 import LogoutPage from "../views/LogoutPage";
 import AuthDebugPage from "../views/AuthDebugPage";
 
@@ -22,17 +21,20 @@ import Productos from "../views/Productos";
 // import CustomStepper from "../pages/CustomStepper";
 import GuiaRemisionMain from "../pages/GuiaRemision";
 import GuiaRemisionNueva from "../pages/GuiaRemisionNueva";
+import GuiaRapida from "../pages/GuiaRapida";
+import { GUIA_RAPIDA_HABILITADA } from "../config/modulos";
 import PuntoUbicacion from "../views/PuntosUbicacion";
 import Personas from "../views/Personas";
 import Conductores from "../views/Conductores";
 import Transportistas from "../views/Transportista";
 import SunatParameters from "../views/SunatParameters";
 
+import ClonarFavoritos from "../views/ClonarFavoritos";
 import Vehiculos from "../views/Vehiculos";
 import Guias from "../views/Guias";
 import PuntoEmision from "../views/PuntoEmision";
 import Numeracion from "../views/Numeracion";
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 
 // Componentes de protección de rutas
 import PrivateRoute from "../components/PrivateRoute";
@@ -88,8 +90,9 @@ export const router = createBrowserRouter([
     ),
     children: [
       {
+        // Sin dashboard por ahora: /admin lleva al panel de guías.
         index: true,
-        element: <Dashboard />
+        element: <Navigate to="/admin/guias" replace />
       },
       {
         path: '/admin/reportes',
@@ -124,6 +127,11 @@ export const router = createBrowserRouter([
         element: <Vehiculos />
       },
       {
+        // Sólo admin: la página redirige si el perfil es otro.
+        path: '/admin/favoritos/clonar',
+        element: <ClonarFavoritos />
+      },
+      {
         path: '/admin/numeracion',
         element: <Numeracion />
       },
@@ -147,6 +155,11 @@ export const router = createBrowserRouter([
       {
         path: '/admin/guiaremision/nueva/:id',
         element: <GuiaRemisionNueva />
+      },
+      {
+        path: '/admin/guiaremision/rapida',
+        // Sólo para empresas con SCOP (VITE_GUIA_RAPIDA); si no, se va a la emisión normal.
+        element: GUIA_RAPIDA_HABILITADA ? <GuiaRapida /> : <Navigate to="/admin/guiaremision/nueva" replace />
       },
       // {
       //   path: '/admin/guiaremision/edit/:id',

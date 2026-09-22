@@ -778,9 +778,101 @@
                 }
             }
         },
+        "/scop/consulta": {
+            "post": {
+                "operationId": "consultaScopApi.getData",
+                "description": "Hace de intermediario con el API de SCOP para que la API key no salga del\nservidor. Ese API tarda 10-18 s porque entra al portal de SCOP en cada\nconsulta, y el tiempo depende de la sucursal y las fechas, no de la placa.\n\nPor eso se consulta una sola vez por sucursal, rango y tipos, se guarda en\ncaché y la placa se filtra aquí: otra placa de la misma sucursal y fechas\nresponde al instante (`desde_cache: true`). Un rango ya cerrado se guarda\nmás tiempo que uno que incluye hoy. Con `refrescar: true` se vuelve a\nconsultar el portal.\n\n`placa` es opcional: sin ella se devuelven todos los registros. La\ncomparación ignora mayúsculas, guiones y espacios.\n\nErrores: 504 si el API no responde a tiempo, 502 si el API o el portal\nfallan o se rechaza la API key, 503 si una consulta igual en curso no\ntermina, y el propio código del API (p. ej. 404 sucursal sin\ncredenciales) con su mensaje en `message`.",
+                "summary": "Consultar SCOP en el API externo",
+                "tags": [
+                    "ConsultaScopApi"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "sucursal": {
+                                        "type": "string"
+                                    },
+                                    "fecha_inicio": {
+                                        "type": "string"
+                                    },
+                                    "fecha_fin": {
+                                        "type": "string"
+                                    },
+                                    "para_liquido": {
+                                        "type": "boolean"
+                                    },
+                                    "para_glp": {
+                                        "type": "boolean"
+                                    },
+                                    "placa": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "refrescar": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "required": [
+                                    "sucursal",
+                                    "fecha_inicio",
+                                    "fecha_fin",
+                                    "para_liquido",
+                                    "para_glp"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "success": {
+                                                    "type": "boolean"
+                                                },
+                                                "data": {
+                                                    "type": "string"
+                                                },
+                                                "desde_cache": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "success",
+                                                "data",
+                                                "desde_cache"
+                                            ]
+                                        },
+                                        {
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/despatches/baja/{id}": {
             "put": {
                 "operationId": "despatch.baja",
+                "description": "Marca el estado electrónico como 'B' y libera sus números de SCOP, que\nquedan disponibles para otra guía.",
+                "summary": "Dar de baja una guía",
                 "tags": [
                     "Despatch"
                 ],
@@ -804,6 +896,33 @@
                     }
                 },
                 "responses": {
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Error al dar de baja la guía"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "error",
+                                        "message",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
                     "200": {
                         "description": "",
                         "content": {
@@ -817,6 +936,9 @@
                                         "despatch": {
                                             "type": "string"
                                         },
+                                        "scopsLiberados": {
+                                            "type": "string"
+                                        },
                                         "exito": {
                                             "type": "boolean"
                                         }
@@ -824,6 +946,29 @@
                                     "required": [
                                         "message",
                                         "despatch",
+                                        "scopsLiberados",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "error",
                                         "exito"
                                     ]
                                 }
@@ -936,6 +1081,13 @@
                                     },
                                     "correlativo": {
                                         "type": "string"
+                                    },
+                                    "scops": {
+                                        "type": "array",
+                                        "description": "Una guía puede no traer ninguno o traer varios; lo único que se\nexige es que cada número esté libre.",
+                                        "items": {
+                                            "type": "string"
+                                        }
                                     }
                                 },
                                 "required": [
@@ -1007,27 +1159,76 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Ya existe un despacho con esta serie y correlativo."
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string"
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "scops": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "nroScop": {
+                                                                "type": "string"
+                                                            },
+                                                            "id_despatch": {
+                                                                "type": "integer"
+                                                            },
+                                                            "guia": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "nroScop",
+                                                            "id_despatch",
+                                                            "guia"
+                                                        ]
+                                                    }
+                                                },
+                                                "exito": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "message",
+                                                "scops",
+                                                "exito"
+                                            ]
                                         },
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "despatch": {
-                                            "type": "string"
-                                        },
-                                        "exito": {
-                                            "type": "boolean"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Ya existe un despacho con esta serie y correlativo."
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "despatch": {
+                                                    "type": "string"
+                                                },
+                                                "exito": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "message",
+                                                "despatch",
+                                                "exito"
+                                            ]
                                         }
-                                    },
-                                    "required": [
-                                        "error",
-                                        "message",
-                                        "despatch",
-                                        "exito"
                                     ]
                                 }
                             }
@@ -1244,27 +1445,76 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "error": {
-                                            "type": "string",
-                                            "example": "Ya existe un despacho con esta serie y correlativo."
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string"
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "scops": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "nroScop": {
+                                                                "type": "string"
+                                                            },
+                                                            "id_despatch": {
+                                                                "type": "integer"
+                                                            },
+                                                            "guia": {
+                                                                "type": [
+                                                                    "string",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "nroScop",
+                                                            "id_despatch",
+                                                            "guia"
+                                                        ]
+                                                    }
+                                                },
+                                                "exito": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "message",
+                                                "scops",
+                                                "exito"
+                                            ]
                                         },
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "despatch": {
-                                            "type": "string"
-                                        },
-                                        "exito": {
-                                            "type": "boolean"
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "Ya existe un despacho con esta serie y correlativo."
+                                                },
+                                                "message": {
+                                                    "type": "string"
+                                                },
+                                                "despatch": {
+                                                    "type": "string"
+                                                },
+                                                "exito": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "error",
+                                                "message",
+                                                "despatch",
+                                                "exito"
+                                            ]
                                         }
-                                    },
-                                    "required": [
-                                        "error",
-                                        "message",
-                                        "despatch",
-                                        "exito"
                                     ]
                                 }
                             }
@@ -1295,6 +1545,28 @@
                                         "despatch",
                                         "exito",
                                         "electronico"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "error",
+                                        "exito"
                                     ]
                                 }
                             }
@@ -1790,6 +2062,235 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/favoritos/usuario/{id}": {
+            "get": {
+                "operationId": "favorito.deUsuario",
+                "description": "Para armar el selector de \"clonar favoritos\": trae los favoritos del\nusuario agrupados por tipo (siempre los 6: `cliente`, `conductor`,\n`transportista`, `producto`, `punto`, `vehiculo`), cada uno con su `id`,\nel `nombreCorto` que ve ese usuario y una `descripcion` para reconocerlo\n(documento y razón social, nombre del conductor, código y descripción del\nproducto, dirección del punto o placa). Ordenados por nombre corto.",
+                "summary": "Ver los favoritos de un usuario (solo admin)",
+                "tags": [
+                    "Favorito"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "usuario": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "perfil": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "name",
+                                                "perfil"
+                                            ]
+                                        },
+                                        "favoritos": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "nombreCorto": {
+                                                            "type": [
+                                                                "string",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "descripcion": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "nombreCorto",
+                                                        "descripcion"
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "usuario",
+                                        "favoritos",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/favoritos/clonar": {
+            "post": {
+                "operationId": "favorito.clonar",
+                "description": "Copia a `id_user_destino` los favoritos elegidos de `id_user_origen`.\nEn `favoritos` va, por tipo, la lista de ids a copiar; se puede mandar uno\no varios tipos y uno o varios ids en cada uno:\n\n`{\"cliente\": [12, 15], \"conductor\": [3], \"vehiculo\": [7, 8]}`\n\nSolo se copia lo que el destino no tiene. El detalle por tipo dice qué\npasó con cada id:\n- `creados`: se agregó como favorito, con el nombre corto del origen.\n- `marcados`: el destino ya lo tenía con nombre propio pero sin favorito;\n  se marcó como favorito conservando su nombre.\n- `omitidos`: el destino ya lo tenía como favorito; no se tocó.\n- `no_encontrados`: ese id no es favorito del usuario origen.",
+                "summary": "Clonar favoritos a otro usuario (solo admin)",
+                "tags": [
+                    "Favorito"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id_user_origen": {
+                                        "type": "integer"
+                                    },
+                                    "id_user_destino": {
+                                        "type": "integer"
+                                    },
+                                    "favoritos": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "integer"
+                                            }
+                                        },
+                                        "minItems": 1
+                                    }
+                                },
+                                "required": [
+                                    "id_user_origen",
+                                    "id_user_destino",
+                                    "favoritos"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "id_user_origen": {
+                                            "type": "integer"
+                                        },
+                                        "id_user_destino": {
+                                            "type": "integer"
+                                        },
+                                        "resumen": {
+                                            "type": "object",
+                                            "properties": {
+                                                "creados": {
+                                                    "type": "integer"
+                                                },
+                                                "marcados": {
+                                                    "type": "integer"
+                                                },
+                                                "omitidos": {
+                                                    "type": "integer"
+                                                },
+                                                "no_encontrados": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "creados",
+                                                "marcados",
+                                                "omitidos",
+                                                "no_encontrados"
+                                            ]
+                                        },
+                                        "detalle": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "creados": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "marcados": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "omitidos": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "integer"
+                                                        }
+                                                    },
+                                                    "no_encontrados": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "integer"
+                                                        }
+                                                    }
+                                                },
+                                                "required": [
+                                                    "creados",
+                                                    "marcados",
+                                                    "omitidos",
+                                                    "no_encontrados"
+                                                ]
+                                            }
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "id_user_origen",
+                                        "id_user_destino",
+                                        "resumen",
+                                        "detalle",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -3261,6 +3762,477 @@
                 }
             }
         },
+        "/scop/disponible": {
+            "get": {
+                "operationId": "scop.disponible",
+                "description": "Pensado para marcar en la lista, antes de guardar la guía, los números\nque ya están usados en otra guía.\n\n`nroScop` acepta uno (`?nroScop=SC-1`) o varios\n(`?nroScop[]=SC-1&nroScop[]=SC-2`). Al editar una guía, manda también su\n`id_despatch` para que sus propios números no salgan como ocupados.\n\nRespuesta:\n- `disponible`: true solo si TODOS los números enviados están libres.\n- `scops`: un elemento por número, en el mismo orden en que se enviaron\n  (sin vacíos ni repetidos). Si está ocupado, `id_despatch` y `guia`\n  (serie-correlativo) dicen en qué guía está; si está libre, ambos son null.",
+                "summary": "Comprobar si números de SCOP están libres",
+                "tags": [
+                    "Scop"
+                ],
+                "parameters": [
+                    {
+                        "name": "id_despatch",
+                        "in": "query",
+                        "schema": {
+                            "type": [
+                                "integer",
+                                "null"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "nroScop",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "disponible": {
+                                            "type": "boolean"
+                                        },
+                                        "scops": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "nroScop": {
+                                                        "type": "string"
+                                                    },
+                                                    "disponible": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "id_despatch": {
+                                                        "type": [
+                                                            "integer",
+                                                            "null"
+                                                        ]
+                                                    },
+                                                    "guia": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "nroScop",
+                                                    "disponible",
+                                                    "id_despatch",
+                                                    "guia"
+                                                ]
+                                            }
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "disponible",
+                                        "scops",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/scop": {
+            "get": {
+                "operationId": "scop.index",
+                "description": "Filtros: `nroScop` (coincidencia parcial), `id_despatch`, `serie` y\n`correlativo` de la guía.",
+                "summary": "Listar números de SCOP",
+                "tags": [
+                    "Scop"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `ScopResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ScopResource"
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "scop.store",
+                "description": "Acepta uno (`nroScop`) o varios (`scops`, lista de textos o de objetos\ncon `nroScop`). Los que ya estuvieran en esa misma guía se dejan como\nestán; si alguno pertenece a otra guía no se guarda ninguno y responde 409\ncon el detalle de cuáles y en qué guía están.",
+                "summary": "Registrar números de SCOP en una guía",
+                "tags": [
+                    "Scop"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "id_despatch": {
+                                        "type": "integer"
+                                    },
+                                    "nroScop": {
+                                        "type": "string"
+                                    },
+                                    "scops": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": [
+                                    "id_despatch"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "scops": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ScopResource"
+                                            }
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "scops",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Algún número ya está en otra guía: no se guardó nada.\n`scops` lista cuáles y en qué guía (serie-correlativo) están.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "scops": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "nroScop": {
+                                                        "type": "string"
+                                                    },
+                                                    "id_despatch": {
+                                                        "type": "integer"
+                                                    },
+                                                    "guia": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "nroScop",
+                                                    "id_despatch",
+                                                    "guia"
+                                                ]
+                                            }
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "error",
+                                        "message",
+                                        "scops",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/scop/{scop}": {
+            "get": {
+                "operationId": "scop.show",
+                "summary": "Ver un número de SCOP",
+                "tags": [
+                    "Scop"
+                ],
+                "parameters": [
+                    {
+                        "name": "scop",
+                        "in": "path",
+                        "required": true,
+                        "description": "The scop ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ScopResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ScopResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "scop.update",
+                "description": "Permite corregir el número o moverlo a otra guía. Si el número nuevo ya\nestá en otra fila, responde 409.",
+                "summary": "Actualizar un número de SCOP",
+                "tags": [
+                    "Scop"
+                ],
+                "parameters": [
+                    {
+                        "name": "scop",
+                        "in": "path",
+                        "required": true,
+                        "description": "The scop ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "nroScop": {
+                                        "type": "string"
+                                    },
+                                    "id_despatch": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "required": [
+                                    "nroScop",
+                                    "id_despatch"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Número de SCOP actualizado"
+                                        },
+                                        "scop": {
+                                            "$ref": "#/components/schemas/ScopResource"
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "scop",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Algún número ya está en otra guía: no se guardó nada.\n`scops` lista cuáles y en qué guía (serie-correlativo) están.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        },
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "scops": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "nroScop": {
+                                                        "type": "string"
+                                                    },
+                                                    "id_despatch": {
+                                                        "type": "integer"
+                                                    },
+                                                    "guia": {
+                                                        "type": [
+                                                            "string",
+                                                            "null"
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "nroScop",
+                                                    "id_despatch",
+                                                    "guia"
+                                                ]
+                                            }
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "error",
+                                        "message",
+                                        "scops",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "scop.destroy",
+                "description": "El número queda libre para otra guía.",
+                "summary": "Borrar un número de SCOP",
+                "tags": [
+                    "Scop"
+                ],
+                "parameters": [
+                    {
+                        "name": "scop",
+                        "in": "path",
+                        "required": true,
+                        "description": "The scop ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "exito": {
+                                            "type": "boolean"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "exito"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
         "/shipments": {
             "get": {
                 "operationId": "shipments.index",
@@ -4382,7 +5354,7 @@
             },
             "post": {
                 "operationId": "vehiculos.store",
-                "description": "Si se envía `fav`, el registro queda marcado como favorito solo para\nel usuario que lo crea.",
+                "description": "`tracto` es true salvo que se mande expresamente false, y `glp` es false\nsalvo que se mande true. Ambos aceptan 1/0, true/false y \"true\"/\"false\".\n\nSi se envía `fav`, el registro queda marcado como favorito solo para\nel usuario que lo crea.",
                 "summary": "Registrar vehículo",
                 "tags": [
                     "Vehiculo"
@@ -4395,6 +5367,19 @@
                                 "properties": {
                                     "placa": {
                                         "type": "string"
+                                    },
+                                    "tracto": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "description": "Sin regla `boolean` a propósito: el front puede mandar \"true\"/\"false\"\ncomo texto. El controlador los normaliza con filter_var."
+                                    },
+                                    "glp": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
                                     }
                                 },
                                 "required": [
@@ -4507,7 +5492,7 @@
         "/vehiculos/{vehiculo}": {
             "put": {
                 "operationId": "vehiculos.update",
-                "description": "`fav` y `nombreCorto` se guardan solo para el usuario autenticado (su\nfavorito y su nombre corto propio); el resto de campos son compartidos.\nEl nombre corto del catálogo no cambia: se fija al crear el registro.",
+                "description": "`fav` y `nombreCorto` se guardan solo para el usuario autenticado (su\nfavorito y su nombre corto propio); el resto de campos son compartidos.\nEl nombre corto del catálogo no cambia: se fija al crear el registro.\n\n`tracto` y `glp` aceptan 1/0, true/false y \"true\"/\"false\". Si no se\nenvían, no cambian.",
                 "summary": "Actualizar vehículo",
                 "tags": [
                     "Vehiculo"
@@ -4527,7 +5512,63 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "type": "object"
+                                "type": "object",
+                                "properties": {
+                                    "placa": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "nroCirculacion": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "nroAutorizacion": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "codEmisor": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "isCompany": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "nombreCorto": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "fav": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "tracto": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "glp": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    }
+                                }
                             }
                         }
                     }
@@ -4550,6 +5591,9 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
@@ -5159,6 +6203,26 @@
                 ],
                 "title": "PuntoubicacionResouce"
             },
+            "ScopResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "nroScop": {
+                        "type": "string"
+                    },
+                    "id_despatch": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "nroScop",
+                    "id_despatch"
+                ],
+                "title": "ScopResource"
+            },
             "ShipmentResource": {
                 "type": "object",
                 "properties": {
@@ -5461,6 +6525,12 @@
                     "isCompany": {
                         "type": "boolean"
                     },
+                    "tracto": {
+                        "type": "boolean"
+                    },
+                    "glp": {
+                        "type": "boolean"
+                    },
                     "nombreCorto": {
                         "type": [
                             "string",
@@ -5490,6 +6560,8 @@
                     "codEmisor",
                     "fav",
                     "isCompany",
+                    "tracto",
+                    "glp",
                     "nombreCorto",
                     "created_at",
                     "updated_at"
@@ -5527,6 +6599,12 @@
                     "isCompany": {
                         "type": "boolean"
                     },
+                    "tracto": {
+                        "type": "boolean"
+                    },
+                    "glp": {
+                        "type": "boolean"
+                    },
                     "nombreCorto": {
                         "type": [
                             "string",
@@ -5548,6 +6626,8 @@
                     "codEmisor",
                     "fav",
                     "isCompany",
+                    "tracto",
+                    "glp",
                     "nombreCorto"
                 ],
                 "title": "VehiculoResource"

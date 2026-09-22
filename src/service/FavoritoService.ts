@@ -83,6 +83,32 @@ const mensajeDeError = (error: any, porDefecto: string): string => {
  * Preferencias por usuario (favorito y nombre corto propio): cambiarlas no
  * toca los datos compartidos del registro.
  */
+/** Un favorito tal como lo muestra el selector de clonar. */
+export interface FavoritoResumen {
+  id: number;
+  nombreCorto: string | null;
+  descripcion: string;
+}
+
+/** `GET /api/favoritos/usuario/{id}`: siempre los 6 tipos, aunque estén vacíos. */
+export interface FavoritosDeUsuario {
+  usuario: { id: number; name: string; perfil: string };
+  favoritos: Record<TipoFavorito, FavoritoResumen[]>;
+}
+
+export interface ConteoClonado {
+  creados: number;
+  marcados: number;
+  omitidos: number;
+  no_encontrados: number;
+}
+
+export interface ResultadoClonado {
+  message: string;
+  resumen: ConteoClonado;
+  detalle: Partial<Record<TipoFavorito, Record<keyof ConteoClonado, number[]>>>;
+}
+
 export const FavoritoService = {
   /** Ids marcados y nombres cortos del usuario, agrupados por tipo (o de un solo tipo). */
   listar: async (tipo?: TipoFavorito): Promise<ListadoFavoritos> => {
@@ -166,6 +192,49 @@ export const FavoritoService = {
     } catch (error) {
       console.warn(`No se pudo sincronizar el favorito de ${tipo} ${id}:`, error);
       return typeof error === "string" ? error : "error desconocido";
+    }
+  },
+
+  /** Favoritos de un usuario agrupados por tipo (sólo admin). */
+  deUsuario: async (idUsuario: number): Promise<FavoritosDeUsuario> => {
+    try {
+      const { data } = await apiLogged.get(`/api/favoritos/usuario/${idUsuario}`);
+      const favoritos = {} as Record<TipoFavorito, FavoritoResumen[]>;
+      Object.values(TIPOS_FAVORITO).forEach((tipo) => {
+        favoritos[tipo] = Array.isArray(data?.favoritos?.[tipo]) ? data.favoritos[tipo] : [];
+      });
+      return { usuario: data?.usuario, favoritos };
+    } catch (error: any) {
+      console.error("Error al obtener los favoritos del usuario:", error);
+      throw mensajeDeError(error, "No se pudieron cargar los favoritos");
+    }
+  },
+
+  /**
+   * Copia a un usuario los favoritos elegidos del origen, por tipo:
+   * `{ cliente: [12, 15], vehiculo: [7] }`. Sólo copia lo que el destino no tiene.
+   */
+  clonar: async (
+    idOrigen: number,
+    idDestino: number,
+    favoritos: Partial<Record<TipoFavorito, number[]>>
+  ): Promise<ResultadoClonado> => {
+    try {
+      const { data } = await apiLogged.post("/api/favoritos/clonar", {
+        id_user_origen: idOrigen,
+        id_user_destino: idDestino,
+        favoritos,
+      });
+      if (data?.exito === false) throw data?.message || data?.error || "No se pudieron clonar los favoritos";
+      return {
+        message: data?.message || "",
+        resumen: { creados: 0, marcados: 0, omitidos: 0, no_encontrados: 0, ...(data?.resumen || {}) },
+        detalle: data?.detalle || {},
+      };
+    } catch (error: any) {
+      if (typeof error === "string") throw error;
+      console.error("Error al clonar favoritos:", error);
+      throw mensajeDeError(error, "No se pudieron clonar los favoritos");
     }
   },
 };

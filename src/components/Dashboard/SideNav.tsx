@@ -3,7 +3,6 @@ import { Menu, MenuItem, Sidebar } from 'react-pro-sidebar'
 import { Avatar, Box, Chip, Theme, Typography, alpha, useMediaQuery, useTheme } from '@mui/material'
 import { Link, useLocation } from 'react-router-dom'
 
-import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded'
 import InventoryRoundedIcon from '@mui/icons-material/InventoryRounded'
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded'
 import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded'
@@ -17,8 +16,11 @@ import SettingsApplicationsRoundedIcon from '@mui/icons-material/SettingsApplica
 import GpsFixedRoundedIcon from '@mui/icons-material/GpsFixedRounded'
 import NumbersRoundedIcon from '@mui/icons-material/NumbersRounded'
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
+import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
+import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
 
 import { useAuthStore } from '../../store/authStore'
+import { GUIA_RAPIDA_HABILITADA } from '../../config/modulos'
 import { inicialesDe } from './AppHeader'
 
 interface SideNavInterface {
@@ -42,23 +44,21 @@ interface SeccionMenu {
   items: ItemMenu[];
 }
 
+const logo = import.meta.env.VITE_API_LOGO
+
 const noOperador = (perfil: Perfil) => perfil !== 'operador'
 const soloAdmin = (perfil: Perfil) => perfil === 'admin'
 
 /** Mismas rutas y permisos que antes; lo más usado (guías) va primero. */
 const SECCIONES: SeccionMenu[] = [
   {
-    titulo: 'General',
-    visible: noOperador,
-    items: [
-      { to: '/admin', label: 'Dashboard', icon: <DashboardRoundedIcon />, coincide: (p) => p === '/admin' },
-    ],
-  },
-  {
     titulo: 'Guías',
     items: [
       { to: '/admin/guias', label: 'Panel de guías', icon: <SpaceDashboardRoundedIcon /> },
       { to: '/admin/guiaremision/nueva', label: 'Emitir guía', icon: <AutoAwesomeRoundedIcon /> },
+      ...(GUIA_RAPIDA_HABILITADA
+        ? [{ to: '/admin/guiaremision/rapida', label: 'Guía rápida', icon: <BoltRoundedIcon /> }]
+        : []),
       {
         to: '/admin/guiaremision',
         label: 'Emisión clásica',
@@ -91,6 +91,7 @@ const SECCIONES: SeccionMenu[] = [
       { to: '/admin/puntoemision', label: 'Puntos de emisión', icon: <GpsFixedRoundedIcon /> },
       { to: '/admin/numeracion', label: 'Numeración', icon: <NumbersRoundedIcon /> },
       { to: '/admin/sunat', label: 'Parámetros SUNAT', icon: <SettingsApplicationsRoundedIcon /> },
+      { to: '/admin/favoritos/clonar', label: 'Clonar favoritos', icon: <ContentCopyRoundedIcon /> },
     ],
   },
 ]
@@ -121,7 +122,18 @@ const SideNav = ({ toggle, setToggle }: SideNavInterface) => {
       backgroundColor={theme.palette.background.paper}
       toggled={toggle}
     >
-      <Box display='flex' alignItems='center' gap={1.5} px={2.5} py={3}>
+      {logo && (
+        <Box px={2.5} pt={2.5} pb={0.5} textAlign='center'>
+          <Box
+            component='img'
+            alt='Logo de la empresa'
+            src={`/assets/img/${logo}`}
+            sx={{ maxWidth: '100%', maxHeight: 56, objectFit: 'contain' }}
+          />
+        </Box>
+      )}
+
+      <Box display='flex' alignItems='center' gap={1.5} px={2.5} pt={2} pb={3}>
         <Avatar sx={{ width: 42, height: 42, fontWeight: 700, bgcolor: 'primary.main' }}>
           {inicialesDe(user?.name)}
         </Avatar>

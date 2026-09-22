@@ -5,6 +5,19 @@ import { apiInitCi } from "../api/axios.ci";
 
 
 
+/** Mensaje del backend; en un 409 de SCOP agrega qué números ya están en otra guía. */
+const motivoGuardado = (error: any, porDefecto: string): string => {
+  const data = error?.response?.data;
+  const texto: string = data?.message || data?.error || porDefecto;
+  const usados = ([] as any[])
+    .concat(data?.scops ?? [])
+    .map((s) =>
+      typeof s === "string" ? s : s?.nroScop ? (s.guia ? `${s.nroScop} en la guía ${s.guia}` : s.nroScop) : ""
+    )
+    .filter(Boolean);
+  return usados.length > 0 ? `${texto} (${usados.join("; ")})` : texto;
+};
+
 export const GuiaServices = {
   
   get:async(id:number)=>{
@@ -96,7 +109,7 @@ export const GuiaServices = {
     } catch (error: any) {
       console.error("Error al guardar la guia:", error);
       // `error` trae el detalle en los 409 (serie + correlativo duplicados)
-      throw error?.response?.data?.message || error?.response?.data?.error || "Error al guardar la guia";
+      throw motivoGuardado(error, "Error al guardar la guia");
     }
   },
   update:async(guia:any,id:number) => {
@@ -105,7 +118,7 @@ export const GuiaServices = {
       return data;
     } catch (error: any) {
       console.error("Error al actualizar la guia:", error);
-      throw error?.response?.data?.message || error?.response?.data?.error || "Error al actualizar la guia";
+      throw motivoGuardado(error, "Error al actualizar la guia");
     }
   },
   report:async(params:string)=>{

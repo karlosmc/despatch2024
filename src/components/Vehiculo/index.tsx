@@ -1,19 +1,27 @@
 import { FavoritoService, TIPOS_FAVORITO, favoritoVigente } from '../../service/FavoritoService';
-import { Box, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import { useEffect, useState } from 'react'
-
-
+import {
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  Switch,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material';
+import { useState } from 'react'
 import { useFormik } from 'formik';
+import * as yup from 'yup';
 
-
-
-import { VehiculoSchema } from '../../utils/validateForm';
 import { useNotification } from '../../context/notification.context';
 import { vehiculo } from '../../types/vehiculo.interface';
 import { VehiculoService } from '../../service/VehiculoService';
-
-
-
 
 const EMISORES = [
   {
@@ -92,223 +100,205 @@ const VehiculoInitialValues: vehiculo = {
   nroCirculacion: '',
   fav: false,
   isCompany: false,
+  tracto: true,
+  glp: false,
   id: 0,
 }
 
+const VehiculoFormSchema = yup.object().shape({
+  placa: yup
+    .string()
+    .trim()
+    .required('Escribe la placa')
+    .test('placa', 'La placa debe tener 6 letras o números (ej. ABC-123)', (valor) =>
+      (valor || '').replace(/[^A-Za-z0-9]/g, '').length === 6
+    ),
+  nroCirculacion: yup.string().nullable(),
+  codEmisor: yup.string().nullable(),
+  nroAutorizacion: yup
+    .string()
+    .nullable()
+    .when('codEmisor', {
+      is: (codEmisor: string) => Boolean(codEmisor),
+      then: (schema) => schema.trim().required('Con emisor autorizado, escribe el número de autorización'),
+    }),
+  fav: yup.boolean(),
+  isCompany: yup.boolean(),
+  tracto: yup.boolean(),
+  glp: yup.boolean(),
+  nombreCorto: yup
+    .string()
+    .nullable()
+    .when('fav', {
+      is: true,
+      then: (schema) => schema.trim().required('Para marcarlo como favorito, ponle un nombre corto'),
+    }),
+})
+
+/** El backend puede mandar null en los textos: el formulario trabaja con cadenas. */
+const aFormulario = (v?: vehiculo | null): vehiculo => ({
+  ...VehiculoInitialValues,
+  ...(v || {}),
+  placa: v?.placa ?? '',
+  nroCirculacion: v?.nroCirculacion ?? '',
+  nroAutorizacion: v?.nroAutorizacion ?? '',
+  codEmisor: v?.codEmisor ?? '',
+  nombreCorto: v?.nombreCorto ?? '',
+  fav: favoritoVigente(TIPOS_FAVORITO.vehiculo, v?.id, v?.fav),
+  isCompany: Boolean(v?.isCompany),
+  tracto: v?.tracto ?? true,
+  glp: Boolean(v?.glp),
+})
+
 interface VehiculoFormProps {
-  initialValue?: vehiculo;
+  initialValue?: vehiculo | null;
   onConfirm: (vehiculo: vehiculo) => void;
-  edit: Boolean,
+  edit: boolean,
 }
 
 const ModalVehiculo = ({ initialValue, onConfirm, edit }: VehiculoFormProps) => {
+  const { getError, getSuccess, getWarning } = useNotification()
+  const [guardando, setGuardando] = useState(false)
 
-  // console.log(initialValue)
-
-  // console.log(initialValue)
-  const { getError,getSuccess } = useNotification()
-
-  const [fav, setFav] = useState<boolean>(favoritoVigente(TIPOS_FAVORITO.vehiculo, initialValue?.id, initialValue?.fav));
-  const [isCompany, setIsCompany] = useState<boolean>(initialValue?.isCompany || false);
-
-  
-
-  const storeVehiculo = async (values: vehiculo) => {
-
-
+  const guardar = async (values: vehiculo) => {
+    // Evita un doble registro por doble clic.
+    if (guardando) return
+    setGuardando(true)
     try {
-      const response = await VehiculoService.save(values);
-      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.vehiculo, response?.id, values.fav, false);
+      const response = edit ? await VehiculoService.update(values) : await VehiculoService.save(values)
+      const id = (response && typeof response === 'object' ? response.id : undefined) ?? values.id
+      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.vehiculo, id, Boolean(values.fav), edit)
+
+      getSuccess(edit ? `Vehículo ${values.placa} actualizado` : `Vehículo ${values.placa} registrado`)
       if (motivoFav) {
-        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
-        // usa el mismo snackbar y lo taparía.
-        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
+        // En el siguiente ciclo: el aviso de éxito usa el mismo snackbar y lo taparía.
+        setTimeout(() => getWarning(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0)
       }
-      onConfirm(response)
-      getSuccess('Vehiculo guardado con éxito')
+      onConfirm({ ...values, ...(response && typeof response === 'object' ? response : {}), id })
     } catch (error) {
-      console.log(error || 'Hubo un error al guadar el vehiculo');
-      getError(error || 'Hubo un error al guadar el vehiculo')
-      
-    }
-
-    // try {
-    //   const { data, status } = await clienteAxios.post('/api/vehiculos', {
-    //     placa: values.placa,
-    //     nroCirculacion: values.nroCirculacion,
-    //     nroAutorizacion: values.nroAutorizacion,
-    //     codEmisor: values.codEmisor,
-    //     fav: values.fav,
-    //     isCompany: values.isCompany,
-    //     nombreCorto: values.nombreCorto,
-    //   }, {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`
-    //     }
-    //   })
-    //   //  console.log(data)
-    //   if (status === 200) {
-    //     onConfirm(data.vehiculo);
-    //   }
-    // }
-    // catch (error) {
-    //   // console.log(error)
-
-    //   getError(error?.response?.data?.message)
-    // }
-
-  }
-
-  const updateVehiculo = async (values: vehiculo) => {
-       try {
-      const response = await VehiculoService.update(values);
-      const motivoFav = await FavoritoService.sincronizar(TIPOS_FAVORITO.vehiculo, response?.id ?? values.id, values.fav, true);
-      if (motivoFav) {
-        // Se muestra en el siguiente ciclo: el aviso de éxito que sigue al guardado
-        // usa el mismo snackbar y lo taparía.
-        setTimeout(() => getError(`Se guardó, pero no se pudo actualizar tu favorito: ${motivoFav}`), 0);
-      }
-      onConfirm(response)
-      getSuccess('Vehiculo actualizado con éxito')
-    } catch (error) {
-      console.log(error || 'Hubo un error al actualizar el vehiculo');
-      getError(error || 'Hubo un error al actualizar el vehiculo')
-      
+      getError(typeof error === 'string' ? error : 'No se pudo guardar el vehículo')
+    } finally {
+      setGuardando(false)
     }
   }
 
-
-
-
-  const formik = useFormik({
-    initialValues: initialValue || VehiculoInitialValues,
-    validationSchema: VehiculoSchema,
+  const formik = useFormik<vehiculo>({
+    initialValues: aFormulario(initialValue),
+    validationSchema: VehiculoFormSchema,
     onSubmit: (values) => {
-      const newValue:vehiculo={
+      guardar({
         ...values,
-        placa:values.placa.toUpperCase(),
-        nombreCorto:values?.nombreCorto?.toUpperCase()||'',
-      }
-      if (edit) {
-        updateVehiculo(newValue)
-      } else {
-        storeVehiculo(newValue)
-      }
+        placa: values.placa.toUpperCase(),
+        nombreCorto: (values.nombreCorto || '').toUpperCase(),
+      })
     },
   });
 
-  useEffect(() => {
-    formik.setFieldValue('fav', fav)
-  }, [fav])
-  useEffect(() => {
-    formik.setFieldValue('isCompany', isCompany)
-  }, [isCompany])
+  const { values, touched, errors } = formik
+  const campo = (nombre: keyof vehiculo) => ({
+    name: nombre,
+    value: String(values[nombre] ?? ''),
+    onChange: formik.handleChange,
+    onBlur: formik.handleBlur,
+    error: Boolean(touched[nombre] && errors[nombre]),
+    helperText: touched[nombre] && errors[nombre] ? String(errors[nombre]) : undefined,
+    size: 'small' as const,
+    fullWidth: true,
+    disabled: guardando,
+    inputProps: { style: { textTransform: 'uppercase' as const } },
+  })
 
   return (
-    <>
-
-      <Box component={'form'} onSubmit={formik.handleSubmit}>
-        <Box
-          display={"grid"}
-          gridTemplateColumns={{ xs: "repeat(1fr)", sm: "repeat(2,1fr)" }}
-          columnGap={1}
-        >
-          <TextField
-            margin="normal"
-            size="small"
-            fullWidth
-            name="placa"
-            type="text"
-            label="Placa"
-            disabled={Boolean(edit)}
-            value={formik.values?.placa?.toUpperCase()}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            helperText={formik.touched?.placa && formik.errors?.placa}
-            error={formik.touched?.placa && Boolean(formik.errors?.placa)}
-            inputProps={{ style: { textTransform: "uppercase" } }}
-          />
-          <TextField
-            margin="normal"
-            size="small"
-            fullWidth
-            name="nroCirculacion"
-            type="text"
-            label="Nro. Circulación"
-
-
-            value={formik.values?.nroCirculacion}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            helperText={formik.touched.nroCirculacion && formik.errors.nroCirculacion}
-            error={formik.touched.nroCirculacion && Boolean(formik.errors.nroCirculacion)}
-            inputProps={{ style: { textTransform: "uppercase" } }}
-          />
-
-          <FormControl fullWidth size="small" margin="normal">
-            <InputLabel>Emisores autorizados (opcional)</InputLabel>
-            <Select
-
-              value={formik.values.codEmisor}
-              name="codEmisor"
-              label="Emisores autorizados (Opcional)"
-              onChange={formik.handleChange}
-            >
-              {EMISORES.map((emisor) => (
-                <MenuItem key={emisor.Codigo} value={emisor.Abreviatura}>
-                  {emisor.Nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            margin="normal"
-            size="small"
-            fullWidth
-            name="nroAutorizacion"
-            type="text"
-            label="Nro. Autorizacion"
-            value={formik.values?.nroAutorizacion?.toUpperCase()||''}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            helperText={formik.touched.nroAutorizacion && formik.errors.nroAutorizacion}
-            error={formik.touched.nroAutorizacion && Boolean(formik.errors.nroAutorizacion)}
-            inputProps={{ style: { textTransform: "uppercase" } }}
-          />
-
-        </Box>
+    <Box component='form' onSubmit={formik.handleSubmit} noValidate sx={{ pt: 1, minWidth: { sm: 460 } }}>
+      <Box display='grid' gridTemplateColumns={{ xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' }} gap={1.5}>
         <TextField
-          margin="normal"
-          size="small"
-          fullWidth
-          name="nombreCorto"
-          type="text"
-          label="Nombre corto del vehiculo"
-          value={formik.values?.nombreCorto.toUpperCase()}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          helperText={formik.touched.nombreCorto && formik.errors.nombreCorto}
-          error={formik.touched.nombreCorto && Boolean(formik.errors.nombreCorto)}
-          inputProps={{ style: { textTransform: "uppercase" } }}
+          {...campo('placa')}
+          label='Placa'
+          placeholder='ABC-123'
+          autoFocus={!edit}
+          disabled={guardando || edit}
         />
+        <TextField {...campo('nroCirculacion')} label='Nro. circulación (TUC)' />
 
-        <Box textAlign={'center'}>
-          <Button onClick={() => setFav(!fav)} variant={!fav ? 'outlined' : 'contained'} color='warning' sx={{ display: 'inline-block', mt: 2, width: '80%', letterSpacing: 20, fontWeight: 600 }}>
-            FAVORITO
-          </Button>
+        <Box gridColumn='1 / -1'>
+          <Typography variant='caption' color='text.secondary' display='block' mb={0.5}>
+            Tipo de unidad
+          </Typography>
+          <ToggleButtonGroup
+            exclusive
+            fullWidth
+            size='small'
+            color='primary'
+            value={values.tracto ? 'tracto' : 'carreta'}
+            onChange={(_, nuevo) => nuevo && formik.setFieldValue('tracto', nuevo === 'tracto')}
+            disabled={guardando}
+          >
+            <ToggleButton value='tracto'>Tracto / camión</ToggleButton>
+            <ToggleButton value='carreta'>Cisterna / carreta</ToggleButton>
+          </ToggleButtonGroup>
         </Box>
 
-        <Box textAlign={'center'}>
-          <Button onClick={() => setIsCompany(!isCompany)} variant={!isCompany ? 'outlined' : 'contained'} color='info' sx={{ display: 'inline-block', my: 2, width: '80%', letterSpacing: 5, fontWeight: 600 }}>
-            Vehiculo de la empresa
-          </Button>
-        </Box>
+        <FormControl fullWidth size='small' sx={{ gridColumn: '1 / -1' }} disabled={guardando}>
+          <InputLabel>Emisor autorizado (opcional)</InputLabel>
+          <Select
+            value={values.codEmisor || ''}
+            name='codEmisor'
+            label='Emisor autorizado (opcional)'
+            onChange={formik.handleChange}
+          >
+            {EMISORES.map((emisor) => (
+              <MenuItem key={emisor.Codigo} value={emisor.Abreviatura}>
+                {emisor.Abreviatura ? `${emisor.Abreviatura} · ${emisor.Nombre}` : emisor.Nombre}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {values.codEmisor && (
+          <TextField {...campo('nroAutorizacion')} label='Nro. autorización' sx={{ gridColumn: '1 / -1' }} />
+        )}
 
-        <Button type='submit' color='success' variant='contained' sx={{ width: '50%', alignItems: 'start', display: 'inline-block' }}>
-          Guardar
-        </Button>
+        <TextField
+          {...campo('nombreCorto')}
+          label='Nombre corto'
+          helperText={
+            touched.nombreCorto && errors.nombreCorto
+              ? String(errors.nombreCorto)
+              : 'Cómo lo verás en tus favoritos'
+          }
+          sx={{ gridColumn: '1 / -1' }}
+        />
       </Box>
-    </>
+
+      <Box display='flex' flexDirection='column' mt={1.5}>
+        <FormControlLabel
+          control={<Switch checked={Boolean(values.glp)} onChange={(e) => formik.setFieldValue('glp', e.target.checked)} disabled={guardando} />}
+          label='Cisterna de GLP'
+        />
+        <FormHelperText sx={{ mt: -0.75, ml: 6.5 }}>
+          En la guía rápida, su placa es la sucursal para consultar el SCOP.
+        </FormHelperText>
+        <FormControlLabel
+          control={<Switch checked={Boolean(values.isCompany)} onChange={(e) => formik.setFieldValue('isCompany', e.target.checked)} disabled={guardando} />}
+          label='Vehículo de la empresa'
+        />
+        <FormControlLabel
+          control={<Switch color='warning' checked={Boolean(values.fav)} onChange={(e) => formik.setFieldValue('fav', e.target.checked)} disabled={guardando} />}
+          label='Favorito (sólo para ti)'
+        />
+      </Box>
+
+      <Button
+        type='submit'
+        color='success'
+        variant='contained'
+        fullWidth
+        sx={{ mt: 2 }}
+        disabled={guardando}
+        startIcon={guardando ? <CircularProgress size={18} color='inherit' /> : undefined}
+      >
+        {guardando ? 'Guardando…' : edit ? 'Guardar cambios' : 'Registrar vehículo'}
+      </Button>
+    </Box>
   );
 }
 

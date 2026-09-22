@@ -3,6 +3,19 @@
 import apiLogged from "../api/axios.auth";
 import { apiInit } from "../api/axios.ini";
 import { User } from "../types/user.interface";
+import { mensajeDeErrorApi } from "../utils/mensajeError";
+
+/** Motivo del rechazo del login, siempre como texto para mostrarlo tal cual. */
+const mensajeLogin = (error: any): string => {
+  if (typeof error === 'string') return error;
+  const status = error?.response?.status;
+  const data = error?.response?.data;
+  if ((status === 401 || status === 403) && !data?.message && !data?.error) {
+    return 'Documento o contraseña incorrectos.';
+  }
+  if (status === 404) return 'El servicio de inicio de sesión no está disponible. Contacta al administrador.';
+  return mensajeDeErrorApi(error, 'No se pudo iniciar sesión');
+};
 
 
 
@@ -13,27 +26,24 @@ export const authService = {
     try {
       const { data } = await apiInit.post('/api/login', credentials);
 
-      // Simulate setting a token in cookies or local storage
-      localStorage.setItem('AUTH_TOKEN', data.token)
-      
+      // El backend también rechaza con HTTP 200: `{ errors }` o `{ token: "", error }`
+      // (p. ej. cuenta sin aprobar). Sin token no hay sesión.
+      const rechazo = data?.errors || data?.error;
+      if (rechazo || !data?.token || !data?.user) {
+        localStorage.removeItem('AUTH_TOKEN');
+        throw typeof rechazo === 'string' && rechazo
+          ? rechazo
+          : 'No se pudo iniciar sesión. Verifica tus datos.';
+      }
 
-      // console.log(data);
+      localStorage.setItem('AUTH_TOKEN', data.token)
       return data.user;
 
     } catch (error: any) {
       console.error("Error en AuthService login:", error);
       
       // Reenviar el error completo para que LoginForm pueda manejarlo
-      if (error?.response) {
-        // Error HTTP con respuesta del servidor
-        throw error;
-      } else if (error?.message) {
-        // Error de JavaScript/Network
-        throw error;
-      } else {
-        // Error genérico
-        throw new Error("Error en login");
-      }
+      throw mensajeLogin(error);
     }
   },
 
@@ -58,22 +68,16 @@ export const authService = {
     try {
 
       const { data } = await apiInit.post('/api/registro', credentials);
-      localStorage.setItem('AUTH_TOKEN', data.token)
+      // La cuenta nueva queda pendiente de aprobación: no se abre sesión aquí,
+      // el usuario entra desde el login cuando el administrador la apruebe.
+      if (data?.errors || data?.error) throw data.errors || data.error;
+      return data;
 
     } catch (error: any) {
       console.error("Error en AuthService register:", error);
       
       // Reenviar el error completo para que RegisterForm pueda manejarlo
-      if (error?.response) {
-        // Error HTTP con respuesta del servidor
-        throw error;
-      } else if (error?.message) {
-        // Error de JavaScript/Network
-        throw error;
-      } else {
-        // Error genérico
-        throw new Error("Error en registro");
-      }
+      throw mensajeDeErrorApi(error, 'No se pudo completar el registro');
     }
 
   },

@@ -29,10 +29,12 @@ import {
   Info,
   Edit,
   DoneAll,
-  Cancel
+  Cancel,
+  PictureAsPdf
 } from '@mui/icons-material';
 import { useGuiaElectronica } from '../../hooks/useGuiaElectronica';
 import { GuiaElectronicaService } from '../../service/GuiaElectronicaService';
+import { pdfDeGuiaGuardada } from '../../utils/pdfGuia';
 import { useNotification } from '../../context/notification.context';
 
 // Componente helper para crear enlaces de archivos estilizados
@@ -90,6 +92,8 @@ interface ProcesarGuiaModalProps {
   onClose: () => void;
   datosGuia: any,
   idElectronico: number,
+  /** Id del despacho guardado: con él se arma el PDF de la empresa. */
+  idDespatch?: number | null,
   onSuccess: (resultado: any) => void;
   onError: (error: any) => void
 
@@ -102,6 +106,7 @@ export const ProcesarGuiaModal = ({
   datosGuia,
   onSuccess,
   idElectronico,
+  idDespatch,
   onError
 }: ProcesarGuiaModalProps) => {
   const theme = useTheme();
@@ -129,6 +134,8 @@ export const ProcesarGuiaModal = ({
   const [ticketDisponible, setTicketDisponible] = React.useState<string | null>(null);
   const [resultadoLocal, setResultadoLocal] = React.useState<any>(null);
   const [downloadingHash, setDownloadingHash] = React.useState<boolean>(false);
+  /** PDF con el formato de la empresa (el mismo de la vista previa). */
+  const [descargandoPdfEmpresa, setDescargandoPdfEmpresa] = React.useState<boolean>(false);
   const [mostrandoProgress, setMostrandoProgress] = React.useState<boolean>(false);
 
   // Ref para el scroll automático en móvil
@@ -329,6 +336,26 @@ export const ProcesarGuiaModal = ({
       setDownloadingHash(false);
     }
   }
+
+  /**
+   * PDF con el formato de la empresa: el mismo que el "Ver PDF" del panel de
+   * guías, generado desde la guía ya guardada (no desde los datos del formulario).
+   */
+  const HandleDescargarPdfEmpresa = async () => {
+    if (!idDespatch) {
+      getError('No se conoce el número interno de la guía: ábrela desde el Panel de Guías para ver su PDF');
+      return;
+    }
+    try {
+      setDescargandoPdfEmpresa(true);
+      HandleDowloadFilePdf(await pdfDeGuiaGuardada(idDespatch));
+    } catch (error) {
+      console.log(error);
+      getError(typeof error === 'string' ? error : 'No se pudo generar el PDF de la guía');
+    } finally {
+      setDescargandoPdfEmpresa(false);
+    }
+  };
 
   const HandleDowloadFilePdf = async (base64String: string) => {
     try {
@@ -1570,6 +1597,29 @@ export const ProcesarGuiaModal = ({
           flexDirection: isMobile ? 'column' : 'row',
           gap: isMobile ? 1 : 0
         }}>
+          {completado && datosPasos?.consultar?.completado && (
+            <Button
+              onClick={HandleDescargarPdfEmpresa}
+              disabled={descargandoPdfEmpresa}
+              variant="outlined"
+              color="primary"
+              size={isMobile ? "medium" : "large"}
+              fullWidth={isMobile}
+              sx={{
+                fontSize: isMobile ? '0.875rem' : '1rem',
+                py: isMobile ? 1.5 : 1,
+                mr: isMobile ? 0 : 1
+              }}
+            >
+              {descargandoPdfEmpresa ? (
+                <CircularProgress size={18} color="inherit" sx={{ mr: 1 }} />
+              ) : (
+                <PictureAsPdf sx={{ mr: 1 }} />
+              )}
+              {descargandoPdfEmpresa ? 'Generando…' : 'Descargar PDF'}
+            </Button>
+          )}
+
           {completado ? (
             <Button
               onClick={handleClose}

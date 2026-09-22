@@ -21,6 +21,7 @@ import { puntoEmision } from "../../types/puntoemision.interface";
 import { GuiaRemisionSchema } from "../../utils/validateGuiaRemision";
 import { useNotification } from "../../context/notification.context";
 import { useAuthStore } from "../../store/authStore";
+import { useOperacionStore } from "../../store/operacionStore";
 
 import { GuiaServices } from "../../service/GuiaServices";
 import { PuntoEmisionService } from "../../service/PuntoEmisionService";
@@ -77,6 +78,30 @@ const primerMensajeDeError = (errores: unknown): string | null => {
 const aplicaTransportista = (envio: Envio): boolean =>
   envio.modTraslado === TRANSPORTE_PUBLICO && !envio.indicadores.includes(INDICADOR_M1L);
 
+/** Todos los mensajes de un objeto de errores de formik (anidado), sin repetir. */
+const todosLosMensajes = (errores: unknown, acumulado: string[] = []): string[] => {
+  if (!errores) return acumulado;
+  if (typeof errores === "string") {
+    if (!acumulado.includes(errores)) acumulado.push(errores);
+  } else if (Array.isArray(errores) || isObject(errores)) {
+    Object.values(errores as object).forEach((valor) => todosLosMensajes(valor, acumulado));
+  }
+  return acumulado;
+};
+
+/** Documento relacionado "81": código de autorización emitido por el SCOP. */
+const TIPO_DOC_SCOP = "81";
+
+const scopsDe = (docs: { tipo?: string; nro?: string }[] = []): string[] =>
+  Array.from(
+    new Set(
+      docs
+        .filter((d) => String(d?.tipo) === TIPO_DOC_SCOP)
+        .map((d) => String(d?.nro ?? "").trim())
+        .filter(Boolean)
+    )
+  );
+
 /** El backend responde 409 cuando la serie + correlativo ya está tomada. */
 const esConflictoDeDuplicado = (error: any): boolean => {
   const texto =
@@ -84,7 +109,13 @@ const esConflictoDeDuplicado = (error: any): boolean => {
   return /ya existe|duplicad|409/i.test(texto);
 };
 
-export const useGuiaRemisionForm = () => {
+export const useGuiaRemisionForm = (opciones: { precargaAutomatica?: boolean } = {}) => {
+  /**
+   * Carga por su cuenta los puntos de emisión y el conductor del usuario. La guía
+   * rápida lo apaga porque hace su propia carga (con progreso y motivos de error)
+   * y así no se piden dos veces.
+   */
+  const precargaAutomatica = opciones.precargaAutomatica ?? true;
   const navigate = useNavigate();
   const { id: guiaId } = useParams<{ id: string }>();
   const { getError, getSuccess, getWarning } = useNotification();
@@ -264,6 +295,9 @@ export const useGuiaRemisionForm = () => {
     },
     addDocs: values.addDocs,
     details: values.details,
+    // Números de SCOP de la guía (documentos tipo 81): el backend los reserva y
+    // responde 409 si alguno ya está en otra guía.
+    scops: scopsDe(values.addDocs),
   });
 
   /* =========================================================
@@ -282,6 +316,15 @@ export const useGuiaRemisionForm = () => {
     snapshotGuardado.current = JSON.stringify(values);
     setCambiosSinGuardar(false);
   };
+
+  /**
+   * Para pantallas que precargan datos (la guía rápida): lo que cambie en el
+   * próximo instante se toma como punto de partida y no como una edición del
+   * usuario, así salir sin tocar nada no pide guardar.
+   */
+  const asentarCambiosAutomaticos = useCallback((ms = 1500) => {
+    ventanaDeAsentado.current = Date.now() + ms;
+  }, []);
 
   const bloqueada = ESTADOS_CERRADOS.includes(estadoGuia || "");
 
@@ -423,6 +466,10 @@ export const useGuiaRemisionForm = () => {
         if (!nuevoId) {
           console.warn("El alta no devolvió el id del despacho:", response);
         }
+
+        // La serie ya consumió este correlativo: se vuelve a leer para que la
+        // próxima guía (y el resumen del header) tomen el número siguiente.
+        void useOperacionStore.getState().refrescarSerie();
       }
 
       setDatosParaProcesar(doc);
@@ -464,6 +511,18 @@ export const useGuiaRemisionForm = () => {
   /* =========================================================
    *  Vista previa PDF
    * ========================================================= */
+  /**
+   * Revisa la guía con las mismas reglas del guardado y devuelve TODOS los
+   * problemas juntos (el guardado se detiene en el primero). Vacío = lista.
+   */
+  const revisarGuia = async (): Promise<string[]> => {
+    const errores = await formik.validateForm();
+    const mensajes = todosLosMensajes(errores);
+    const negocio = validarNegocio(formik.values);
+    if (negocio && !mensajes.includes(negocio)) mensajes.push(negocio);
+    return mensajes;
+  };
+
   const previsualizarPdf = async () => {
     const errores = await formik.validateForm();
     if (Object.keys(errores).length > 0) {
@@ -537,13 +596,13 @@ export const useGuiaRemisionForm = () => {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !precargaAutomatica) return;
     getPuntosEmision();
     // En edición los choferes vienen del documento; no se sugiere el del usuario.
     if (!modoEdicion) {
       buscarConductorPorNroDoc(user.documento);
     }
-  }, [user, modoEdicion, getPuntosEmision, buscarConductorPorNroDoc]);
+  }, [user, modoEdicion, precargaAutomatica, getPuntosEmision, buscarConductorPorNroDoc]);
 
   /* Carga de la guía a editar */
   useEffect(() => {
@@ -858,6 +917,8 @@ export const useGuiaRemisionForm = () => {
     formik,
     isMobile,
     modoEdicion,
+    asentarCambiosAutomaticos,
+    revisarGuia,
     cargando,
     bloqueada,
     estadoGuia,
@@ -873,6 +934,7 @@ export const useGuiaRemisionForm = () => {
     guardando,
     guardar,
     guardada: idDespatch !== null,
+    idDespatch,
     enviadaSunat,
 
     generandoPdf,

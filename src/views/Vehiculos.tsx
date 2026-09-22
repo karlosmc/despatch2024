@@ -1,20 +1,37 @@
 import FavoritoToggle from '../components/FavoritoToggle';
 import { TIPOS_FAVORITO } from '../service/FavoritoService';
-import { Box, Button, CircularProgress, Container, Fab, Icon, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  IconButton,
+  InputAdornment,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material'
+import React, { useEffect, useMemo, useState } from 'react'
 
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 
-
-import StoreIcon from '@mui/icons-material/Store';
-import StoreOutlinedIcon from '@mui/icons-material/StoreOutlined';
-
-import EditIcon from '@mui/icons-material/Edit';
 import { DialogComponentCustom } from '../components';
-
 import { vehiculo } from '../types/vehiculo.interface';
 import ModalVehiculo from '../components/Vehiculo';
 import { VehiculoService } from '../service/VehiculoService';
-
 
 type ModalsProps = {
   open: boolean;
@@ -22,172 +39,200 @@ type ModalsProps = {
   title: string;
 };
 
+const soloAlfanumerico = (texto?: string | null) => (texto || '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+
 const Vehiculos = () => {
-
-  const [modalsForm, setModalsForms] = useState<ModalsProps>({
-    open: false,
-    form: null,
-    title: "",
-  });
-
+  const [modalsForm, setModalsForms] = useState<ModalsProps>({ open: false, form: null, title: '' });
   const [listaVehiculos, setListaVehiculos] = useState<vehiculo[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [errorCarga, setErrorCarga] = useState<string | null>(null)
+  const [busqueda, setBusqueda] = useState('')
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [page, setPage] = useState(0);
 
   const handleOpenModalForm = (form: React.ReactNode, title: string) => {
     setModalsForms({ open: true, form, title });
   };
 
   const handleCloseModalForm = () => {
-    // Cierra el modal en la posición especificada
     setModalsForms((prev) => ({ ...prev, open: false }));
   };
 
-
+  /** Tras crear o editar: se cierra el modal y se recarga la lista (antes al crear no se recargaba). */
   const handleConfirm = (): void => {
     handleCloseModalForm()
     getVehiculos()
-    setPage(0)
   }
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(0);
-
-  const handleChangePage = (_event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-
-
-  const getVehiculos = async() =>{
+  const getVehiculos = async () => {
     try {
       setIsLoading(true)
-      const {data} = await VehiculoService.get('');
-      setListaVehiculos(data)
-
+      setErrorCarga(null)
+      const { data } = await VehiculoService.get('');
+      setListaVehiculos(Array.isArray(data) ? data : [])
     } catch (error) {
-      console.log(error);
-    }
-    finally {
+      setErrorCarga(typeof error === 'string' ? error : 'No se pudieron cargar los vehículos')
+    } finally {
       setIsLoading(false)
     }
   }
 
-  useEffect(()=>{
-
+  useEffect(() => {
     getVehiculos()
+  }, [])
 
-  },[])
-
-  
-
-  // if (isLoading) return <div>Cargando</div>
-
-  const rows = [];
-
-  listaVehiculos?.forEach((fil:vehiculo) => {
-    rows.push(
-      <TableRow
-        key={fil.id}
-      >
-        <TableCell align="left">{fil.id}</TableCell>
-        <TableCell align="left">{fil.placa}</TableCell>
-        <TableCell align="left">{fil.nombreCorto}</TableCell>
-        <TableCell align="left">{fil.nroCirculacion}</TableCell>
-        <TableCell align="left"><FavoritoToggle tipo={TIPOS_FAVORITO.vehiculo} id={fil.id} fav={fil.fav} /></TableCell>
-        <TableCell align="left"><Icon color={fil.isCompany?'info':'action'} >{fil.isCompany ? <StoreIcon /> : <StoreOutlinedIcon />}</Icon></TableCell>
-        <TableCell align="left"><Fab color='primary' size='small' onClick={() => handleEditVehiculo(fil)} ><EditIcon /></Fab></TableCell>
-      </TableRow>
+  const filtrados = useMemo(() => {
+    const texto = busqueda.trim().toUpperCase()
+    if (!texto) return listaVehiculos
+    const placa = soloAlfanumerico(texto)
+    return listaVehiculos.filter((v) =>
+      (placa && soloAlfanumerico(v.placa).includes(placa)) ||
+      (v.nombreCorto || '').toUpperCase().includes(texto)
     )
-  })
+  }, [listaVehiculos, busqueda])
 
+  useEffect(() => setPage(0), [busqueda])
 
-
-  const handleEditVehiculo = (vehiculo:vehiculo) => {
-    // setEdit(false);
-    // const selectedPunto = data.data.data.find(item => item.id === id);
+  const handleEditVehiculo = (vehiculo: vehiculo) => {
     handleOpenModalForm(
       <ModalVehiculo initialValue={vehiculo} edit={true} onConfirm={handleConfirm} />,
-      'Editar Vehiculo'
+      `Editar vehículo ${vehiculo.placa}`
     )
   }
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  const visibles = filtrados.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
   return (
-    <Container>
-      <Box my={3} display='flex' component='div' justifyContent='space-between'>
-        <Typography>
-          Vehiculos
-        </Typography>
+    <Container sx={{ py: 3 }}>
+      <Box mb={2} display='flex' flexWrap='wrap' alignItems='center' justifyContent='space-between' gap={1.5}>
+        <Box>
+          <Typography variant='h5' fontWeight={700}>Vehículos</Typography>
+          <Typography variant='body2' color='text.secondary'>
+            {listaVehiculos.length} registrado(s)
+          </Typography>
+        </Box>
         <Button
-          color='primary'
-          onClick={() => {
+          variant='contained'
+          startIcon={<AddRoundedIcon />}
+          onClick={() =>
             handleOpenModalForm(
-              <ModalVehiculo initialValue={null} edit={false} onConfirm={handleCloseModalForm} />,
-              'Nuevo Vehiculo'
+              <ModalVehiculo initialValue={null} edit={false} onConfirm={handleConfirm} />,
+              'Nuevo vehículo'
             )
-          }}
-          variant='outlined'>
-          Agregar Vehiculo
+          }
+        >
+          Agregar vehículo
         </Button>
       </Box>
 
-      <TableContainer component={Paper} >
-        <Table aria-label="simple table" size='small'>
+      <Box display='flex' gap={1} mb={1.5}>
+        <TextField
+          size='small'
+          fullWidth
+          placeholder='Buscar por placa o nombre corto'
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position='start'>
+                <SearchRoundedIcon fontSize='small' />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Tooltip title='Recargar'>
+          <span>
+            <IconButton onClick={getVehiculos} disabled={isLoading} aria-label='Recargar'>
+              <RefreshRoundedIcon />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </Box>
+
+      {errorCarga && (
+        <Alert
+          severity='error'
+          sx={{ mb: 1.5 }}
+          action={<Button color='inherit' size='small' onClick={getVehiculos}>Reintentar</Button>}
+        >
+          {errorCarga}
+        </Alert>
+      )}
+
+      <TableContainer component={Paper} variant='outlined'>
+        <Table aria-label='Vehículos' size='small'>
           <TableHead>
             <TableRow>
-              <TableCell width={'5%'}>Id</TableCell>
-              <TableCell width={'10%'} align="left">Placa</TableCell>
-              <TableCell width={'20%'} align="left">Nombre corto</TableCell>
-              <TableCell width={'30%'} align="left">Nro. Circulación</TableCell>
-              <TableCell width={'10%'} align="left">Fav?</TableCell>
-              <TableCell width={'10%'} align="left">Propio?</TableCell>
-              <TableCell width={'10%'} align="left">Editar</TableCell>
+              <TableCell>Placa</TableCell>
+              <TableCell>Nombre corto</TableCell>
+              <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Nro. circulación</TableCell>
+              <TableCell>Tipo</TableCell>
+              <TableCell align='center'>Fav.</TableCell>
+              <TableCell align='right' />
             </TableRow>
           </TableHead>
           <TableBody>
-            {
-              isLoading ? (<TableRow style={{ height: 53 * rowsPerPage }}><TableCell colSpan={11} align="center"><CircularProgress /></TableCell></TableRow>) :
-                rows.length > 0 ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  :
-                  <TableRow style={{ height: 53 * rowsPerPage }}><TableCell colSpan={11} align="center"><h2>No hay resultados</h2></TableCell></TableRow>
-            }
-
-            {emptyRows > 0 && (
-              <TableRow style={{ height: 53 * emptyRows }}><TableCell colSpan={11} /></TableRow>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={6} align='center' sx={{ py: 6 }}><CircularProgress /></TableCell>
+              </TableRow>
+            ) : visibles.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} align='center' sx={{ py: 6, color: 'text.secondary' }}>
+                  {busqueda ? 'Ningún vehículo coincide con la búsqueda' : 'No hay vehículos registrados'}
+                </TableCell>
+              </TableRow>
+            ) : (
+              visibles.map((fil) => (
+                <TableRow key={fil.id} hover>
+                  <TableCell sx={{ fontWeight: 600, whiteSpace: 'nowrap' }}>{fil.placa}</TableCell>
+                  <TableCell>{fil.nombreCorto || '—'}</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', sm: 'table-cell' } }}>{fil.nroCirculacion || '—'}</TableCell>
+                  <TableCell>
+                    <Box display='flex' flexWrap='wrap' gap={0.5}>
+                      <Chip size='small' variant='outlined' label={fil.tracto ?? true ? 'Tracto' : 'Cisterna'} />
+                      {fil.glp && <Chip size='small' color='warning' label='GLP' />}
+                      {fil.isCompany && <Chip size='small' color='info' variant='outlined' label='Propio' />}
+                    </Box>
+                  </TableCell>
+                  <TableCell align='center'>
+                    <FavoritoToggle tipo={TIPOS_FAVORITO.vehiculo} id={fil.id} fav={fil.fav} />
+                  </TableCell>
+                  <TableCell align='right'>
+                    <Tooltip title='Editar'>
+                      <IconButton color='primary' size='small' onClick={() => handleEditVehiculo(fil)} aria-label={`Editar ${fil.placa}`}>
+                        <EditRoundedIcon fontSize='small' />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={rows.length}
+        rowsPerPageOptions={[10, 25, 50]}
+        component='div'
+        count={filtrados.length}
         rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        page={Math.min(page, Math.max(0, Math.ceil(filtrados.length / rowsPerPage) - 1))}
+        onPageChange={(_e, nueva) => setPage(nueva)}
+        onRowsPerPageChange={(e) => {
+          setRowsPerPage(parseInt(e.target.value, 10));
+          setPage(0);
+        }}
+        labelRowsPerPage='Filas'
       />
-      {/* <ProductoFormModal/> */}
       <DialogComponentCustom
         closeButton={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => handleCloseModalForm()}
-          >
+          <Button color='inherit' onClick={handleCloseModalForm}>
             Cerrar
           </Button>
         }
         open={modalsForm.open}
         title={modalsForm.title}
         element={modalsForm.form}
-
       />
     </Container>
   )

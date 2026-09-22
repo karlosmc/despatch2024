@@ -51,7 +51,7 @@ export const useAuthStore = create<AuthState>()(
           // console.log('Usuario logueado y guardado en auth-storage:', user);
           
         } catch (error: any) {
-          const errorMessage = error?.response?.data?.message || error || 'Error en login';
+          const errorMessage = typeof error === 'string' ? error : 'Error en login';
           set({
             error: errorMessage,
             loading: false,
@@ -87,8 +87,10 @@ export const useAuthStore = create<AuthState>()(
           // Limpiar otros stores
           const { useTokenParamsStore } = await import('./tokenParamsStore');
           const { useMiscStore } = await import('./miscStore');
+          const { useOperacionStore } = await import('./operacionStore');
           useTokenParamsStore.getState().clearAll();
           useMiscStore.getState().clearAll();
+          useOperacionStore.getState().clearAll();
           
           console.log("Estado de autenticación limpiado completamente");
         }
@@ -119,6 +121,9 @@ export const useAuthStore = create<AuthState>()(
         import('./miscStore').then(({ useMiscStore }) => {
           useMiscStore.getState().clearAll();
         });
+        import('./operacionStore').then(({ useOperacionStore }) => {
+          useOperacionStore.getState().clearAll();
+        });
         
         console.log("✅ Force logout completado");
       },
@@ -127,9 +132,10 @@ export const useAuthStore = create<AuthState>()(
         set({ loading: true, error: null });
         try {
           await authService.register(credentials);
-          set({ isAuthenticated: true, loading: false, error: null });
+          // Registrarse no inicia sesión: la cuenta espera la aprobación del administrador.
+          set({ loading: false, error: null });
         } catch (error: any) {
-          const errorMessage = error?.response?.data?.message || error || 'Error en registro';
+          const errorMessage = typeof error === 'string' ? error : 'Error en registro';
           set({
             error: errorMessage,
             loading: false,

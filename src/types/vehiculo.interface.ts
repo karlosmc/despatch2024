@@ -7,4 +7,8 @@ export interface vehiculo {
   fav: boolean;
   isCompany: boolean;
   nombreCorto?:string;
+  /** Es tracto (cabeza). */
+  tracto?: boolean;
+  /** Cisterna de GLP: en la guía rápida su placa es la sucursal del SCOP. */
+  glp?: boolean;
 }

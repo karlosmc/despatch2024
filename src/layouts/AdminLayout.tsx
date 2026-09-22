@@ -9,6 +9,8 @@ import { useThemeContext } from '../context/themeProvider'
 
 import { useTokenParamsStore } from '../store/tokenParamsStore'
 import { useMiscStore } from '../store/miscStore'
+import { useOperacionStore } from '../store/operacionStore'
+import { useAuthStore } from '../store/authStore'
 
 
 
@@ -17,6 +19,18 @@ const AdminLayout = () => {
   const params = useTokenParamsStore(state => state.params);
   const series = useMiscStore(state => state.series);
   const ubigeos = useMiscStore(state => state.ubigeos);
+  const user = useAuthStore(state => state.user);
+  const estadoOperacion = useOperacionStore(state => state.estado);
+
+  /*
+   * Punto de emisión, serie, vehículos y conductor del usuario: se cargan al
+   * entrar, no al abrir la guía rápida, para que esa pantalla no espere.
+   */
+  useEffect(() => {
+    if (user?.id && estadoOperacion === 'vacio') {
+      useOperacionStore.getState().cargar(user);
+    }
+  }, [user?.id, estadoOperacion]);
 
   const { theme } = useThemeContext();
   const [toggle, setToggle] = useState<boolean>(false)
