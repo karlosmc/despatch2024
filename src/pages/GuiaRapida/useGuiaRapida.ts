@@ -30,7 +30,7 @@ import { VehiculoService } from "../../service/VehiculoService";
 import { PersonaService } from "../../service/PersonaService";
 import { PuntoUbicacionService } from "../../service/PuntoUbicacionService";
 import { ConductoresService } from "../../service/ConductoresServices";
-import { ProductoService } from "../../service/ProductoService";
+import { CombustiblesService } from "../../service/CombustiblesService";
 import {
   MAX_DIAS_SCOP,
   SCOP_MODO,
@@ -49,7 +49,6 @@ import {
   ProductoScop,
   abreviarUnidad,
   calcularPesoTotal,
-  codigoExacto,
   mismoCodigo,
   productoScopDe,
   unidadCompatible,
@@ -138,7 +137,7 @@ const TITULOS_PASOS: Record<PasoId, string> = {
   chofer: "Chofer ligado a tu DNI",
   personas: "Destinatario y proveedores",
   llegada: "Puntos de llegada de la empresa",
-  productos: "Productos del SCOP en el catálogo",
+  productos: "Combustibles en tu catálogo de productos",
 };
 
 const pasosIniciales = (): Record<PasoId, PasoCarga> =>
@@ -296,6 +295,11 @@ export const useGuiaRapida = () => {
   const consultaScop = useRef(0);
   /** "Volver a consultar" pide datos frescos al portal, sin la caché del backend. */
   const refrescarScop = useRef(false);
+  /**
+   * Sólo la cisterna GLP consulta sola al abrir el formulario. Con líquidos la
+   * consulta se hace cuando el usuario la pide (botón de actualizar).
+   */
+  const [consultaPedida, setConsultaPedida] = useState(false);
   /** Números de SCOP ya usados en otra guía -> "T001-25" (o "" si no se sabe cuál). */
   const [ocupados, setOcupados] = useState<Record<string, string>>({});
   /** Aviso cuando refrescar o la verificación de uso sueltan pedidos elegidos. */
@@ -476,29 +480,15 @@ export const useGuiaRapida = () => {
     // La llegada nunca se precarga: la elige el usuario, también con cisterna GLP.
   };
 
+  /**
+   * Nada que ver con el portal SCOP: son los combustibles de la tabla
+   * `PRODUCTOS_SCOP` buscados en NUESTRO catálogo, para convertir el nombre que
+   * trae un pedido en un bien de la guía. Se leen al entrar al sistema
+   * (operacionStore), así que aquí normalmente no hay ninguna petición.
+   */
   const tareaProductos = async (): Promise<string | void> => {
-    const resultados: PromiseSettledResult<any>[] = [];
-    for (const p of PRODUCTOS_SCOP) {
-      try {
-        resultados.push({ status: "fulfilled", value: await ProductoService.get(`codigo=${encodeURIComponent(p.codigo)}`) });
-      } catch (reason) {
-        resultados.push({ status: "rejected", reason });
-      }
-    }
-    if (resultados.every((r) => r.status === "rejected")) {
-      throw (resultados[0] as PromiseRejectedResult).reason;
-    }
-
-    const productos: Record<string, Producto> = {};
-    PRODUCTOS_SCOP.forEach((p, i) => {
-      const r = resultados[i];
-      const lista: Producto[] = r.status === "fulfilled" && Array.isArray(r.value?.data) ? r.value.data : [];
-      // El filtro del backend puede ser parcial: primero el código exacto, luego el mismo número.
-      const encontrado =
-        lista.find((x) => codigoExacto(x.codigo, p.codigo)) ||
-        lista.find((x) => mismoCodigo(x.codigo, p.codigo));
-      if (encontrado) productos[p.codigo] = encontrado;
-    });
+    const guardados = (await datosDeTrabajo()).productos;
+    const productos = Object.keys(guardados).length > 0 ? guardados : (await CombustiblesService.cargar()).productos;
     setProductosBd(productos);
 
     const faltan = PRODUCTOS_SCOP.filter((p) => !productos[p.codigo]).map((p) => p.codigo);
@@ -670,9 +660,12 @@ export const useGuiaRapida = () => {
    *  Pedidos SCOP
    * ========================================================= */
   useEffect(() => {
-    // Recién al terminar la carga inicial, con tipo marcado y sucursal. La placa no
-    // entra en la consulta: se piden todos los pedidos y se filtran en pantalla.
-    if (cargaEnCurso || !tipoScop || !sucursal) {
+    /*
+     * Recién al terminar la carga inicial, con tipo marcado y sucursal. La placa no
+     * entra en la consulta: se piden todos los pedidos y se filtran en pantalla.
+     * Si la cisterna no es GLP, no se consulta hasta que el usuario lo pida.
+     */
+    if (cargaEnCurso || !tipoScop || !sucursal || (!secundarioEsGlp && !consultaPedida)) {
       consultaScop.current++;
       setPedidosSucursal([]);
       setDesdeCache(false);
@@ -741,7 +734,7 @@ export const useGuiaRapida = () => {
 
     // Si cambia la búsqueda o se sale de la página, se abandona la consulta anterior.
     return () => controlador.abort();
-  }, [cargaEnCurso, tipoScop, rango.desde, rango.hasta, sucursal, recargaScop]);
+  }, [cargaEnCurso, tipoScop, rango.desde, rango.hasta, sucursal, secundarioEsGlp, consultaPedida, recargaScop]);
 
   /* Pedidos de la placa elegida; los cerrados y anulados no se ofrecen. */
   const pedidosPlaca = useMemo(() => filtrarPorPlaca(pedidosSucursal, placaScop), [pedidosSucursal, placaScop]);
@@ -850,10 +843,27 @@ export const useGuiaRapida = () => {
     setSeleccion([]);
     setAvisoSeleccion(null);
     setVendedorElegido(null);
+    // Otra búsqueda con líquidos vuelve a esperar a que el usuario la pida.
+    setConsultaPedida(false);
     setDocsManuales([]);
     setCorrecciones({});
     setBienesManuales({});
   }, [placaScop, tipoScop, sucursal, rango.desde, rango.hasta]);
+
+  /*
+   * Al cambiar el motivo cambia el producto del GLP (kilos en compras, galones en
+   * traslados y ventas): se sueltan los pedidos cuya unidad ya no corresponde.
+   */
+  useEffect(() => {
+    setSeleccion((previa) => {
+      const sueltos = previa.filter((p) => !unidadCompatible(p, values.envio.codTraslado));
+      if (sueltos.length === 0) return previa;
+      setAvisoSeleccion(
+        `Se quitó ${sueltos.map((p) => p.codigoAutorizacion).join(", ")}: con este motivo el producto no se registra en esa unidad.`
+      );
+      return previa.filter((p) => unidadCompatible(p, values.envio.codTraslado));
+    });
+  }, [values.envio.codTraslado]);
 
   const estaSeleccionado = (p: PedidoScop) => seleccion.some((s) => claveScop(s) === claveScop(p));
 
@@ -862,8 +872,10 @@ export const useGuiaRapida = () => {
       if (previa.some((s) => claveScop(s) === claveScop(p))) {
         return previa.filter((s) => claveScop(s) !== claveScop(p));
       }
-      // No se marca un número usado en otra guía ni uno en otra unidad (p. ej. GLP en galones).
-      return p.codigoAutorizacion in ocupados || !unidadCompatible(p) ? previa : [...previa, p];
+      // No se marca un número usado en otra guía ni uno cuya unidad no corresponde al motivo.
+      return p.codigoAutorizacion in ocupados || !unidadCompatible(p, values.envio.codTraslado)
+        ? previa
+        : [...previa, p];
     });
 
   /* =========================================================
@@ -892,7 +904,8 @@ export const useGuiaRapida = () => {
     };
 
     seleccion.forEach((pedido) => {
-      const producto = productoScopDe(pedido.producto);
+      // El motivo decide el producto cuando hay dos (GLP en kilos o en galones).
+      const producto = productoScopDe(pedido.producto, values.envio.codTraslado);
       if (producto) sumar(producto, pedido.volumen);
     });
     Object.entries(bienesManuales).forEach(([codigo, cantidad]) => {
@@ -909,7 +922,7 @@ export const useGuiaRapida = () => {
     actuales.forEach((actual) => {
       if (!deseados.has(actual.codigo)) api.onEliminarDetalle(actual);
     });
-  }, [seleccion, bienesManuales, productosBd]);
+  }, [seleccion, bienesManuales, productosBd, values.envio.codTraslado]);
 
   /* =========================================================
    *  Documentos: SCOP + factura de cada pedido, con correcciones, más los manuales
@@ -1050,7 +1063,11 @@ export const useGuiaRapida = () => {
         delete siguiente[producto.codigo];
         return siguiente;
       });
-      setSeleccion((previa) => previa.filter((pedido) => productoScopDe(pedido.producto)?.codigo !== producto.codigo));
+      setSeleccion((previa) =>
+        previa.filter(
+          (pedido) => productoScopDe(pedido.producto, values.envio.codTraslado)?.codigo !== producto.codigo
+        )
+      );
     }
     api.onEliminarDetalle(detalle);
   };
@@ -1196,8 +1213,11 @@ export const useGuiaRapida = () => {
     noDisponibles,
     cargandoScop,
     errorScop,
+    consultaPedida,
+    /** Consulta o vuelve a consultar el portal (con líquidos es la única forma). */
     recargarScop: () => {
       refrescarScop.current = true;
+      setConsultaPedida(true);
       setRecargaScop((n) => n + 1);
     },
     seleccion,

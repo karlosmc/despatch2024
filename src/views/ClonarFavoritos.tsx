@@ -16,6 +16,8 @@ import {
   LinearProgress,
   Paper,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
   alpha,
   useTheme,
@@ -128,6 +130,9 @@ const ClonarFavoritos = () => {
   const [cargandoUsuarios, setCargandoUsuarios] = useState(false);
   const [errorUsuarios, setErrorUsuarios] = useState<string | null>(null);
   const [destinos, setDestinos] = useState<UsuarioResumen[]>([]);
+  /** Favoritos de cada usuario ya contado; "error" si esa consulta falló. */
+  const [conteos, setConteos] = useState<Record<number, number | "error">>({});
+  const [filtroUsuarios, setFiltroUsuarios] = useState<"todos" | "con" | "sin">("todos");
 
   useEffect(() => {
     if (esAdmin) cargarFavoritos();
@@ -155,6 +160,32 @@ const ClonarFavoritos = () => {
       clearTimeout(temporizador);
     };
   }, [busquedaUsuario, esAdmin, user?.id]);
+
+  /*
+   * Contar favoritos cuesta una petición por usuario, así que no se hace solo:
+   * se cuenta cuando el admin lo pide, y lo contado queda guardado.
+   */
+  const [contando, setContando] = useState<{ actual: number; total: number } | null>(null);
+
+  const contarFavoritos = async () => {
+    const pendientes = usuarios.filter((u) => u.id && typeof conteos[u.id] !== "number");
+    if (pendientes.length === 0 || contando) return;
+
+    setContando({ actual: 0, total: pendientes.length });
+    for (let i = 0; i < pendientes.length; i++) {
+      const u = pendientes[i];
+      try {
+        const { favoritos } = await FavoritoService.deUsuario(u.id);
+        const total = TIPOS.reduce((n, { tipo }) => n + (favoritos[tipo]?.length || 0), 0);
+        setConteos((previos) => ({ ...previos, [u.id]: total }));
+      } catch (error) {
+        console.warn(`No se pudieron contar los favoritos de ${u.name}:`, error);
+        setConteos((previos) => ({ ...previos, [u.id]: "error" }));
+      }
+      setContando({ actual: i + 1, total: pendientes.length });
+    }
+    setContando(null);
+  };
 
   /* ---------- Clonado ---------- */
   const [confirmando, setConfirmando] = useState(false);
@@ -196,12 +227,23 @@ const ClonarFavoritos = () => {
   const estaElegido = (u: UsuarioResumen) => destinos.some((d) => d.id === u.id);
   const alternarUsuario = (u: UsuarioResumen) =>
     setDestinos((previa) => (previa.some((d) => d.id === u.id) ? previa.filter((d) => d.id !== u.id) : [...previa, u]));
-  const todosMostradosElegidos = usuarios.length > 0 && usuarios.every(estaElegido);
+  /** Lista según el filtro: todos, sólo los que ya tienen favoritos o sólo los que no. */
+  const usuariosVisibles = usuarios.filter((u) => {
+    if (filtroUsuarios === "todos") return true;
+    const conteo = conteos[u.id];
+    if (typeof conteo !== "number") return false;
+    return filtroUsuarios === "con" ? conteo > 0 : conteo === 0;
+  });
+  const contados = usuarios.filter((u) => typeof conteos[u.id] === "number").length;
+  const sinFavoritos = usuarios.filter((u) => conteos[u.id] === 0).length;
+  const conFavoritos = usuarios.filter((u) => typeof conteos[u.id] === "number" && (conteos[u.id] as number) > 0).length;
+
+  const todosMostradosElegidos = usuariosVisibles.length > 0 && usuariosVisibles.every(estaElegido);
   const alternarMostrados = () =>
     setDestinos((previa) =>
       todosMostradosElegidos
-        ? previa.filter((d) => !usuarios.some((u) => u.id === d.id))
-        : [...previa, ...usuarios.filter((u) => !previa.some((d) => d.id === u.id))]
+        ? previa.filter((d) => !usuariosVisibles.some((u) => u.id === d.id))
+        : [...previa, ...usuariosVisibles.filter((u) => !previa.some((d) => d.id === u.id))]
     );
 
   /* ---------- Ejecutar ---------- */
@@ -413,6 +455,34 @@ const ClonarFavoritos = () => {
             </Alert>
           )}
 
+          <Box display="flex" alignItems="center" flexWrap="wrap" gap={0.75} mt={1}>
+            <ToggleButtonGroup
+              exclusive
+              size="small"
+              value={filtroUsuarios}
+              onChange={(_, valor: "todos" | "con" | "sin" | null) => valor && setFiltroUsuarios(valor)}
+            >
+              <ToggleButton value="todos">Todos ({usuarios.length})</ToggleButton>
+              <ToggleButton value="con" disabled={contados === 0}>
+                Con favoritos ({conFavoritos})
+              </ToggleButton>
+              <ToggleButton value="sin" disabled={contados === 0}>
+                Sin favoritos ({sinFavoritos})
+              </ToggleButton>
+            </ToggleButtonGroup>
+
+            {contados < usuarios.length && (
+              <Button
+                size="small"
+                onClick={contarFavoritos}
+                disabled={Boolean(contando) || usuarios.length === 0}
+                startIcon={contando ? <CircularProgress size={14} /> : undefined}
+              >
+                {contando ? `Contando ${contando.actual} de ${contando.total}…` : "Contar favoritos"}
+              </Button>
+            )}
+          </Box>
+
           <Box mt={1} sx={{ border: 1, borderColor: "divider", borderRadius: 2, overflow: "hidden" }}>
             <Box
               component="label"
@@ -429,17 +499,18 @@ const ClonarFavoritos = () => {
                 disabled={usuarios.length === 0 || clonando}
               />
               <Typography variant="caption" fontWeight={600}>
-                Elegir los {usuarios.length} mostrados
+                Elegir los {usuariosVisibles.length} mostrados
               </Typography>
             </Box>
             <Box sx={{ maxHeight: 380, overflowY: "auto" }}>
-              {!cargandoUsuarios && usuarios.length === 0 && !errorUsuarios && (
+              {!cargandoUsuarios && usuariosVisibles.length === 0 && !errorUsuarios && (
                 <Typography variant="body2" color="text.secondary" textAlign="center" py={3}>
-                  No se encontraron usuarios
+                  {usuarios.length === 0 ? "No se encontraron usuarios" : "Ningún usuario con ese filtro"}
                 </Typography>
               )}
-              {usuarios.map((u) => {
+              {usuariosVisibles.map((u) => {
                 const marcado = estaElegido(u);
+                const conteo = conteos[u.id];
                 return (
                   <Box
                     key={u.id}
@@ -465,6 +536,13 @@ const ClonarFavoritos = () => {
                         {[u.documento, u.email].filter(Boolean).join(" · ")}
                       </Typography>
                     </Box>
+                    {conteo === undefined ? null : conteo === "error" ? (
+                      <Chip size="small" variant="outlined" color="warning" label="?" />
+                    ) : conteo === 0 ? (
+                      <Chip size="small" color="warning" variant="outlined" label="Sin favoritos" />
+                    ) : (
+                      <Chip size="small" color="success" variant="outlined" label={`${conteo} fav.`} />
+                    )}
                     {u.perfil && <Chip size="small" variant="outlined" label={u.perfil} sx={{ textTransform: "capitalize" }} />}
                   </Box>
                 );

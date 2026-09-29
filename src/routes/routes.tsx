@@ -29,6 +29,7 @@ import Conductores from "../views/Conductores";
 import Transportistas from "../views/Transportista";
 import SunatParameters from "../views/SunatParameters";
 
+import Asignaciones from "../views/Asignaciones";
 import ClonarFavoritos from "../views/ClonarFavoritos";
 import Vehiculos from "../views/Vehiculos";
 import Guias from "../views/Guias";
@@ -125,6 +126,11 @@ export const router = createBrowserRouter([
       {
         path: '/admin/vehiculos',
         element: <Vehiculos />
+      },
+      {
+        // Sólo admin: la página redirige si el perfil es otro.
+        path: '/admin/asignaciones',
+        element: <Asignaciones />
       },
       {
         // Sólo admin: la página redirige si el perfil es otro.

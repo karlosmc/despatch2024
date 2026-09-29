@@ -14,7 +14,7 @@ import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
-import EditIcon from '@mui/icons-material/Edit';
+
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -474,10 +474,10 @@ const TablePanel = ({
     }
   };
 
-  const handleEditGuia = (fila: panelguia) => {
-    // Navegar a la ruta de edición con el ID de la guía
-    navigate(`/admin/guiaremision/edit/${fila.id_despatch}`);
-  };
+  // const handleEditGuia = (fila: panelguia) => {
+  //   // Navegar a la ruta de edición con el ID de la guía
+  //   navigate(`/admin/guiaremision/edit/${fila.id_despatch}`);
+  // };
 
   const handleEditGuiaNueva = (fila: panelguia) => {
     // Edición en el formulario nuevo (responsive)
@@ -589,7 +589,7 @@ const TablePanel = ({
           </Box>
         </TableCell>
         <TableCell sx={TableCellStyles} align="center">
-          <Tooltip title="Editar guía" disableHoverListener={fil.estado === 'B' || fil.estado === 'F'}>
+          {/* <Tooltip title="Editar guía" disableHoverListener={fil.estado === 'B' || fil.estado === 'F'}>
             <span>
               <IconButton
                 size="small"
@@ -601,7 +601,7 @@ const TablePanel = ({
                 <EditIcon fontSize="small" />
               </IconButton>
             </span>
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip title="Editar en el formulario nuevo" disableHoverListener={fil.estado === 'B' || fil.estado === 'F'}>
             <span>
               <IconButton

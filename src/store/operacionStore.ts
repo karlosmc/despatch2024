@@ -6,10 +6,12 @@ import { ConductoresService } from "../service/ConductoresServices";
 import { puntoEmision } from "../types/puntoemision.interface";
 import { numeracion } from "../types/numeracion.interface";
 import { conductor } from "../types/conductor.interface";
+import { Producto } from "../types/producto.interface";
+import { CombustiblesService } from "../service/CombustiblesService";
 
 /**
  * Datos de trabajo del usuario: su punto de emisión, la serie con su correlativo
- * y sus vehículos, y el conductor ligado a su DNI.
+ * y sus vehículos, el conductor ligado a su DNI y los combustibles del catálogo.
  *
  * Se cargan una vez al entrar al sistema, no al abrir la guía rápida, así esa
  * pantalla ya los tiene listos. Se pueden cambiar desde la guía rápida.
@@ -27,6 +29,8 @@ interface OperacionState {
   series: numeracion[];
   serie: numeracion | null;
   conductor: conductor | null;
+  /** Combustibles de la tabla del SCOP tal como están en el catálogo. */
+  productos: Record<string, Producto>;
   cargar: (usuario: { id?: number; documento?: string } | null) => Promise<void>;
   /** Cambia de punto y trae sus series (la guía rápida lo usa al cambiarlo). */
   elegirPunto: (id: number) => Promise<void>;
@@ -45,6 +49,7 @@ const VACIO = {
   series: [],
   serie: null,
   conductor: null,
+  productos: {},
 };
 
 const comoTexto = (error: unknown, porDefecto: string) =>
@@ -91,7 +96,30 @@ export const useOperacionStore = create<OperacionState>((set, get) => ({
         if (!chofer) avisos.push(`Tu DNI ${documento} no está registrado como conductor.`);
       }
 
-      set({ estado: "listo", error: null, avisos, puntos, puntoId, series, serie, conductor: chofer });
+      // El catálogo de combustibles casi no cambia: se lee una vez por sesión.
+      let productos: Record<string, Producto> = {};
+      try {
+        const catalogo = await CombustiblesService.cargar();
+        productos = catalogo.productos;
+        if (catalogo.faltan.length > 0) {
+          avisos.push(`Códigos que no están en tu catálogo de productos: ${catalogo.faltan.join(", ")}.`);
+        }
+      } catch (error) {
+        avisos.push("No se pudo leer el catálogo de productos.");
+        console.warn("No se pudo leer el catálogo de combustibles:", error);
+      }
+
+      set({
+        estado: "listo",
+        error: null,
+        avisos,
+        puntos,
+        puntoId,
+        series,
+        serie,
+        conductor: chofer,
+        productos,
+      });
     } catch (error) {
       set({ estado: "error", error: comoTexto(error, "No se pudieron cargar tus datos de trabajo") });
     }

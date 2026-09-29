@@ -29,8 +29,15 @@ const ESTADOS_TRANSITORIOS = [429, 502, 503, 504];
 /** 401: token inválido o vencido. 419: sesión/CSRF vencida en Laravel. */
 const ESTADOS_SESION_VENCIDA = [401, 419];
 
-/** Peticiones cuyo 401 no significa "sesión expirada" (el usuario ya está saliendo). */
-const RUTAS_SIN_EXPIRACION = ['/api/logout'];
+/**
+ * Peticiones cuyo 401 no habla de nuestra sesión:
+ *  - /api/logout: el usuario ya está saliendo;
+ *  - /api/scop/*: el 401 viene del servicio externo de SCOP (su clave), no de Sanctum.
+ */
+const RUTAS_SIN_EXPIRACION = ['/api/logout', '/api/scop/'];
+
+/** Petición liviana y autenticada para comprobar si el token sigue sirviendo. */
+const RUTA_VERIFICACION = '/api/favoritos';
 
 type ConfigConReintentos = InternalAxiosRequestConfig & { __reintentos?: number };
 
@@ -56,6 +63,51 @@ const demoraPara = (error: AxiosError, intento: number): number => {
  * Sesión expirada
  * ========================================================================= */
 let sesionExpirando = false;
+
+/**
+ * Cliente sin interceptores para comprobar la sesión: si entrara por `apiLogged`
+ * su propio 401 volvería a pasar por aquí.
+ */
+const verificador = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+  timeout: 8000,
+});
+
+/** Una sola comprobación a la vez, aunque lleguen varios 401 juntos. */
+let verificacionEnCurso: Promise<boolean> | null = null;
+
+/**
+ * ¿El token realmente dejó de servir? Un 401 suelto también aparece cuando el
+ * servidor o su base de datos se cortan un momento, y en ese caso sacar al
+ * usuario al login le hace perder lo que estaba haciendo. Sólo se confirma la
+ * expiración si una segunda petición, hecha aparte, también responde 401/419.
+ */
+const sesionRealmenteVencida = (): Promise<boolean> => {
+  // Sin internet no hay nada que confirmar: el token sigue siendo el mismo.
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve(false);
+
+  const token = localStorage.getItem('AUTH_TOKEN');
+  if (!token) return Promise.resolve(true);
+
+  if (!verificacionEnCurso) {
+    verificacionEnCurso = verificador
+      .get(RUTA_VERIFICACION, { headers: { Authorization: `Bearer ${token}` } })
+      .then(() => false)
+      .catch((error: AxiosError) => {
+        const status = error.response?.status;
+        // Sin respuesta (red, timeout) o error del servidor: no se puede afirmar nada.
+        return status === 401 || status === 419;
+      });
+    // Se olvida enseguida para no dar por buena una sesión que venció después.
+    void verificacionEnCurso.finally(() => {
+      setTimeout(() => {
+        verificacionEnCurso = null;
+      }, 2000);
+    });
+  }
+  return verificacionEnCurso;
+};
 /** Hubo un reintento o una caída: el próximo éxito se anuncia como "recuperada". */
 let conexionInestable = false;
 
@@ -124,11 +176,20 @@ apiLogged.interceptors.response.use(
     const config = error.config as ConfigConReintentos | undefined;
     const status = error.response?.status;
 
-    // 1) Token vencido o inválido: se cierra la sesión de inmediato, sin reintentos.
+    // 1) Puede ser el token vencido... o un corte momentáneo. Se comprueba antes
+    //    de cerrar la sesión, y nunca se reintenta la petición original.
     if (status && ESTADOS_SESION_VENCIDA.includes(status)) {
       const url = config?.url || '';
-      if (!RUTAS_SIN_EXPIRACION.some((ruta) => url.includes(ruta))) {
+      if (RUTAS_SIN_EXPIRACION.some((ruta) => url.includes(ruta))) {
+        return Promise.reject(error);
+      }
+
+      if (await sesionRealmenteVencida()) {
         void cerrarSesionExpirada();
+      } else {
+        console.warn(`401 puntual en ${url}: el token sigue vigente, no se cierra la sesión.`);
+        conexionInestable = true;
+        emitirEstadoConexion({ estado: 'caida' });
       }
       return Promise.reject(error);
     }

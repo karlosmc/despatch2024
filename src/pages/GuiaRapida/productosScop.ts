@@ -28,21 +28,21 @@ export const PRODUCTOS_SCOP: ProductoScop[] = [
     codigo: "0003",
     descripcion: "DIESEL B5 S-50 UV",
     unidad: "GLL",
-    factorKg: 3.22,
+    factorKg: 1.9391,
   },
   {
     nombresScop: ["GASOHOL PREMIUM"],
     codigo: "0002",
     descripcion: "GASOHOL PREMIUM",
     unidad: "GLL",
-    factorKg: 2.8,
+    factorKg: 1.9391,
   },
   {
     nombresScop: ["GASOHOL REGULAR"],
     codigo: "0001",
     descripcion: "GASOHOL REGULAR",
     unidad: "GLL",
-    factorKg: 2.8,
+    factorKg: 1.9391,
   },
   {
     nombresScop: ["GLP - G"],
@@ -50,6 +50,13 @@ export const PRODUCTOS_SCOP: ProductoScop[] = [
     descripcion: "GLP GRANEL",
     unidad: "KGM",
     factorKg: 1,
+  },
+   {
+    nombresScop: ["GLP - G"],
+    codigo: "0044",
+    descripcion: "GLP GRANEL",
+    unidad: "GLL",
+    factorKg: 1.9391,
   },
 ];
 
@@ -80,12 +87,11 @@ export const abreviarUnidad = (unidad: string): string => {
 
 /**
  * El pedido se puede usar si su unidad en el SCOP coincide con la del producto
- * de la guía. Ej.: el GLP de compras (0004) va en kilos; un pedido de GLP en
- * galones no corresponde a este código y no se ofrece. Si el SCOP no informa la
- * unidad (líquidos), se acepta.
+ * que toca según el motivo: en compras el GLP va en kilos (0004) y en traslados
+ * o ventas en galones (0044). Si el SCOP no informa la unidad (líquidos), se acepta.
  */
-export const unidadCompatible = (pedido: { unidad?: string; producto: string }): boolean => {
-  const producto = productoScopDe(pedido.producto);
+export const unidadCompatible = (pedido: { unidad?: string; producto: string }, motivo?: string): boolean => {
+  const producto = productoScopDe(pedido.producto, motivo);
   if (!producto || !pedido.unidad?.trim()) return true;
   return abreviarUnidad(pedido.unidad) === abreviarUnidad(producto.unidad);
 };
@@ -95,9 +101,29 @@ const sinAcentos = (texto: string) => texto.normalize("NFD").replace(/[̀-ͯ]/g,
 const normalizarNombre = (texto: string) =>
   sinAcentos(texto || "").toUpperCase().replace(/\s+/g, " ").trim();
 
-export const productoScopDe = (nombreScop: string): ProductoScop | undefined => {
+/** Motivo de traslado "Compra". */
+const MOTIVO_COMPRA = "02";
+
+/**
+ * Unidad que corresponde según el motivo del traslado: la compra de GLP se
+ * registra en kilos; los traslados entre establecimientos y las ventas, en
+ * galones (se convierten a kilos con el factor del producto).
+ */
+export const unidadPorMotivo = (motivo?: string) => (motivo === MOTIVO_COMPRA ? "KGM" : "GLL");
+
+/**
+ * Producto de la tabla para un nombre del SCOP. El GLP está dos veces, en kilos
+ * y en galones: con `motivo` se elige el que toca.
+ */
+export const productoScopDe = (nombreScop: string, motivo?: string): ProductoScop | undefined => {
   const buscado = normalizarNombre(nombreScop);
-  return PRODUCTOS_SCOP.find((p) => p.nombresScop.some((n) => normalizarNombre(n) === buscado));
+  const coincidencias = PRODUCTOS_SCOP.filter((p) =>
+    p.nombresScop.some((n) => normalizarNombre(n) === buscado)
+  );
+  if (coincidencias.length <= 1) return coincidencias[0];
+
+  const unidad = unidadPorMotivo(motivo);
+  return coincidencias.find((p) => p.unidad === unidad) || coincidencias[0];
 };
 
 /* ------------------------------------------------------------------ */

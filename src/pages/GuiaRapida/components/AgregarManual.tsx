@@ -104,7 +104,7 @@ const AgregarManual = ({ hayProveedor, onAgregarDoc, onAgregarProducto }: Agrega
               >
                 {PRODUCTOS_SCOP.map((p) => (
                   <MenuItem key={p.codigo} value={p.codigo}>
-                    {p.descripcion}
+                    {p.descripcion} · {p.unidad === "KGM" ? "kg" : "gal"}
                   </MenuItem>
                 ))}
               </TextField>

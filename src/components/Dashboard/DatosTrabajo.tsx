@@ -38,7 +38,7 @@ const Dato = ({ etiqueta, valor }: { etiqueta: string; valor?: string | null }) 
 const DatosTrabajo = () => {
   const theme = useTheme()
   const user = useAuthStore((state) => state.user)
-  const { estado, error, avisos, puntos, puntoId, serie, conductor } = useOperacionStore()
+  const { estado, error, avisos, puntos, puntoId, serie, conductor, productos } = useOperacionStore()
 
   const [ancla, setAncla] = useState<null | HTMLElement>(null)
   const abrir = (e: MouseEvent<HTMLElement>) => setAncla(e.currentTarget)
@@ -118,6 +118,7 @@ const DatosTrabajo = () => {
         <Dato etiqueta='Serie y correlativo' valor={numero} />
         <Dato etiqueta='Chofer' valor={conductor ? `${conductor.nombres} ${conductor.apellidos}` : ''} />
         <Dato etiqueta='Licencia' valor={conductor?.licencia} />
+        <Dato etiqueta='Combustibles en catálogo' valor={`${Object.keys(productos).length} producto(s)`} />
 
         <Box mt={0.75}>
           <Typography variant='caption' color='text.secondary'>

@@ -26,6 +26,8 @@ interface ListaScopProps {
   cargando: boolean;
   /** Número de SCOP -> guía donde ya está usado ("" si no se sabe cuál). */
   ocupados?: Record<string, string>;
+  /** Motivo del traslado: decide si el GLP va en kilos (compra) o en galones. */
+  motivo?: string;
 }
 
 /** Pedidos numerados en filas de dos líneas; se marcan tocando la fila. */
@@ -36,6 +38,7 @@ const ListaScop = ({
   habilitado,
   cargando,
   ocupados = {},
+  motivo,
 }: ListaScopProps) => {
   const theme = useTheme();
 
@@ -72,9 +75,9 @@ const ListaScop = ({
     <Box display="flex" flexDirection="column" gap={0.5}>
       {pedidos.map((pedido, indice) => {
         const seleccionado = estaSeleccionado(pedido);
-        const relacionado = Boolean(productoScopDe(pedido.producto));
+        const relacionado = Boolean(productoScopDe(pedido.producto, motivo));
         const usado = pedido.codigoAutorizacion in ocupados;
-        const compatible = unidadCompatible(pedido);
+        const compatible = unidadCompatible(pedido, motivo);
         const deshabilitado = !habilitado || !relacionado || usado || !compatible;
 
         return (
@@ -144,8 +147,8 @@ const ListaScop = ({
                 {relacionado && !compatible && (
                   <Box component="span" sx={{ color: "warning.main", fontWeight: 600 }}>
                     {" "}
-                    · en {abreviarUnidad(pedido.unidad)}: no aplica, la compra va en{" "}
-                    {abreviarUnidad(productoScopDe(pedido.producto)?.unidad || "")}
+                    · en {abreviarUnidad(pedido.unidad)}: este motivo registra en{" "}
+                    {abreviarUnidad(productoScopDe(pedido.producto, motivo)?.unidad || "")}
                   </Box>
                 )}
                 {usado && (

@@ -54,6 +54,7 @@ const TITULOS: [string, string][] = [
   ['/admin/numeracion', 'Numeración'],
   ['/admin/sunat', 'Parámetros SUNAT'],
   ['/admin/favoritos/clonar', 'Clonar favoritos'],
+  ['/admin/asignaciones', 'Asignaciones'],
   ['/admin/migraciones', 'Migraciones'],
   ['/admin', 'Dashboard'],
 ];

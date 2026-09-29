@@ -123,6 +123,8 @@ const GuiaRapidaContenido = () => {
     ? { color: "warning.main", texto: "Elige el punto de llegada: su id es la sucursal del SCOP." }
     : !r.placaScop
     ? { color: "warning.main", texto: "Elige el vehículo secundario: se muestran los pedidos de su placa." }
+    : !r.secundarioEsGlp && !r.consultaPedida
+    ? { color: "info.main", texto: "Toca actualizar para traer los pedidos de esta llegada." }
     : !r.proveedor
     ? { color: "warning.main", texto: "Elige el proveedor para poder marcar pedidos." }
     : r.secundarioEsGlp
@@ -367,9 +369,14 @@ const GuiaRapidaContenido = () => {
                 <DateRangeRoundedIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Volver a consultar">
+            <Tooltip title={r.consultaPedida || r.secundarioEsGlp ? "Volver a consultar" : "Consultar el SCOP"}>
               <span>
-                <IconButton onClick={r.recargarScop} disabled={r.cargandoScop || !r.tipoScop || !r.sucursal} aria-label="Volver a consultar">
+                <IconButton
+                  onClick={r.recargarScop}
+                  disabled={r.cargandoScop || !r.tipoScop || !r.sucursal}
+                  color={!r.secundarioEsGlp && !r.consultaPedida ? "primary" : "default"}
+                  aria-label="Consultar el SCOP"
+                >
                   <RefreshRoundedIcon fontSize="small" />
                 </IconButton>
               </span>
@@ -443,6 +450,7 @@ const GuiaRapidaContenido = () => {
               habilitado={Boolean(r.proveedor)}
               cargando={r.cargandoScop && r.pedidos.length === 0}
               ocupados={r.ocupados}
+              motivo={v.envio.codTraslado}
             />
           </Box>
 

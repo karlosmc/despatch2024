@@ -18,6 +18,7 @@ import NumbersRoundedIcon from '@mui/icons-material/NumbersRounded'
 import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded'
+import SwapHorizRoundedIcon from '@mui/icons-material/SwapHorizRounded'
 
 import { useAuthStore } from '../../store/authStore'
 import { GUIA_RAPIDA_HABILITADA } from '../../config/modulos'
@@ -90,6 +91,7 @@ const SECCIONES: SeccionMenu[] = [
     items: [
       { to: '/admin/puntoemision', label: 'Puntos de emisión', icon: <GpsFixedRoundedIcon /> },
       { to: '/admin/numeracion', label: 'Numeración', icon: <NumbersRoundedIcon /> },
+      { to: '/admin/asignaciones', label: 'Asignaciones', icon: <SwapHorizRoundedIcon /> },
       { to: '/admin/sunat', label: 'Parámetros SUNAT', icon: <SettingsApplicationsRoundedIcon /> },
       { to: '/admin/favoritos/clonar', label: 'Clonar favoritos', icon: <ContentCopyRoundedIcon /> },
     ],
