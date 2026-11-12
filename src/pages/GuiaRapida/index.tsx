@@ -421,14 +421,18 @@ const GuiaRapidaContenido = () => {
               {r.vendedores.map((v) => (
                 <Tooltip
                   key={v.nombre}
-                  title={v.cliente ? `Cliente: ${v.cliente.rznSocial}` : "Sin cliente que coincida"}
+                  title={
+                    v.cliente
+                      ? `Cargar el proveedor ${v.cliente.rznSocial}`
+                      : "No se sabe qué cliente es: elige el proveedor a mano"
+                  }
                 >
                   <Chip
                     size="small"
                     label={`${v.etiqueta} (${v.cantidad})`}
-                    color={v.nombre === r.vendedorElegido ? "primary" : "default"}
+                    color={v.nombre === r.vendedorElegido ? "primary" : v.cliente ? "default" : "warning"}
                     variant={v.nombre === r.vendedorElegido ? "filled" : "outlined"}
-                    onClick={() => r.elegirVendedor(v.nombre === r.vendedorElegido ? null : v.nombre)}
+                    onClick={() => r.elegirVendedor(v.nombre)}
                     sx={{ maxWidth: 240 }}
                   />
                 </Tooltip>
@@ -440,6 +444,18 @@ const GuiaRapidaContenido = () => {
             <Typography variant="caption" color="warning.main" display="block" mt={0.5}>
               {r.avisoVendedor}
             </Typography>
+          )}
+
+          {r.avisoChip && (
+            <Alert severity="info" onClose={r.cerrarAvisoChip} sx={{ mt: 0.75, py: 0 }}>
+              {r.avisoChip}
+            </Alert>
+          )}
+
+          {r.avisoProveedor && (
+            <Alert severity="warning" sx={{ mt: 0.75, py: 0 }}>
+              {r.avisoProveedor}
+            </Alert>
           )}
 
           <Box mt={0.75}>

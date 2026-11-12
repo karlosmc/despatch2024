@@ -9,6 +9,7 @@ import {
   Step,
   StepLabel,
   Alert,
+  AlertTitle,
   LinearProgress,
   Button,
   Box,
@@ -36,6 +37,7 @@ import { useGuiaElectronica } from '../../hooks/useGuiaElectronica';
 import { GuiaElectronicaService } from '../../service/GuiaElectronicaService';
 import { pdfDeGuiaGuardada } from '../../utils/pdfGuia';
 import { useNotification } from '../../context/notification.context';
+import { useTokenParamsStore } from '../../store/tokenParamsStore';
 
 // Componente helper para crear enlaces de archivos estilizados
 const FileLink: React.FC<{
@@ -114,6 +116,7 @@ export const ProcesarGuiaModal = ({
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
   const {getError} = useNotification()
+  const params = useTokenParamsStore(state => state.params)
 
   const {
     procesarGuiaCompleta,
@@ -137,6 +140,17 @@ export const ProcesarGuiaModal = ({
   /** PDF con el formato de la empresa (el mismo de la vista previa). */
   const [descargandoPdfEmpresa, setDescargandoPdfEmpresa] = React.useState<boolean>(false);
   const [mostrandoProgress, setMostrandoProgress] = React.useState<boolean>(false);
+  /**
+   * Antes de enviar se revisa si la guía ya tiene ticket. Si lo tiene, no se
+   * reenvía nada: el usuario decide entre consultar ese ticket o volver a enviar
+   * todo (lo que generaría otro ticket y pisaría el anterior).
+   */
+  const [revisandoEstado, setRevisandoEstado] = React.useState<boolean>(false);
+  const [estadoPrevio, setEstadoPrevio] = React.useState<any>(null);
+  const [avisoRevision, setAvisoRevision] = React.useState<string | null>(null);
+  const [confirmarReenvio, setConfirmarReenvio] = React.useState<boolean>(false);
+  /** Mientras está en true, la pantalla espera una decisión y nunca envía sola. */
+  const [esperandoDecision, setEsperandoDecision] = React.useState<boolean>(false);
 
   // Ref para el scroll automático en móvil
   const stepperRef = React.useRef<HTMLDivElement>(null);
@@ -149,9 +163,10 @@ export const ProcesarGuiaModal = ({
     // console.log(procesando);
     // console.log(completado);
     // console.log(open);
-    if (open && datosGuia && !procesando && !completado) {
-      handleProcesar();
+    if (open && datosGuia && !procesando && !completado && !esperandoDecision && !revisandoEstado) {
+      revisarAntesDeEnviar();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, datosGuia]);
 
   // Reset states when modal opens (seguridad adicional)
@@ -165,6 +180,10 @@ export const ProcesarGuiaModal = ({
       setDatosReintento(null);
       setTicketDisponible(null);
       setMostrandoProgress(false);
+      setEstadoPrevio(null);
+      setAvisoRevision(null);
+      setEsperandoDecision(false);
+      setConfirmarReenvio(false);
     }
   }, [open, resetearEstado]);
 
@@ -216,7 +235,51 @@ export const ProcesarGuiaModal = ({
     }
   }, [datosPasos?.enviar, datosGuia, procesando, completado, procesoFallido]);
 
+  /** `RUC-tipo-serie-correlativo`: con él se nombran el CDR y el PDF. */
+  const numeroDocumentoDeGuia = () => {
+    const serie = datosGuia?.serie || datosGuia?.datosGenerales?.serie;
+    const correlativo = datosGuia?.correlativo || datosGuia?.datosGenerales?.correlativo;
+    const tipoDoc = datosGuia?.tipoDoc || datosGuia?.datosGenerales?.tipoDoc || '09';
+    return `${params?.ruc || ''}-${tipoDoc}-${serie}-${correlativo}`;
+  };
+
+  /**
+   * Primer paso al abrir: si la guía ya tiene ticket guardado, se espera la
+   * decisión del usuario. Si no se puede leer el estado, tampoco se envía solo:
+   * reenviar a ciegas es lo que duplica tickets.
+   */
+  const revisarAntesDeEnviar = async () => {
+    if (!idElectronico) {
+      handleProcesar();
+      return;
+    }
+
+    setRevisandoEstado(true);
+    try {
+      const estado = await GuiaElectronicaService.estadoActual(idElectronico);
+      const ticket = (estado?.ticket || '').trim();
+
+      if (ticket) {
+        setEstadoPrevio(estado);
+        setTicketDisponible(ticket);
+        setDatosReintento({ numeroDocumento: numeroDocumentoDeGuia(), ticket });
+        setEsperandoDecision(true);
+        return;
+      }
+      handleProcesar();
+    } catch (error: any) {
+      setAvisoRevision(
+        `No se pudo comprobar si la guía ya tenía un ticket (${error?.message || error}). Revísalo antes de enviar.`
+      );
+      setEsperandoDecision(true);
+    } finally {
+      setRevisandoEstado(false);
+    }
+  };
+
   const handleProcesar = async () => {
+    setEsperandoDecision(false);
+    setConfirmarReenvio(false);
     setProcesando(true);
     setMostrandoProgress(true);
     setProcesoFallido(false);
@@ -252,6 +315,7 @@ export const ProcesarGuiaModal = ({
   const handleReintentarConsulta = async () => {
     if (!datosReintento) return;
 
+    setEsperandoDecision(false);
     setProcesando(true);
     setProcesoFallido(false);
 
@@ -284,9 +348,13 @@ export const ProcesarGuiaModal = ({
 
     } catch (err: any) {
       console.error('Error al reintentar consulta:', err);
-      setProcesoFallido(true);
+      // La consulta se cortó (red, tiempo de espera): el ticket sigue siendo válido,
+      // así que se vuelve a la decisión en vez de dar el proceso por fallido.
       setCompletado(false);
+      setProcesoFallido(false);
       const errorMessage = err?.message || err?.toString() || 'Error al reintentar consulta';
+      setAvisoRevision(`La consulta no terminó: ${errorMessage}. El ticket sigue guardado, puedes consultarlo de nuevo.`);
+      setEsperandoDecision(true);
       onError?.(errorMessage);
     } finally {
       setProcesando(false);
@@ -816,8 +884,107 @@ export const ProcesarGuiaModal = ({
             })
           }}
         >
+          {/* Antes de enviar: si ya hay ticket, decide el usuario */}
+          {revisandoEstado && (
+            <Box display="flex" alignItems="center" gap={1.5} py={2}>
+              <CircularProgress size={20} />
+              <Typography variant="body2">Revisando si la guía ya fue enviada a SUNAT…</Typography>
+            </Box>
+          )}
+
+          {esperandoDecision && !revisandoEstado && (
+            <Box mb={2}>
+              <Alert severity={ticketDisponible ? 'warning' : 'info'} sx={{ mb: 1.5 }}>
+                <AlertTitle>
+                  {ticketDisponible ? 'Esta guía ya fue enviada a SUNAT' : 'No se pudo comprobar el estado'}
+                </AlertTitle>
+                {ticketDisponible && (
+                  <>
+                    <Typography variant="body2">
+                      Tiene el ticket <strong>{ticketDisponible}</strong>
+                      {estadoPrevio?.descripcion ? ` · ${estadoPrevio.descripcion}` : ''}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 0.5 }}>
+                      Consulta ese ticket para saber su respuesta. Si vuelves a enviar todo, SUNAT genera otro
+                      ticket, se pierde el actual y suele responder <strong>1033: el comprobante fue enviado con
+                      otros datos</strong> cuando la guía ya estaba aceptada.
+                    </Typography>
+                  </>
+                )}
+                {avisoRevision && (
+                  <Typography variant="body2" sx={{ mt: ticketDisponible ? 0.5 : 0 }}>
+                    {avisoRevision}
+                  </Typography>
+                )}
+              </Alert>
+
+              {confirmarReenvio && (
+                <Alert severity="error" sx={{ mb: 1.5 }}>
+                  <AlertTitle>¿Enviar todo de nuevo?</AlertTitle>
+                  Se generará, firmará y enviará otra vez: el ticket actual se reemplaza y no se podrá consultar.
+                  Hazlo solo si la respuesta del ticket actual es errónea.
+                </Alert>
+              )}
+
+              <Box display="flex" flexDirection={isMobile ? 'column' : 'row'} gap={1}>
+                {ticketDisponible && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleReintentarConsulta}
+                    disabled={procesando || !datosReintento}
+                    fullWidth={isMobile}
+                    startIcon={procesando ? <CircularProgress size={16} color="inherit" /> : <Refresh />}
+                  >
+                    Consultar ticket
+                  </Button>
+                )}
+                {confirmarReenvio ? (
+                  <>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={handleProcesar}
+                      disabled={procesando}
+                      fullWidth={isMobile}
+                    >
+                      Sí, enviar de nuevo
+                    </Button>
+                    <Button onClick={() => setConfirmarReenvio(false)} disabled={procesando} fullWidth={isMobile}>
+                      Cancelar
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => setConfirmarReenvio(true)}
+                    disabled={procesando}
+                    fullWidth={isMobile}
+                  >
+                    Enviar de nuevo
+                  </Button>
+                )}
+              </Box>
+            </Box>
+          )}
+
+          {/* 1033: la guía ya había llegado a SUNAT con otro ticket */}
+          {[
+            datosPasos?.consultar?.datos?.codigoError,
+            datosPasos?.consultar?.datos?.estadoSunat,
+            datosPasos?.consultar?.datos?.codigoSunat,
+            estadoPrevio?.codigoSunat,
+          ].some((codigo) => String(codigo || '') === '1033') && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <AlertTitle>SUNAT respondió 1033</AlertTitle>
+              El comprobante ya había sido enviado con otros datos: la guía llegó antes a SUNAT con otro ticket.
+              Búscala en el Panel de Guías para ver el estado que quedó registrado; no hace falta enviarla otra vez.
+            </Alert>
+          )}
+
           {/* Stepper solo en móvil */}
-          {isMobile && (
+          {!esperandoDecision && isMobile && (
             <Box sx={{ width: '100%', mb: 2 }}>
               <Stepper
                 ref={stepperRef}

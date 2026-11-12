@@ -87,13 +87,15 @@ export const DESCRIPCION_DOC: Record<TipoDocRapido, string> = {
   "01": "FACTURA",
 };
 
-/** Documento tal como se ve en la pantalla (el emisor es siempre el proveedor). */
+/** Documento tal como se ve en la pantalla. */
 export interface DocRapido {
   /** `auto:<tipo>:<nro original>` si sale de un pedido; `manual:<n>` si se agregó a mano. */
   clave: string;
   tipo: TipoDocRapido;
   tipoDesc: string;
   nro: string;
+  /** RUC del emisor: el proveedor que había cuando se eligió el pedido o se agregó el documento. */
+  emisor: string;
 }
 
 const PATRON_FACTURA = /^[FBE][A-Z0-9]{3}-\d+$/;
@@ -304,7 +306,11 @@ export const useGuiaRapida = () => {
   const [ocupados, setOcupados] = useState<Record<string, string>>({});
   /** Aviso cuando refrescar o la verificación de uso sueltan pedidos elegidos. */
   const [avisoSeleccion, setAvisoSeleccion] = useState<string | null>(null);
-  /** Vendedor del portal elegido; null = se ven los de todos. */
+  /** RUC del proveedor que había al marcar cada pedido (clave del SCOP -> RUC). */
+  const [emisorPorScop, setEmisorPorScop] = useState<Record<string, string>>({});
+  /** Aviso cuando un chip de vendedor no reemplaza al proveedor ya elegido. */
+  const [avisoChip, setAvisoChip] = useState<string | null>(null);
+  /** Vendedor del portal cuyo proveedor se aplicó; no filtra la lista. */
   const [vendedorElegido, setVendedorElegido] = useState<string | null>(null);
   /** Catálogo de clientes para buscar al vendedor por parecido (se pide una vez). */
   const [clientesCatalogo, setClientesCatalogo] = useState<persona[]>([]);
@@ -591,10 +597,10 @@ export const useGuiaRapida = () => {
     api.onProveedorChange(proveedor ? aCliente(proveedor) : { ...CLIENTE_VACIO });
   }, [proveedor?.id]);
 
-  /* Sin proveedor no hay emisor para los documentos: se suelta la selección. */
-  useEffect(() => {
-    if (!proveedor) setSeleccion([]);
-  }, [proveedor]);
+  /*
+   * Cambiar de proveedor no toca lo ya elegido: cada pedido conserva el RUC con
+   * el que se marcó. La pantalla lo advierte con `avisoProveedor`.
+   */
 
   /* Partida: los puntos del RUC del proveedor. */
   useEffect(() => {
@@ -777,16 +783,21 @@ export const useGuiaRapida = () => {
 
   const vendedorActual = vendedores.find((v) => v.nombre === vendedorElegido) || null;
 
-  /* El vendedor define el proveedor (emisor de la factura y filtro de partida). */
+  /*
+   * El vendedor sólo carga el proveedor cuando todavía no hay uno y se sabe cuál
+   * es; nunca reemplaza al que ya está elegido. No filtra la lista.
+   */
   useEffect(() => {
-    if (vendedorActual?.cliente) setProveedor(vendedorActual.cliente);
-  }, [vendedorActual?.cliente?.id]);
+    if (!vendedorActual?.cliente || proveedor) return;
+    setProveedor(vendedorActual.cliente);
+  }, [vendedorElegido, vendedorActual?.cliente?.id, proveedor?.id]);
 
   const avisoVendedor =
     vendedorActual && !vendedorActual.cliente
-      ? `"${vendedorActual.etiqueta}" no coincide con ningún cliente: elige el proveedor a mano.`
+      ? `No se sabe qué cliente es "${vendedorActual.etiqueta}": elige el proveedor antes de marcar pedidos.`
       : null;
 
+  /* El chip elegido filtra la lista; sin chip elegido se ven los de todos. */
   const pedidos = useMemo(
     () =>
       vendedorElegido === null
@@ -865,6 +876,20 @@ export const useGuiaRapida = () => {
     });
   }, [values.envio.codTraslado]);
 
+  /*
+   * Los documentos de un pedido quedan con el RUC del proveedor que había al
+   * marcarlo. Si después se cambia de proveedor, se avisa en vez de reescribirlos.
+   */
+  const rucsDeSeleccion = Array.from(
+    new Set(seleccion.map((p) => emisorPorScop[claveScop(p)]).filter(Boolean))
+  );
+  const avisoProveedor =
+    proveedor?.numDoc && rucsDeSeleccion.some((ruc) => ruc !== proveedor.numDoc)
+      ? `Los ${seleccion.length} SCOP ya elegidos conservan el RUC del proveedor anterior (${rucsDeSeleccion.join(
+          ", "
+        )}). Para emitirlos con ${proveedor.rznSocial}, quítalos y vuelve a elegirlos.`
+      : null;
+
   const estaSeleccionado = (p: PedidoScop) => seleccion.some((s) => claveScop(s) === claveScop(p));
 
   const alternarPedido = (p: PedidoScop) =>
@@ -872,10 +897,18 @@ export const useGuiaRapida = () => {
       if (previa.some((s) => claveScop(s) === claveScop(p))) {
         return previa.filter((s) => claveScop(s) !== claveScop(p));
       }
-      // No se marca un número usado en otra guía ni uno cuya unidad no corresponde al motivo.
-      return p.codigoAutorizacion in ocupados || !unidadCompatible(p, values.envio.codTraslado)
-        ? previa
-        : [...previa, p];
+      // No se marca un número usado en otra guía, ni uno cuya unidad no corresponde
+      // al motivo, ni ninguno sin proveedor (es el emisor de sus documentos).
+      if (
+        p.codigoAutorizacion in ocupados ||
+        !unidadCompatible(p, values.envio.codTraslado) ||
+        !proveedor?.numDoc
+      ) {
+        return previa;
+      }
+      // El RUC queda fijado: cambiar de proveedor después no reescribe estos documentos.
+      setEmisorPorScop((previos) => ({ ...previos, [claveScop(p)]: proveedor.numDoc }));
+      return [...previa, p];
     });
 
   /* =========================================================
@@ -938,12 +971,15 @@ export const useGuiaRapida = () => {
     };
 
     seleccion.forEach((pedido) => {
+      // El emisor es el proveedor que había al marcar el pedido, no el actual.
+      const emisor = emisorPorScop[claveScop(pedido)] || proveedor?.numDoc || "";
       const claveScopDoc = `auto:81:${pedido.codigoAutorizacion}`;
       agregar({
         clave: claveScopDoc,
         tipo: "81",
         tipoDesc: DESCRIPCION_DOC["81"],
         nro: correcciones[claveScopDoc] ?? pedido.codigoAutorizacion,
+        emisor,
       });
       if (pedido.factura) {
         const claveFactura = `auto:01:${pedido.factura}`;
@@ -952,22 +988,22 @@ export const useGuiaRapida = () => {
           tipo: "01",
           tipoDesc: DESCRIPCION_DOC["01"],
           nro: correcciones[claveFactura] ?? pedido.factura,
+          emisor,
         });
       }
     });
     docsManuales.forEach(agregar);
 
     return lista;
-  }, [seleccion, correcciones, docsManuales]);
+  }, [seleccion, correcciones, docsManuales, emisorPorScop, proveedor?.numDoc]);
 
   useEffect(() => {
     const deseados = new Map<string, AddDoc>();
-    if (proveedor) {
-      docsVista.forEach((d) => {
-        const doc: AddDoc = { tipo: d.tipo, tipoDesc: d.tipoDesc, nro: d.nro, emisor: proveedor.numDoc };
-        deseados.set(`${doc.emisor}|${doc.nro}`, doc);
-      });
-    }
+    docsVista.forEach((d) => {
+      if (!d.emisor) return;
+      const doc: AddDoc = { tipo: d.tipo, tipoDesc: d.tipoDesc, nro: d.nro, emisor: d.emisor };
+      deseados.set(`${doc.emisor}|${doc.nro}`, doc);
+    });
 
     const actuales: AddDoc[] = values.addDocs || [];
     actuales.forEach((actual) => {
@@ -976,7 +1012,7 @@ export const useGuiaRapida = () => {
     deseados.forEach((doc, clave) => {
       if (!actuales.some((a) => `${a.emisor}|${a.nro}` === clave)) api.onNuevoAddDoc(doc);
     });
-  }, [docsVista, proveedor?.numDoc]);
+  }, [docsVista]);
 
   /*
    * Peso total calculado (entero). Se mantiene al día con los bienes salvo que el
@@ -1024,7 +1060,13 @@ export const useGuiaRapida = () => {
     contadorManual.current += 1;
     setDocsManuales((previos) => [
       ...previos,
-      { clave: `manual:${contadorManual.current}`, tipo, tipoDesc: DESCRIPCION_DOC[tipo], nro: texto },
+      {
+        clave: `manual:${contadorManual.current}`,
+        tipo,
+        tipoDesc: DESCRIPCION_DOC[tipo],
+        nro: texto,
+        emisor: proveedor.numDoc,
+      },
     ]);
     return null;
   };
@@ -1123,8 +1165,40 @@ export const useGuiaRapida = () => {
     if (aviso) avisar(aviso);
   };
 
-  const elegirProveedor = (id: number | null) =>
+  const elegirProveedor = (id: number | null) => {
+    setAvisoChip(null);
     setProveedor(personas.find((p) => p.id === id) || null);
+  };
+
+  /**
+   * Chip de vendedor: filtra la lista por sus pedidos y, si todavía no hay
+   * proveedor, carga su cliente. Nunca reemplaza al proveedor ya elegido: en ese
+   * caso filtra igual y avisa por qué no lo cambió. Tocarlo de nuevo quita el filtro.
+   */
+  const elegirVendedor = (nombre: string | null) => {
+    const siguiente = nombre === vendedorElegido ? null : nombre;
+    setVendedorElegido(siguiente);
+
+    const vendedor = vendedores.find((v) => v.nombre === siguiente);
+    if (!vendedor || !proveedor) {
+      setAvisoChip(null);
+      return;
+    }
+
+    if (vendedor.cliente && vendedor.cliente.id !== proveedor.id) {
+      setAvisoChip(
+        `Ya tienes elegido el proveedor ${proveedor.rznSocial}. Para usar ${vendedor.cliente.rznSocial}, cámbialo en el campo Proveedor.`
+      );
+      return;
+    }
+    if (!vendedor.cliente) {
+      setAvisoChip(
+        `No se sabe qué cliente es "${vendedor.etiqueta}": se deja el proveedor ${proveedor.rznSocial} que ya tenías.`
+      );
+      return;
+    }
+    setAvisoChip(null);
+  };
 
   const elegirMotivo = (id: string) => {
     formik.setFieldValue("envio.codTraslado", id);
@@ -1200,7 +1274,10 @@ export const useGuiaRapida = () => {
     vendedorElegido,
     vendedorActual,
     avisoVendedor,
-    elegirVendedor: (nombre: string | null) => setVendedorElegido(nombre),
+    avisoProveedor,
+    elegirVendedor,
+    avisoChip,
+    cerrarAvisoChip: () => setAvisoChip(null),
     avisoSeleccion,
     cerrarAvisoSeleccion: () => setAvisoSeleccion(null),
     setPlacaScop: setPlacaElegida,

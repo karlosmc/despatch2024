@@ -288,7 +288,10 @@ const Asignaciones = () => {
                         </Typography>
                       )}
                       {fila.usuarios.map((u) => (
-                        <Chip key={u.id} size="small" variant="outlined" label={u.name} />
+                        <Chip key={u.id} sx={{ height: 'auto' }} variant="outlined"  label={<Box display="flex" flexDirection="column" alignItems="flex-start">
+                          <Typography variant="body2">{u.name}</Typography>
+                          <Typography variant="caption" color="text.secondary">{u.documento}</Typography>
+                        </Box>} />
                       ))}
                     </Box>
                   </TableCell>

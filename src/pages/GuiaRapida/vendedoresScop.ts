@@ -8,13 +8,15 @@ import { masParecido } from "../../utils/similitud";
  *    parecido en nuestros clientes ("SOLGAS S.A." = "SOLGAS SA").
  *  - Líquidos: la columna "Prov. Producto". El portal no trae la razón social
  *    del vendedor, así que se aplica la regla acordada: si abastece La Pampilla
- *    es Repsol; cualquier otro valor (incluido "-") es Hidrocarburos del Mundo.
+ *    es Repsol; con cualquier otro valor (incluido "-") el proveedor lo elige
+ *    el usuario.
+ *
+ * Los chips de vendedor NO deciden qué pedidos se pueden marcar: sólo cargan el
+ * proveedor cuando se conoce, o lo dejan vacío para que se elija a mano.
  */
 
 /** Id del cliente Repsol Comercial S.A.C. (abastecimiento de La Pampilla). */
 export const CLIENTE_PAMPILLA = 17;
-/** Id del cliente Hidrocarburos del Mundo (el resto de los abastecimientos). */
-export const CLIENTE_OTROS = 19;
 
 const PAMPILLA = /PAMPILLA/i;
 
@@ -33,15 +35,17 @@ export interface VendedorScop {
   cantidad: number;
   /** Cliente de nuestra base que le corresponde, si se encontró. */
   cliente: persona | null;
-  /** 0 a 1; 1 en líquidos, porque la regla es fija y no compara nombres. */
+  /** 0 a 1; 1 en líquidos con regla conocida, porque no compara nombres. */
   puntaje: number;
 }
 
-/** Cliente que corresponde a un pedido de líquidos, por su abastecimiento. */
-const clienteDeLiquido = (provProducto: string, clientes: persona[]): persona | null => {
-  const id = PAMPILLA.test(provProducto) ? CLIENTE_PAMPILLA : CLIENTE_OTROS;
-  return clientes.find((c) => c.id === id) || null;
-};
+/**
+ * Cliente de un pedido de líquidos, por su abastecimiento: sólo se da por sabido
+ * cuando abastece La Pampilla. Con cualquier otro valor (incluido "-") no se
+ * adivina: el proveedor queda vacío y lo elige el usuario.
+ */
+const clienteDeLiquido = (provProducto: string, clientes: persona[]): persona | null =>
+  PAMPILLA.test(provProducto) ? clientes.find((c) => c.id === CLIENTE_PAMPILLA) || null : null;
 
 /**
  * Vendedores presentes en los pedidos, con su cliente y cuántos pedidos tiene
@@ -65,7 +69,7 @@ export const vendedoresDePedidos = (pedidos: PedidoScop[], clientes: persona[]):
       etiqueta: nombre || ETIQUETA_SIN_VENDEDOR,
       cantidad: lista.length,
       cliente,
-      puntaje: esGlp ? coincidencia?.puntaje ?? 0 : 1,
+      puntaje: esGlp ? coincidencia?.puntaje ?? 0 : cliente ? 1 : 0,
     });
   });
 

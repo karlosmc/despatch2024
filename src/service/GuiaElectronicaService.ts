@@ -137,6 +137,22 @@ export const GuiaElectronicaService = {
       throw new Error(error?.response?.data?.message || error?.message || 'Error al actualizar el estado Electrónico de la guía');
     }
   },
+  /**
+   * Estado guardado de la guía electrónica. Sirve para saber, antes de enviar,
+   * si ya hay un ticket de SUNAT: reenviar todo generaría otro ticket y pisaría
+   * el anterior, que puede tener ya la respuesta de aceptada.
+   */
+  estadoActual: async (idElectronico: number) => {
+    try {
+      const { data } = await apiLogged.get(`/api/estadoelectronico/${idElectronico}`);
+      const estado = Array.isArray(data?.data) ? data.data[0] : data?.data ?? data;
+      return estado || null;
+    } catch (error: any) {
+      console.log('Error al leer el estado electrónico de la guía:', error);
+      throw error?.response?.data?.message || 'No se pudo leer el estado de la guía';
+    }
+  },
+
   /* Proceso Completo */
   procesarGuiaCompleta: async (datosGuia: any,  params: ParamsInterface, token: string, idElectronico: number, onProgress) => {
 
