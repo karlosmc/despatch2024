@@ -15,4 +15,9 @@ export interface panelguia {
   token?:string;
   ticket?:string;
   name?:string;
+  /** API de facturación: null mientras la guía no se envíe por ella */
+  feId?:string | null;
+  feEstado?:string | null;
+  feQrUrl?:string | null;
+  fePdfSunat?:boolean;
 }

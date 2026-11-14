@@ -19,7 +19,7 @@ import {
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import ArrowForwardRoundedIcon from "@mui/icons-material/ArrowForwardRounded";
 import MoreVertRoundedIcon from "@mui/icons-material/MoreVertRounded";
-import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
+import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
@@ -257,14 +257,13 @@ const MobileForm = ({ api }: Props) => {
         <MenuItem
           onClick={() => {
             cerrarMenu();
-            api.previsualizarPdf();
+            api.abrirRevision();
           }}
-          disabled={api.generandoPdf}
         >
           <ListItemIcon>
-            <PictureAsPdfRoundedIcon fontSize="small" />
+            <FactCheckRoundedIcon fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Descargar vista previa</ListItemText>
+          <ListItemText>Revisar guía</ListItemText>
         </MenuItem>
         <MenuItem
           onClick={() => {

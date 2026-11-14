@@ -160,6 +160,9 @@ export const GuiaElectronicaService = {
     if (!idElectronico || idElectronico <= 0) {
       throw new Error('ID electrónico inválido. No se puede procesar la guía sin un ID válido.');
     }
+    if (!params?.ruc) {
+      throw new Error('Faltan los parámetros de SUNAT (RUC). Revisa tu conexión e inténtalo de nuevo.');
+    }
 
     const numeroDocumento = `${params.ruc}-${datosGuia.tipoDoc}-${datosGuia.serie}-${datosGuia.correlativo}`;
     const IdDocumento = `${datosGuia.serie}-${datosGuia.correlativo}`;

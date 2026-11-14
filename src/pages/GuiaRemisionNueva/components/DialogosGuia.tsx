@@ -15,7 +15,7 @@ import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 
-import { ProcesarGuiaModal } from "../../GuiaRemision/ProcesarGuia";
+import { ModalEnvioGuia } from "../../GuiaRemision/ModalEnvioGuia";
 import { GuiaRemisionFormApi } from "../useGuiaRemisionForm";
 
 interface DialogosGuiaProps {
@@ -75,29 +75,6 @@ const DialogosGuia = ({ api, confirmacionesManuales = true }: DialogosGuiaProps)
           disabled={api.guardando}
         >
           Guardar y salir
-        </Button>
-      </DialogActions>
-    </Dialog>
-
-    {/* Vista previa del PDF (escritorio) */}
-    <Dialog
-      open={api.openPreview}
-      onClose={api.cerrarPreview}
-      maxWidth="lg"
-      fullWidth
-      PaperProps={{ sx: { borderRadius: 3 } }}
-    >
-      <DialogTitle>Vista previa</DialogTitle>
-      <DialogContent>
-        <Box
-          component="embed"
-          src={`data:application/pdf;base64,${api.base64Pdf}`}
-          sx={{ width: "100%", height: "72vh", border: 0 }}
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button variant="contained" onClick={api.cerrarPreview}>
-          Cerrar
         </Button>
       </DialogActions>
     </Dialog>
@@ -167,7 +144,7 @@ const DialogosGuia = ({ api, confirmacionesManuales = true }: DialogosGuiaProps)
     )}
 
     {/* Proceso electrónico ante SUNAT */}
-    <ProcesarGuiaModal
+    <ModalEnvioGuia
       open={api.modalSunatOpen}
       onClose={api.cerrarModalSunat}
       datosGuia={api.datosParaProcesar}

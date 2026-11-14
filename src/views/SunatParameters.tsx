@@ -7,6 +7,8 @@ import { DialogComponentCustom } from '../components';
 import { SunatParams } from '../types/sunatparameters.interface';
 import ModalSunat from '../components/Sunat';
 import { SunatParameterService } from '../service/SunatParameterService';
+import ConfigFacturacionCard from '../components/ConfigFacturacion';
+import { useAuthStore } from '../store/authStore';
 
 
 type ModalsProps = {
@@ -25,6 +27,7 @@ const SunatParameters = () => {
 
   const [listaSunatParameters, setListaSunatParameters] = useState<SunatParams[]>([])
   const [isLoading, setIsLoading] = useState(false);
+  const esAdmin = useAuthStore((state) => state.user?.perfil === 'admin');
 
 
 
@@ -167,6 +170,7 @@ const getSunatParameters = async()=>{
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      {esAdmin && <ConfigFacturacionCard />}
       {/* <ProductoFormModal/> */}
       <DialogComponentCustom
         closeButton={

@@ -3,7 +3,6 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -15,17 +14,29 @@ import {
   useTheme,
 } from "@mui/material";
 import dayjs from "dayjs";
-import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 
-import { GuiaRapidaApi, MODALIDADES_TRASLADO } from "../useGuiaRapida";
+import { GuiaRemisionFormApi } from "../useGuiaRemisionForm";
 
-interface ResumenRapidoProps {
+interface ResumenRevisionProps {
   abierto: boolean;
   onCerrar: () => void;
-  r: GuiaRapidaApi;
+  api: GuiaRemisionFormApi;
 }
+
+const MODALIDADES_TRASLADO: Record<string, string> = {
+  "01": "Público",
+  "02": "Privado",
+};
+
+/** Nombre del documento relacionado según su tipo SUNAT. */
+const TIPOS_DOC: Record<string, string> = {
+  "01": "Factura",
+  "03": "Boleta",
+  "09": "Guía",
+  "81": "SCOP",
+};
 
 const Seccion = ({ titulo, children }: { titulo: string; children: ReactNode }) => (
   <Box py={0.75}>
@@ -54,8 +65,7 @@ const formatoKilos = (n: number) => new Intl.NumberFormat("es-PE").format(n);
  * Resumen de la guía antes de guardar o enviar: los datos ordenados y, arriba,
  * todos los problemas encontrados con las mismas reglas del guardado.
  */
-const ResumenRapido = ({ abierto, onCerrar, r }: ResumenRapidoProps) => {
-  const { api } = r;
+const ResumenRevision = ({ abierto, onCerrar, api }: ResumenRevisionProps) => {
   const v = api.formik.values;
   const theme = useTheme();
   const pantallaChica = useMediaQuery(theme.breakpoints.down("sm"));
@@ -179,30 +189,23 @@ const ResumenRapido = ({ abierto, onCerrar, r }: ResumenRapidoProps) => {
             <Fila etiqueta="Documentos" valor="Sin documentos" />
           ) : (
             (v.addDocs || []).map((d) => (
-              <Fila key={`${d.emisor}|${d.nro}`} etiqueta={d.tipo === "81" ? "SCOP" : "Factura"} valor={`${d.nro} · RUC ${d.emisor}`} />
+              <Fila key={`${d.emisor}|${d.nro}`} etiqueta={TIPOS_DOC[d.tipo] || `Doc. ${d.tipo}`} valor={`${d.nro} · RUC ${d.emisor}`} />
             ))
           )}
         </Seccion>
       </DialogContent>
 
       <DialogActions sx={{ flexWrap: "wrap", gap: 0.75, px: 2, py: 1.25 }}>
-        <Button
-          startIcon={api.generandoPdf ? <CircularProgress size={14} /> : <PictureAsPdfRoundedIcon />}
-          onClick={accion(api.previsualizarPdf)}
-          disabled={!valida || api.generandoPdf}
-        >
-          PDF
+        <Button color="inherit" onClick={onCerrar}>
+          {valida ? "Cerrar" : "Ir a corregir"}
         </Button>
         <Box flex={1} />
-        <Button color="inherit" onClick={onCerrar}>
-          Cerrar
-        </Button>
         <Button
           variant="outlined"
           color="success"
           startIcon={<SaveRoundedIcon />}
           onClick={accion(() => api.guardar("borrador"))}
-          disabled={!valida || api.guardando}
+          disabled={!valida || api.guardando || api.bloqueada}
         >
           {api.guardada ? "Actualizar" : "Guardar"}
         </Button>
@@ -211,7 +214,7 @@ const ResumenRapido = ({ abierto, onCerrar, r }: ResumenRapidoProps) => {
           color="warning"
           startIcon={<SendRoundedIcon />}
           onClick={accion(() => api.guardar("sunat"))}
-          disabled={!valida || api.guardando || api.enviadaSunat}
+          disabled={!valida || api.guardando || api.enviadaSunat || api.bloqueada}
           sx={{ color: "common.white", fontWeight: 700 }}
         >
           Enviar a SUNAT
@@ -221,4 +224,4 @@ const ResumenRapido = ({ abierto, onCerrar, r }: ResumenRapidoProps) => {
   );
 };
 
-export default ResumenRapido;
+export default ResumenRevision;

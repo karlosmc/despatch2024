@@ -13,6 +13,12 @@ interface AuthTokenState {
   saveToken: (newToken: string, expiryTime: number) => void;
   getToken: () => Promise<string | null>;
   getSunatParams: () => Promise<void>;
+  /**
+   * Devuelve los parámetros listos para usar (con RUC). Si no están en memoria
+   * los vuelve a pedir; si el servidor no responde usa la última copia buena
+   * guardada. Lanza un mensaje claro solo si no hay ninguna de las dos.
+   */
+  asegurarParams: () => Promise<ParamsInterface>;
   params: ParamsInterface | null;
   clearAll: () => void; // Nuevo método para limpiar todo
 }
@@ -74,15 +80,45 @@ export const useTokenParamsStore = create<AuthTokenState>((set, get) => ({
   
   getSunatParams: async () => {
     const data = await fetchSunatParameters();
-    
-    // Guardar en localStorage para persistencia
-    if (data) {
+
+    // Solo se reemplaza con datos válidos: una respuesta vacía o rara no debe
+    // borrar la última copia buena (antes dejaba params en null).
+    if (paramsValidos(data)) {
       localStorage.setItem(PARAMS_KEY, JSON.stringify(data));
-    } else {
-      localStorage.removeItem(PARAMS_KEY);
+      set({ params: data });
     }
-    
-    set({ params: data });
+  },
+
+  asegurarParams: async () => {
+    const actuales = get().params;
+    if (paramsValidos(actuales)) return actuales;
+
+    // Varias pantallas pueden pedirlos a la vez: una sola consulta
+    if (!cargaParams) {
+      cargaParams = get()
+        .getSunatParams()
+        .catch((error) => {
+          console.warn('No se pudieron recargar los parámetros SUNAT:', error);
+        })
+        .finally(() => {
+          cargaParams = null;
+        });
+    }
+    await cargaParams;
+
+    const recargados = get().params;
+    if (paramsValidos(recargados)) return recargados;
+
+    // Sin servidor: la última copia buena del navegador
+    const guardados = leerParamsGuardados();
+    if (paramsValidos(guardados)) {
+      set({ params: guardados });
+      return guardados;
+    }
+
+    throw new Error(
+      'No se pudieron cargar los parámetros de SUNAT (RUC, certificado). Revisa tu conexión e inténtalo de nuevo.'
+    );
   },
 
   clearAll: () => {
@@ -102,11 +138,29 @@ export const useTokenParamsStore = create<AuthTokenState>((set, get) => ({
 }));
 
 // Funciones auxiliares (fuera del store)
-const fetchSunatParameters = async (): Promise<ParamsInterface | null> => {
-  
+
+/** Consulta en curso de los parámetros (se comparte entre llamadas simultáneas). */
+let cargaParams: Promise<void> | null = null;
+
+/** Sirven para emitir: al menos traen el RUC. */
+const paramsValidos = (p: ParamsInterface | null | undefined): p is ParamsInterface =>
+  Boolean(p && String(p.ruc ?? '').trim() !== '');
+
+const leerParamsGuardados = (): ParamsInterface | null => {
   try {
-    const { data, statusText } = await apiLogged('/api/sunat/parametros')
-    return statusText === 'OK' ? data.data : null;
+    const guardados = localStorage.getItem(PARAMS_KEY);
+    return guardados ? JSON.parse(guardados) : null;
+  } catch {
+    return null;
+  }
+};
+
+const fetchSunatParameters = async (): Promise<ParamsInterface | null> => {
+
+  try {
+    // `status`, no `statusText`: con HTTP/2 o tras un proxy statusText llega vacío
+    const { data, status } = await apiLogged('/api/sunat/parametros')
+    return status === 200 ? data?.data ?? null : null;
   } catch (error:any) {
     console.log('Hubo un error al consultar los parametros');
     throw error?.response?.data?.message || 'Hubo un error al consultar los parametros';
@@ -115,8 +169,8 @@ const fetchSunatParameters = async (): Promise<ParamsInterface | null> => {
 
 const fetchNewToken = async (): Promise<IToken | null> => {
   try {
-    const { data, statusText } = await apiLogged.post('/api/tokensunat')
-    return statusText === 'Created' ? data : null;
+    const { data, status } = await apiLogged.post('/api/tokensunat')
+    return status === 200 || status === 201 ? data : null;
   } catch (error:any) {
     console.log('Hubo un error al crear el token');
     throw error?.response?.data?.message || 'Hubo un error al crear el token';
@@ -125,8 +179,8 @@ const fetchNewToken = async (): Promise<IToken | null> => {
 
 const checkToken = async (): Promise<IToken | null> => {
   try {
-    const { data, statusText } = await apiLogged('/api/tokensunat');
-    return statusText === 'OK' ? data : null;
+    const { data, status } = await apiLogged('/api/tokensunat');
+    return status === 200 ? data : null;
   } catch (error:any) {
     console.log('Hubo un error al obtener el token');
     throw error?.response?.data?.message || 'Hubo un error al obtener el token';

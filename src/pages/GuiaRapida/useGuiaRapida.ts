@@ -1216,11 +1216,17 @@ export const useGuiaRapida = () => {
     const elegido = (vehiculos || []).find((v) => v.id === id);
     if (!elegido) return;
     const principal = aVehiculoEnvio(elegido);
-    formik.setFieldValue("vehiculo", { ...principal, secundarios: values.vehiculo?.secundarios || [] });
+    // La misma placa no puede ir de principal y de secundaria: se quita de las secundarias
+    const secundarios = (values.vehiculo?.secundarios || []).filter((s) => s.id !== principal.id);
+    formik.setFieldValue("vehiculo", { ...principal, secundarios });
   };
 
   const elegirVehiculoSecundario = (id: number | null) => {
     const elegido = (vehiculos || []).find((v) => v.id === id);
+    if (elegido && elegido.id === values.vehiculo?.id) {
+      avisar(`La placa ${elegido.placa} ya es el vehículo principal: elige otra cisterna.`);
+      return;
+    }
     if (elegido) registrarGlp([elegido]);
     api.onVehiculosSecundariosChange(elegido ? [aVehiculoEnvio(elegido)] : []);
   };

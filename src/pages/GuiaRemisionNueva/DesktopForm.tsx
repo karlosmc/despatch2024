@@ -9,7 +9,7 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-import PictureAsPdfRoundedIcon from "@mui/icons-material/PictureAsPdfRounded";
+import FactCheckRoundedIcon from "@mui/icons-material/FactCheckRounded";
 import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
@@ -152,13 +152,10 @@ const DesktopForm = ({ api }: Props) => {
           >
             <Button
               variant="outlined"
-              startIcon={
-                api.generandoPdf ? <CircularProgress size={16} /> : <PictureAsPdfRoundedIcon />
-              }
-              onClick={api.previsualizarPdf}
-              disabled={api.generandoPdf}
+              startIcon={<FactCheckRoundedIcon />}
+              onClick={api.abrirRevision}
             >
-              Vista previa
+              Revisar
             </Button>
 
             <Box flex={1} />

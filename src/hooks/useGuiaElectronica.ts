@@ -13,8 +13,8 @@ export const useGuiaElectronica = () => {
   const [pasoActual, setPasoActual] = useState(0);
   const [datosPasos, setDatosPasos] = useState<any>(null);
 
-  const params = useTokenParamsStore(state => state.params);
   const getToken = useTokenParamsStore(state => state.getToken);
+  const asegurarParams = useTokenParamsStore(state => state.asegurarParams);
 
   const validarYPrepararToken = useCallback(async () => {
     try {
@@ -50,10 +50,14 @@ export const useGuiaElectronica = () => {
     setProgress('');
     setPasoActual(0);
     setDatosPasos(null);
-    const token = await validarYPrepararToken();
-    
 
     try {
+      // Se leen en el momento de enviar, no al montar el componente: así nunca
+      // se usan unos params viejos o nulos (si faltan, se recargan aquí).
+      setProgress('Cargando parámetros de SUNAT...');
+      const params = await asegurarParams();
+      const token = await validarYPrepararToken();
+
       const resultado = await GuiaElectronicaService.procesarGuiaCompleta(
         datosGuia, params,token,idElectronico,
         (mensaje, datosProceso) => {
@@ -74,7 +78,7 @@ export const useGuiaElectronica = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [asegurarParams, validarYPrepararToken]);
 
   // Función para reintentar solo la consulta
   const reintentarConsulta = useCallback(async (numeroDocumento: string, ticket: string, idElectronico: number) => {
@@ -82,10 +86,13 @@ export const useGuiaElectronica = () => {
     setError(null);
     
     try {
+      const params = await asegurarParams();
       const token = await validarYPrepararToken();
-      
+      // Si se armó sin RUC (params aún no cargados) queda "-09-T001-1": se completa
+      const documento = numeroDocumento.startsWith('-') ? `${params.ruc}${numeroDocumento}` : numeroDocumento;
+
       const resultadoConsulta = await GuiaElectronicaService.reintentarConsulta(
-        numeroDocumento, ticket, params, token, idElectronico,
+        documento, ticket, params, token, idElectronico,
         (mensaje) => {
           setProgress(mensaje);
         }
@@ -117,7 +124,7 @@ export const useGuiaElectronica = () => {
     } finally {
       setLoading(false);
     }
-  }, [params, validarYPrepararToken, datosPasos]);
+  }, [asegurarParams, validarYPrepararToken, datosPasos]);
 
   return {
     // Proceso completo

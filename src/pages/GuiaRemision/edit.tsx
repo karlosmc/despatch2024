@@ -76,7 +76,7 @@ import ObservacionesTextField from "../Observaciones";
 // import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
-import { ProcesarGuiaModal } from "./ProcesarGuia";
+import { ModalEnvioGuia } from "./ModalEnvioGuia";
 
 import { GuiaServices } from "../../service/GuiaServices";
 
@@ -1718,13 +1718,14 @@ const GuiaRemisionEditForm = ({
           </Modal>
         </Container>
       )}
-      <ProcesarGuiaModal
+      <ModalEnvioGuia
         open={modalOpen}
         onClose={handleModalClose}
         datosGuia={datosParaProcesar}
         onSuccess={handleProcesoSuccess}
         onError={handleProcesoError}
         idElectronico={estadoElectronico}
+        idDespatch={idDespatch}
       />
     </LocalizationProvider>
   );

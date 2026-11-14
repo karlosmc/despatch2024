@@ -26,7 +26,6 @@ import { useOperacionStore } from "../../store/operacionStore";
 import { GuiaServices } from "../../service/GuiaServices";
 import { PuntoEmisionService } from "../../service/PuntoEmisionService";
 import { ConductoresService } from "../../service/ConductoresServices";
-import { GuiaElectronicaService } from "../../service/GuiaElectronicaService";
 import { NumeracionService } from "../../service/NumeracionService";
 
 import {
@@ -146,7 +145,6 @@ export const useGuiaRemisionForm = (opciones: { precargaAutomatica?: boolean } =
   const [datosParaProcesar, setDatosParaProcesar] = useState<any>(null);
   const [modalSunatOpen, setModalSunatOpen] = useState<boolean>(false);
   const [guardando, setGuardando] = useState<boolean>(false);
-  const [generandoPdf, setGenerandoPdf] = useState<boolean>(false);
   const [enviadaSunat, setEnviadaSunat] = useState<boolean>(false);
 
   /** Candado síncrono: dos clics en el mismo tick no pueden crear dos guías. */
@@ -154,9 +152,8 @@ export const useGuiaRemisionForm = (opciones: { precargaAutomatica?: boolean } =
   /** Una vez dada de alta, esta pantalla nunca vuelve a hacer un POST. */
   const guiaYaCreada = useRef<boolean>(false);
 
-  /* ---------- Vista previa ---------- */
-  const [base64Pdf, setBase64Pdf] = useState<string>("");
-  const [openPreview, setOpenPreview] = useState<boolean>(false);
+  /* ---------- Revisión antes de guardar (reemplaza la vista previa PDF) ---------- */
+  const [revisionAbierta, setRevisionAbierta] = useState<boolean>(false);
 
   /* ---------- Confirmaciones automáticas ---------- */
   const [conductorFound, setConductorFound] = useState<EnvioChoferes[]>([]);
@@ -509,7 +506,7 @@ export const useGuiaRemisionForm = (opciones: { precargaAutomatica?: boolean } =
   };
 
   /* =========================================================
-   *  Vista previa PDF
+   *  Revisión (resumen + todos los problemas, antes de guardar)
    * ========================================================= */
   /**
    * Revisa la guía con las mismas reglas del guardado y devuelve TODOS los
@@ -521,40 +518,6 @@ export const useGuiaRemisionForm = (opciones: { precargaAutomatica?: boolean } =
     const negocio = validarNegocio(formik.values);
     if (negocio && !mensajes.includes(negocio)) mensajes.push(negocio);
     return mensajes;
-  };
-
-  const previsualizarPdf = async () => {
-    const errores = await formik.validateForm();
-    if (Object.keys(errores).length > 0) {
-      getError(primerMensajeDeError(errores) || "Revisa los datos del formulario");
-      return;
-    }
-
-    setGenerandoPdf(true);
-    try {
-      const doc = construirDoc(formik.values);
-      const { response } = await GuiaElectronicaService.getPdfPreview(doc);
-
-      if (!response?.TramaPdf) {
-        getError("No se pudo generar la vista previa del PDF");
-        return;
-      }
-
-      setBase64Pdf(response.TramaPdf);
-
-      if (isMobile) {
-        const link = document.createElement("a");
-        link.href = `data:application/pdf; base64,${response.TramaPdf}`;
-        link.download = `${doc.serie}-${doc.correlativo}.pdf`;
-        link.click();
-      } else {
-        setOpenPreview(true);
-      }
-    } catch (error) {
-      getError(typeof error === "string" ? error : "Hubo un error al generar el PDF");
-    } finally {
-      setGenerandoPdf(false);
-    }
   };
 
   /* =========================================================
@@ -853,16 +816,16 @@ export const useGuiaRemisionForm = (opciones: { precargaAutomatica?: boolean } =
     if (blocker.state === "blocked") setSalidaOpen(true);
   }, [blocker.state]);
 
-  /* Avisa también al cerrar la pestaña o recargar. */
+  /* Avisa también al cerrar la pestaña o recargar (o si se está guardando). */
   useEffect(() => {
-    if (!hayCambiosPendientes) return;
+    if (!hayCambiosPendientes && !guardando) return;
     const handler = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [hayCambiosPendientes]);
+  }, [hayCambiosPendientes, guardando]);
 
   const salirDefinitivamente = () => {
     permitirSalida.current = true;
@@ -937,11 +900,9 @@ export const useGuiaRemisionForm = (opciones: { precargaAutomatica?: boolean } =
     idDespatch,
     enviadaSunat,
 
-    generandoPdf,
-    previsualizarPdf,
-    base64Pdf,
-    openPreview,
-    cerrarPreview: () => setOpenPreview(false),
+    revisionAbierta,
+    abrirRevision: () => setRevisionAbierta(true),
+    cerrarRevision: () => setRevisionAbierta(false),
 
     modalSunatOpen,
     cerrarModalSunat: () => setModalSunatOpen(false),

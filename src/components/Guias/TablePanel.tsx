@@ -1,4 +1,4 @@
-import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, TablePagination, useTheme, Theme, SxProps, useMediaQuery, Box,  Tooltip, ListItem, styled, Typography, Modal, Button, Backdrop, IconButton, Menu, MenuItem, ListItemIcon, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, TablePagination, useTheme, Theme, SxProps, useMediaQuery, Box, Tooltip, ListItem, styled, Typography, Modal, Button, Backdrop, IconButton, Menu, MenuItem, ListItemIcon, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Chip, Divider, Stack, alpha, darken, lighten } from '@mui/material'
 import { panelguia } from '../../types/panelguia.interface';
 
 import LinkIcon from "@mui/icons-material/Link";
@@ -20,19 +20,22 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import FindInPageIcon from "@mui/icons-material/FindInPage";
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotification } from '../../context/notification.context';
 
 import { useAuthStore } from '../../store/authStore';
-import PreviewPdf from './PreviewPdf';
 import { GuiaServices } from '../../service/GuiaServices';
 import QRCode from 'qrcode.react';
-import { ProcesarGuiaModal } from '../../pages/GuiaRemision/ProcesarGuia';
+import { ModalEnvioGuia } from '../../pages/GuiaRemision/ModalEnvioGuia';
 import { useGuiaElectronica } from '../../hooks/useGuiaElectronica';
 import { useTokenParamsStore } from '../../store/tokenParamsStore';
 import { GuiaElectronicaService } from '../../service/GuiaElectronicaService';
 import { PictureAsPdfSharp } from '@mui/icons-material';
+import { EmisionService, enProceso, etiquetaFeEstado, FormatoPdf, TipoArchivo } from '../../service/EmisionService';
+import VisorPdf from '../VisorPdf';
+import { base64APdf, useVisorPdf } from '../../hooks/useVisorPdf';
+import { pdfDeGuiaGuardada } from '../../utils/pdfGuia';
 
 
 interface TablePanelProps {
@@ -87,8 +90,9 @@ const TablePanel = ({
   const navigate = useNavigate();
 
   const user = useAuthStore((state) => state.user);
-  const params = useTokenParamsStore(state => state.params);
   const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('sm'));
+  /** Hasta tablet la tabla no entra: se muestran tarjetas. */
+  const usarTarjetas = useMediaQuery((theme: Theme) => theme.breakpoints.down('md'));
 
   const { getError, getSuccess } = useNotification()
 
@@ -103,9 +107,8 @@ const TablePanel = ({
   const [isPdfDownloading, setIsPdfDownloading] = useState(false)
   const [open, setOpen] = useState(false);
 
-  const [openPdf, setOpenPdf] = useState(false)
-
-  const [guiaSelected, setGuiaSelected] = useState<number>(null);
+  /** Ver PDF / PDF SUNAT: visor propio (en el celular dibuja las páginas con pdf.js) */
+  const visor = useVisorPdf({ onError: getError });
 
   const [guiaSeleccionadaAnula, setGuiaSeleccionadaAnula] = useState<panelguia>(null)
 
@@ -371,10 +374,59 @@ const TablePanel = ({
 
   }
 
+  /**
+   * Guía enviada por la API de facturación (flujo nuevo): estado y archivos los
+   * da guiasapi. Las que no tienen `feId` siguen con el flujo anterior.
+   */
+  const porApi = (fil: panelguia | null) => Boolean(fil?.feId);
+
+  /** Sin ticket (flujo anterior), ya respondida o de baja: no hay nada que consultar. */
+  const sinConsulta = (fil: panelguia) =>
+    (!porApi(fil) && !fil.ticket) || fil.estado === 'B' || fil.estado === 'F';
+
+  /** Terminada, de baja o en SUNAT esperando respuesta: no se edita ni se reenvía (guiasapi responde 409). */
+  const bloqueada = (fil: panelguia) =>
+    fil.estado === 'B' || fil.estado === 'F' || enProceso(fil.feEstado);
+
+  const descargarDeApi = async (fil: panelguia | null, tipo: TipoArchivo, formato: FormatoPdf = 'a4') => {
+    if (!fil?.id_despatch) return;
+    if (tipo === 'pdf') {
+      // A4 ("Ver PDF") o el de SUNAT: se muestran en el visor
+      const nombre = `${formato === 'sunat' ? 'SUNAT-' : ''}${fil.serie}-${fil.numero}.pdf`;
+      visor.abrir(nombre, (signal) => EmisionService.archivo(fil.id_despatch, 'pdf', formato, signal));
+      return;
+    }
+    try {
+      setIsPdfDownloading(true);
+      await EmisionService.abrirArchivo(fil.id_despatch, tipo, formato);
+    } catch (error) {
+      getError(typeof error === 'string' ? error : 'No se pudo obtener el archivo');
+    } finally {
+      setIsPdfDownloading(false);
+    }
+  };
+
+  const consultarEnApi = async (fil: panelguia) => {
+    try {
+      setIsConsulting(true);
+      const r = await EmisionService.consultar(fil.id_despatch);
+      const texto = r.electronico?.descripcion || r.message || etiquetaFeEstado(r.electronico?.feEstado);
+      if (r.exito) getSuccess(texto);
+      else getError(texto);
+    } finally {
+      setIsConsulting(false);
+      reFetch();
+    }
+  };
+
   const HandleConsult = async (fil: panelguia) => {
 
     if (fil.estado === "F") {
       getSuccess('El Comprobante ya tiene respuesta, no puede volver a consultar');
+      return;
+    }
+    if (porApi(fil)) {
+      await consultarEnApi(fil);
       return;
     }
     if (fil.ticket === "") {
@@ -384,7 +436,8 @@ const TablePanel = ({
 
     try {
       setIsConsulting(true);
-      const numeroDocumento = `${params.ruc}-09-${fil.serie}-${fil.numero}`;
+      const { ruc } = await useTokenParamsStore.getState().asegurarParams();
+      const numeroDocumento = `${ruc}-09-${fil.serie}-${fil.numero}`;
       const result = await reintentarConsulta(
         numeroDocumento,
         fil.ticket,
@@ -424,6 +477,10 @@ const TablePanel = ({
   };
 
   const HandleReDowloadFilePdf = async (fil: panelguia) => {
+    if (porApi(fil)) {
+      await descargarDeApi(fil, 'pdf', 'sunat');
+      return;
+    }
     try {
       setIsPdfDownloading(true);
       const response = await GuiaElectronicaService.tryDownloadAgain(fil.hashQr, `${fil.serie}-${fil.numero}`);
@@ -450,15 +507,11 @@ const TablePanel = ({
     setSelectedRowForMenu(null);
   }
 
-  const handlePickGuiaPdf = (fil: number) => {
-    setGuiaSelected(fil)
-    setOpenPdf(true)
+  /** "Ver PDF" de una guía del flujo anterior: el A4 que arma el servicio anterior. */
+  const handlePickGuiaPdf = (fil: panelguia | null) => {
+    if (!fil?.id_despatch) return;
+    visor.abrir(`${fil.serie}-${fil.numero}.pdf`, async () => base64APdf(await pdfDeGuiaGuardada(fil.id_despatch)));
   }
-
-  const handleClosePdf = useCallback(() => {
-    setOpenPdf(false);
-    setGuiaSelected(null);
-  }, [])
 
 
   const downloadQRCode = () => {
@@ -506,271 +559,296 @@ const TablePanel = ({
     }
   }
 
-  const rows = [];
+  /** Etiqueta y color de cada estado local de la guía. */
+  const ESTADOS: Record<string, { texto: string; color: 'default' | 'success' | 'info' | 'warning' | 'error' | 'secondary' }> = {
+    G: { texto: 'Generado', color: 'default' },
+    S: { texto: 'Firmado', color: 'secondary' },
+    E: { texto: 'Enviado', color: 'info' },
+    P: { texto: 'Pendiente', color: 'warning' },
+    F: { texto: 'Finalizado', color: 'success' },
+    B: { texto: 'De baja', color: 'error' },
+  };
 
-  guias?.forEach((fil: panelguia) => (
-    rows.push(
-      <TableRow key={fil.id}>
-        {!isMobile && <TableCell sx={{ ...TableCellStyles, color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}` }} align="left">{fil.id}</TableCell>}
-        <TableCell sx={{ ...TableCellStyles, color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}` }} align="left">{fil.serie}</TableCell>
-        <TableCell sx={{ ...TableCellStyles, color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}` }} align="left">{fil.numero}</TableCell>
-        <TableCell sx={{ ...TableCellStyles, color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}` }} align="left">{fil.fecha}</TableCell>
-        {!isMobile && <TableCell sx={{ ...TableCellStyles, color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}` }} align="left">{fil.codigoSunat}</TableCell>}
-        <TableCell sx={{ ...TableCellStyles, color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}` }} align="left">{fil.descripcion}</TableCell>
-        {!isMobile && <TableCell sx={{ ...TableCellStyles, color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}` }} align="left">{fil.estado}</TableCell>}
-        {!isMobile && <TableCell sx={{
-          ...TableCellStyles, maxWidth: 120, // Ajusta el ancho máximo según sea necesario
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap', color: `${fil.estado === 'B' ? theme.palette.error.main : 'inherit'}`
-        }} align="left">{fil.name}</TableCell>}
+  const chipEstado = (fil: panelguia) => {
+    const estado = ESTADOS[fil.estado] || { texto: fil.estado || '—', color: 'default' as const };
+    return <Chip size='small' label={estado.texto} color={estado.color} variant={fil.estado === 'F' ? 'filled' : 'outlined'} />;
+  };
 
-        <TableCell sx={TableCellStyles} align="center">
-          <Box display="flex" justifyContent="center" alignItems="center" gap={0.5}>
-            <Tooltip title="Consultar ticket en SUNAT" disableHoverListener={fil.ticket === "" || fil.estado === 'B' || fil.estado === 'F'}>
-              <span>
-                <IconButton
-                  size="small"
-                  color="success"
-                  disabled={fil.ticket === "" || fil.estado === 'B' || fil.estado === 'F'}
-                  onClick={() => HandleConsult(fil)}
-                  sx={AnimatedIconButtonStyles}
-                >
-                  <FindInPageIcon fontSize="small" />
-                </IconButton>
-              </span>
-            </Tooltip>
-            
-            <Tooltip title="Regenerar PDF desde SUNAT" disableHoverListener={fil.hashQr === ""}>
-              <span>
-                <IconButton
-                  size="small"
-                  color="warning"
-                  disabled={fil.hashQr === ""}
-                  onClick={() => HandleReDowloadFilePdf(fil)}
-                  sx={AnimatedIconButtonStyles}
-                >
-                  <RefreshIcon fontSize="small" />
-                </IconButton>
-              </span>
-            </Tooltip>
+  /*
+   * Se llaman como funciones, no como <Componente />: definidos dentro del render
+   * serían un tipo nuevo en cada render, React volvería a montar el botón ⋮ y el
+   * menú perdería su ancla (se abría en la esquina de la pantalla).
+   */
 
-            {user?.perfil === 'admin' && (
-              <Tooltip title="Reenviar guía corregida" disableHoverListener={fil.estado === 'B' || fil.estado === 'F'}>
-                <span>
-                  <IconButton
-                    size="small"
-                    color="info"
-                    disabled={fil.estado === 'B' || fil.estado === 'F'}
-                    onClick={() => HandleRegenerar(fil)}
-                    sx={AnimatedIconButtonStyles}
-                  >
-                    <SendIcon fontSize="small" />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            )}
+  /** Botones de acción de una guía: los mismos en la tabla y en las tarjetas. */
+  const acciones = (fil: panelguia) => (
+    <>
+      <Tooltip title="Consultar ticket en SUNAT" disableHoverListener={sinConsulta(fil)}>
+        <span>
+          <IconButton size="small" color="success" disabled={sinConsulta(fil)} onClick={() => HandleConsult(fil)} sx={AnimatedIconButtonStyles} aria-label="Consultar en SUNAT">
+            <FindInPageIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
 
-            {user?.perfil === 'admin' && (
-              <Tooltip title="Dar de baja guía" disableHoverListener={fil.estado !== 'F'}>
-                <span>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    disabled={fil.estado !== 'F'}
-                    onClick={() => handleSeleccionarGuiaAnula(fil)}
-                    sx={AnimatedIconButtonStyles}
-                  >
-                    <DoDisturbIcon fontSize="small" />
-                  </IconButton>
-                </span>
-              </Tooltip>
-            )}
-          </Box>
-        </TableCell>
-        <TableCell sx={TableCellStyles} align="center">
-          {/* <Tooltip title="Editar guía" disableHoverListener={fil.estado === 'B' || fil.estado === 'F'}>
-            <span>
-              <IconButton
-                size="small"
-                color="primary"
-                disabled={fil.estado === 'B' || fil.estado === 'F'}
-                onClick={() => handleEditGuia(fil)}
-                sx={AnimatedIconButtonStyles}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </span>
-          </Tooltip> */}
-          <Tooltip title="Editar en el formulario nuevo" disableHoverListener={fil.estado === 'B' || fil.estado === 'F'}>
-            <span>
-              <IconButton
-                size="small"
-                color="secondary"
-                disabled={fil.estado === 'B' || fil.estado === 'F'}
-                onClick={() => handleEditGuiaNueva(fil)}
-                sx={AnimatedIconButtonStyles}
-              >
-                <AutoAwesomeIcon fontSize="small" />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </TableCell>
-        <TableCell sx={TableCellStyles} align="center">
-          <Box>
-            <IconButton
-              id='basic-iconbutton'
-              onClick={(e) => handleOpenMenu(e, fil)}
-              size='small'
-              aria-controls={openMenu ? 'basic-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={openMenu ? 'true' : undefined}
-              sx={AnimatedIconButtonStyles}
-            >
-              <MoreVertIcon fontSize="small" />
+      <Tooltip title="Regenerar PDF desde SUNAT" disableHoverListener={fil.hashQr === ""}>
+        <span>
+          <IconButton size="small" color="warning" disabled={fil.hashQr === ""} onClick={() => HandleReDowloadFilePdf(fil)} sx={AnimatedIconButtonStyles} aria-label="Regenerar PDF">
+            <RefreshIcon fontSize="small" />
+          </IconButton>
+        </span>
+      </Tooltip>
+
+      {user?.perfil === 'admin' && (
+        <Tooltip title="Reenviar guía corregida" disableHoverListener={bloqueada(fil)}>
+          <span>
+            <IconButton size="small" color="info" disabled={bloqueada(fil)} onClick={() => HandleRegenerar(fil)} sx={AnimatedIconButtonStyles} aria-label="Reenviar guía">
+              <SendIcon fontSize="small" />
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              id="basic-menu"
-              open={openMenu}
-              onClose={handleCloseMenu}
-              onClick={handleCloseMenu}
-              PaperProps={{
-                elevation: 0,
-                sx: {
-                  overflow: 'visible',
-                  filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                  mt: 1.5,
-                  '&::before': {
-                    content: '""',
-                    display: 'block',
-                    position: 'absolute',
-                    top: 0,
-                    right: 14,
-                    width: 10,
-                    height: 10,
-                    bgcolor: 'background.paper',
-                    transform: 'translateY(-50%) rotate(45deg)',
-                    zIndex: 0,
-                  },
-                },
-              }}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              <MenuItem onClick={() => handlePickGuiaPdf(selectedRowForMenu?.id_despatch)}>
-                <ListItemIcon>
-                  <VisibilityIcon color='error' fontSize='small' />
-                </ListItemIcon>
-                <Typography sx={{ fontSize: '0.85rem' }} >Ver PDF</Typography>
-              </MenuItem>
-              <MenuItem onClick={() => HandleDowloadFilePdf(selectedRowForMenu?.rutaPdf)}>
-                <ListItemIcon>
-                  <PictureAsPdfSharp color='error' fontSize='small' />
-                </ListItemIcon>
-                <Typography sx={{ fontSize: '0.85rem' }} >Descargar PDF SUNAT</Typography>
-              </MenuItem>
-              <MenuItem onClick={() => HandleDowloadFile(selectedRowForMenu?.rutaXml)}>
-                <ListItemIcon>
-                  <AttachFileIcon color='primary' fontSize='small' />
-                </ListItemIcon>
-                <Typography sx={{ fontSize: '0.85rem' }} >Descargar XML</Typography>
-              </MenuItem>
+          </span>
+        </Tooltip>
+      )}
 
-              <MenuItem onClick={() => HandleDowloadFile(selectedRowForMenu?.rutaCdr)}>
-                <ListItemIcon>
-                  <FolderSpecialIcon color='success' fontSize='small' />
-                </ListItemIcon>
-                <Typography sx={{ fontSize: '0.85rem' }} >Descargar CDR</Typography>
-              </MenuItem>
-              <Tooltip title={<CustomToolTip fil={selectedRowForMenu} />} placement="left">
-                <MenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleConsultarNotas(selectedRowForMenu);
-                  }}
-                  onMouseEnter={(e) => e.stopPropagation()}
-                >
-                  <ListItemIcon>
-                    <FormatListBulletedIcon color='success' fontSize='small' />
-                  </ListItemIcon>
-                  <Typography sx={{ fontSize: '0.85rem' }} >Ver Notas</Typography>
-                </MenuItem>
-              </Tooltip>
+      {user?.perfil === 'admin' && (
+        <Tooltip title="Dar de baja guía" disableHoverListener={fil.estado !== 'F'}>
+          <span>
+            <IconButton size="small" color="error" disabled={fil.estado !== 'F'} onClick={() => handleSeleccionarGuiaAnula(fil)} sx={AnimatedIconButtonStyles} aria-label="Dar de baja">
+              <DoDisturbIcon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
+      )}
+    </>
+  );
 
-              <MenuItem onClick={() => handleUrlHashQr(selectedRowForMenu?.hashQr)}>
-                <ListItemIcon>
-                  <LinkIcon color='success' fontSize='small' />
-                </ListItemIcon>
-                <Typography sx={{ fontSize: '0.85rem' }} >Hash QR</Typography>
-              </MenuItem>
+  const botonEditar = (fil: panelguia) => (
+    <Tooltip title="Editar guía" disableHoverListener={bloqueada(fil)}>
+      <span>
+        <IconButton size="small" color="secondary" disabled={bloqueada(fil)} onClick={() => handleEditGuiaNueva(fil)} sx={AnimatedIconButtonStyles} aria-label="Editar guía">
+          <AutoAwesomeIcon fontSize="small" />
+        </IconButton>
+      </span>
+    </Tooltip>
+  );
 
-              <MenuItem onClick={() => handleImageQr(selectedRowForMenu?.hashQr)}>
-                <ListItemIcon>
-                  <QrCodeIcon fontSize='small' />
-                </ListItemIcon>
-                <Typography sx={{ fontSize: '0.85rem' }} >Ver QR en imagen</Typography>
-              </MenuItem>
+  const botonMas = (fil: panelguia) => (
+    <IconButton
+      onClick={(e) => handleOpenMenu(e, fil)}
+      size='small'
+      aria-controls={openMenu ? 'menu-guia' : undefined}
+      aria-haspopup="true"
+      aria-expanded={openMenu && selectedRowForMenu?.id === fil.id ? 'true' : undefined}
+      aria-label="Más opciones"
+      sx={AnimatedIconButtonStyles}
+    >
+      <MoreVertIcon fontSize="small" />
+    </IconButton>
+  );
 
-            </Menu>
-          </Box>
-        </TableCell>
-      </TableRow>
-    )
-  ))
+  /**
+   * Fondo de los menús emergentes: un tono distinto al de la tabla para que se
+   * distingan. Claro: un celeste muy suave del color primario; oscuro: un gris
+   * más claro que el fondo de las tarjetas.
+   */
+  const fondoMenu = theme.palette.mode === 'dark'
+    ? lighten(theme.palette.background.paper, 0.1)
+    : lighten(theme.palette.primary.main, 0.92);
+  const hoverMenu = theme.palette.mode === 'dark'
+    ? alpha(theme.palette.primary.light, 0.16)
+    : darken(fondoMenu, 0.06);
+
+  const colorFila = (fil: panelguia) => (fil.estado === 'B' ? theme.palette.error.main : 'inherit');
+
+  /* ---------- Celular y tablet: una tarjeta por guía ---------- */
+  const tarjetas = (
+    <Stack spacing={1.25}>
+      {isLoading ? (
+        <Box py={6} display="flex" justifyContent="center"><CircularProgress /></Box>
+      ) : guias?.length ? (
+        guias.map((fil) => (
+          <Paper
+            key={fil.id}
+            variant="outlined"
+            sx={{
+              p: 1.5,
+              borderRadius: 2.5,
+              borderLeft: 4,
+              borderLeftColor: fil.estado === 'B' ? 'error.main' : fil.estado === 'F' ? 'success.main' : 'divider',
+            }}
+          >
+            <Box display="flex" alignItems="flex-start" justifyContent="space-between" gap={1}>
+              <Box minWidth={0}>
+                <Typography variant="subtitle1" fontWeight={700} lineHeight={1.2} sx={{ color: colorFila(fil) }}>
+                  {fil.serie}-{fil.numero}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {fil.fecha}{fil.name ? ` · ${fil.name}` : ''}
+                </Typography>
+              </Box>
+              {chipEstado(fil)}
+            </Box>
+
+            {(fil.descripcion || fil.codigoSunat) && (
+              <Typography variant="body2" mt={1} sx={{ color: colorFila(fil), wordBreak: 'break-word' }}>
+                {fil.codigoSunat ? <strong>{fil.codigoSunat} · </strong> : null}
+                {fil.descripcion}
+              </Typography>
+            )}
+
+            <Divider sx={{ my: 1 }} />
+
+            <Box display="flex" alignItems="center" gap={0.75} flexWrap="wrap">
+              {acciones(fil)}
+              <Box flex={1} />
+              {botonEditar(fil)}
+              {botonMas(fil)}
+            </Box>
+          </Paper>
+        ))
+      ) : (
+        <Paper variant="outlined" sx={{ py: 6, textAlign: 'center', borderRadius: 2.5 }}>
+          <Typography color="text.secondary">No hay resultados</Typography>
+        </Paper>
+      )}
+    </Stack>
+  );
+
+  /* ---------- Escritorio: tabla ---------- */
+  const tabla = (
+    <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2.5 }}>
+      <Table aria-label="Guías emitidas" size="small">
+        <TableHead sx={customTableHeader}>
+          <TableRow>
+            <TableCell width={"1%"}>Id</TableCell>
+            <TableCell width={"5%"}>Serie</TableCell>
+            <TableCell width={"5%"}>Num</TableCell>
+            <TableCell width={"12%"}>Fecha</TableCell>
+            <TableCell width={"5%"}>C.Sunat</TableCell>
+            <TableCell width={"30%"}>Descripción</TableCell>
+            <TableCell width={"10%"}>Estado</TableCell>
+            <TableCell width={"8%"}>Usuario</TableCell>
+            <TableCell width={"14%"} align="center">Acciones</TableCell>
+            <TableCell width={"5%"} align="center">Editar</TableCell>
+            <TableCell width={"5%"} align="center">Más</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {isLoading ? (
+            <TableRow style={{ height: 53 * rowsPerPage }}><TableCell colSpan={11} align="center"><CircularProgress /></TableCell></TableRow>
+          ) : guias?.length ? (
+            guias.map((fil) => (
+              <TableRow key={fil.id} hover>
+                <TableCell sx={{ ...TableCellStyles, color: colorFila(fil) }}>{fil.id}</TableCell>
+                <TableCell sx={{ ...TableCellStyles, color: colorFila(fil) }}>{fil.serie}</TableCell>
+                <TableCell sx={{ ...TableCellStyles, color: colorFila(fil) }}>{fil.numero}</TableCell>
+                <TableCell sx={{ ...TableCellStyles, color: colorFila(fil) }}>{fil.fecha}</TableCell>
+                <TableCell sx={{ ...TableCellStyles, color: colorFila(fil) }}>{fil.codigoSunat}</TableCell>
+                <TableCell sx={{ ...TableCellStyles, color: colorFila(fil) }}>{fil.descripcion}</TableCell>
+                <TableCell sx={TableCellStyles}>{chipEstado(fil)}</TableCell>
+                <TableCell sx={{ ...TableCellStyles, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: colorFila(fil) }}>{fil.name}</TableCell>
+                <TableCell sx={TableCellStyles} align="center">
+                  <Box display="flex" justifyContent="center" alignItems="center" gap={0.5}>
+                    {acciones(fil)}
+                  </Box>
+                </TableCell>
+                <TableCell sx={TableCellStyles} align="center">{botonEditar(fil)}</TableCell>
+                <TableCell sx={TableCellStyles} align="center">{botonMas(fil)}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow style={{ height: 53 * rowsPerPage }}><TableCell colSpan={11} align="center"><Typography variant="h6" color="text.secondary">No hay resultados</Typography></TableCell></TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 
   return (
     <>
-      <TableContainer component={Paper}>
-        <Table aria-label="simple table" size="small">
-          <TableHead sx={customTableHeader} >
-            <TableRow>
-              {!isMobile && <TableCell width={"1%"}>Id</TableCell>}
-              <TableCell width={"5%"} align="left">
-                Serie
-              </TableCell>
-              <TableCell width={"5%"} align="left">
-                Num
-              </TableCell>
-              <TableCell width={"13%"} align="left">
-                Fecha
-              </TableCell>
-              {!isMobile && <TableCell width={"5%"} align="left">
-                C.Sunat
-              </TableCell>}
-              <TableCell width={"30%"} align="left">
-                Descripcion
-              </TableCell>
-              <TableCell width={"10%"} align="left">
-                Est
-              </TableCell>
-              {!isMobile && <TableCell width={"5%"} align="left">
-                Usuario
-              </TableCell>}
-              <TableCell width={"15%"} align="center">
-                Acciones
-              </TableCell>
-              <TableCell width={"15%"} align="center">
-                Editar
-              </TableCell>
-              <TableCell width={"5%"} align="center">
-                Más
-              </TableCell>
+      {usarTarjetas ? tarjetas : tabla}
 
-            </TableRow>
-          </TableHead>
-          <TableBody>
+      {/* Un solo menú "Más" para todas las guías */}
+      <Menu
+        anchorEl={anchorEl}
+        id="menu-guia"
+        open={openMenu}
+        onClose={handleCloseMenu}
+        onClick={handleCloseMenu}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            mt: 1.5,
+            bgcolor: fondoMenu,
+            border: `1px solid ${theme.palette.divider}`,
+            '& .MuiMenuItem-root:hover': { bgcolor: hoverMenu },
+            '&::before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              // La flecha toma el mismo fondo y borde que el menú
+              bgcolor: fondoMenu,
+              borderTop: `1px solid ${theme.palette.divider}`,
+              borderLeft: `1px solid ${theme.palette.divider}`,
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={() => porApi(selectedRowForMenu)
+          ? descargarDeApi(selectedRowForMenu, 'pdf', 'a4')
+          : handlePickGuiaPdf(selectedRowForMenu)}>
+          <ListItemIcon><VisibilityIcon color='error' fontSize='small' /></ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem' }}>Ver PDF</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => porApi(selectedRowForMenu)
+          ? descargarDeApi(selectedRowForMenu, 'pdf', 'sunat')
+          : HandleDowloadFilePdf(selectedRowForMenu?.rutaPdf)}>
+          <ListItemIcon><PictureAsPdfSharp color='error' fontSize='small' /></ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem' }}>Descargar PDF SUNAT</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => porApi(selectedRowForMenu)
+          ? descargarDeApi(selectedRowForMenu, 'xml')
+          : HandleDowloadFile(selectedRowForMenu?.rutaXml)}>
+          <ListItemIcon><AttachFileIcon color='primary' fontSize='small' /></ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem' }}>Descargar XML</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => porApi(selectedRowForMenu)
+          ? descargarDeApi(selectedRowForMenu, 'cdr')
+          : HandleDowloadFile(selectedRowForMenu?.rutaCdr)}>
+          <ListItemIcon><FolderSpecialIcon color='success' fontSize='small' /></ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem' }}>Descargar CDR</Typography>
+        </MenuItem>
+        <Tooltip title={selectedRowForMenu ? <CustomToolTip fil={selectedRowForMenu} /> : ''} placement="left">
+          <MenuItem
+            onClick={(e) => {
+              e.stopPropagation();
+              handleConsultarNotas(selectedRowForMenu);
+            }}
+            onMouseEnter={(e) => e.stopPropagation()}
+          >
+            <ListItemIcon><FormatListBulletedIcon color='success' fontSize='small' /></ListItemIcon>
+            <Typography sx={{ fontSize: '0.85rem' }}>Ver Notas</Typography>
+          </MenuItem>
+        </Tooltip>
+        <MenuItem onClick={() => handleUrlHashQr(selectedRowForMenu?.feQrUrl || selectedRowForMenu?.hashQr)}>
+          <ListItemIcon><LinkIcon color='success' fontSize='small' /></ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem' }}>Hash QR</Typography>
+        </MenuItem>
+        <MenuItem onClick={() => handleImageQr(selectedRowForMenu?.feQrUrl || selectedRowForMenu?.hashQr)}>
+          <ListItemIcon><QrCodeIcon fontSize='small' /></ListItemIcon>
+          <Typography sx={{ fontSize: '0.85rem' }}>Ver QR en imagen</Typography>
+        </MenuItem>
+      </Menu>
 
-            {
-              isLoading ? (<TableRow style={{ height: 53 * rowsPerPage }}><TableCell colSpan={11} align="center"><CircularProgress /></TableCell></TableRow>) :
-                rows.length > 0 ? rows
-                  :
-                  <TableRow style={{ height: 53 * rowsPerPage }}><TableCell colSpan={11} align="center"><h2>No hay resultados</h2></TableCell></TableRow>
-            }
-
-          </TableBody>
-        </Table>
-      </TableContainer>
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
@@ -779,13 +857,11 @@ const TablePanel = ({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Filas por página:"
+        labelRowsPerPage={usarTarjetas ? "Por página:" : "Filas por página:"}
         labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count !== -1 ? count : `más de ${to}`}`}
+        sx={{ '& .MuiTablePagination-toolbar': { px: { xs: 0, sm: 2 } } }}
       />
-      {
-        guiaSelected &&
-        <PreviewPdf openPdf={openPdf} idGuia={guiaSelected} handleClosePdf={handleClosePdf} />
-      }
+      <VisorPdf {...visor.props} />
 
       {/*  Modal para mostrar el QR */}
       <Modal
@@ -831,13 +907,14 @@ const TablePanel = ({
       </Dialog>
       {
         datosParaProcesar &&
-        <ProcesarGuiaModal
+        <ModalEnvioGuia
           open={modalOpen}
           onClose={handleModalClose}
           datosGuia={datosParaProcesar}
           onSuccess={handleProcesoSuccess}
           onError={handleProcesoError}
           idElectronico={guiaSeleccionada?.id}
+          idDespatch={guiaSeleccionada?.id_despatch}
         />
       }
 

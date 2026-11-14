@@ -40,7 +40,7 @@ import CampoSelect, { conActual } from "./components/CampoSelect";
 import CargaInicial from "./components/CargaInicial";
 import DocsRapidos from "./components/DocsRapidos";
 import ListaScop, { formatoVolumen } from "./components/ListaScop";
-import ResumenRapido from "./components/ResumenRapido";
+import ResumenRevision from "../GuiaRemisionNueva/components/ResumenRevision";
 import TemaCompacto from "./components/TemaCompacto";
 import { MODALIDADES_TRASLADO, MOTIVOS_TRASLADO, useGuiaRapida } from "./useGuiaRapida";
 
@@ -615,7 +615,7 @@ const GuiaRapidaContenido = () => {
         </Paper>
       </Box>
 
-      <ResumenRapido abierto={verResumen} onCerrar={() => setVerResumen(false)} r={r} />
+      <ResumenRevision abierto={verResumen} onCerrar={() => setVerResumen(false)} api={r.api} />
       <CargaInicial
         abierto={r.cargaEnCurso || r.hayErroresCarga}
         pasos={r.pasosLista}

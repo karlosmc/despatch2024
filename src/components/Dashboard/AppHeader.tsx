@@ -59,8 +59,6 @@ const TITULOS: [string, string][] = [
   ['/admin', 'Dashboard'],
 ];
 
-const logo = import.meta.env.VITE_API_LOGO
-
 const tituloDeRuta = (pathname: string) =>
   TITULOS.find(([prefijo]) => pathname === prefijo || pathname.startsWith(prefijo))?.[1] || ''
 
@@ -107,22 +105,11 @@ const AppHeader = ({ toggle, setToggle }: AppHeaderInterface) => {
           <MenuRoundedIcon />
         </IconButton>
 
-        {/* En celular el logo no entra: va en el menú lateral. */}
-        <Box
-          component='img'
-          alt='Logo de la empresa'
-          src={`/assets/img/${logo}`}
-          onClick={() => navigate('/')}
-          sx={{ display: { xs: 'none', sm: 'block' }, borderRadius: 2, height: 38, cursor: 'pointer', ml: 0.5 }}
-        />
-
+        {/* El logo va sólo en el menú lateral. */}
         {titulo && (
-          <>
-            <Divider orientation='vertical' flexItem sx={{ mx: 1, my: 1.5, display: { xs: 'none', sm: 'block' } }} />
-            <Typography variant='subtitle1' fontWeight={700} noWrap sx={{ minWidth: 0 }}>
-              {titulo}
-            </Typography>
-          </>
+          <Typography variant='subtitle1' fontWeight={700} noWrap sx={{ minWidth: 0, ml: 0.5 }}>
+            {titulo}
+          </Typography>
         )}
 
         <Box sx={{ flexGrow: 1 }} />

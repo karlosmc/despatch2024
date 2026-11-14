@@ -39,6 +39,17 @@ const RUTAS_SIN_EXPIRACION = ['/api/logout', '/api/scop/'];
 /** Petición liviana y autenticada para comprobar si el token sigue sirviendo. */
 const RUTA_VERIFICACION = '/api/favoritos';
 
+/**
+ * `sinReintentos: true` en una petición: su 502/503 es una respuesta del
+ * negocio (p. ej. "SUNAT aún no entrega el PDF"), no una caída. Se devuelve el
+ * error al instante, sin reintentar ni marcar la conexión como caída.
+ */
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    sinReintentos?: boolean;
+  }
+}
+
 type ConfigConReintentos = InternalAxiosRequestConfig & { __reintentos?: number };
 
 const esperar = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -195,7 +206,7 @@ apiLogged.interceptors.response.use(
     }
 
     // 2) Interrupción del servicio: reintento con espera creciente, sólo si repetir es inocuo.
-    if (config && esInterrupcionDelServicio(error)) {
+    if (config && !config.sinReintentos && esInterrupcionDelServicio(error)) {
       const metodo = (config.method || 'get').toLowerCase();
       const intentos = config.__reintentos ?? 0;
 

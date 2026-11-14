@@ -89,7 +89,7 @@ import { puntoEmision } from "../../types/puntoemision.interface";
 // import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
-import { ProcesarGuiaModal } from "./ProcesarGuia";
+import { ModalEnvioGuia } from "./ModalEnvioGuia";
 
 import { GuiaServices } from "../../service/GuiaServices";
 import { PuntoEmisionService } from "../../service/PuntoEmisionService";
@@ -1474,13 +1474,14 @@ const GuiaRemisionMain = () => {
         </Dialog>
       </Container>
 
-      <ProcesarGuiaModal
+      <ModalEnvioGuia
         open={modalOpen}
         onClose={handleModalClose}
         datosGuia={datosParaProcesar}
         onSuccess={handleProcesoSuccess}
         onError={handleProcesoError}
         idElectronico={estadoElectronico}
+        idDespatch={idDespatch}
       />
     </LocalizationProvider>
   );
