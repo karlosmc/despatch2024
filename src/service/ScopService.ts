@@ -285,6 +285,91 @@ const consultarFake = async (
 /* Servicio                                                             */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* SCOP temporales (cargados en guiasapi por la app de campo)           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * De dónde salen los pedidos que se eligen en la guía rápida:
+ *  - "temporal" (por defecto): lo cargado en guiasapi (`scop_temporal`) para la
+ *    placa de la cisterna. No necesita sucursal ni rango de fechas.
+ *  - "portal": consulta directa al portal SCOP por sucursal y rango (como antes).
+ *  - "manual": no se consulta nada; el SCOP, la factura y el producto se agregan a mano.
+ * Se cambia con VITE_SCOP_FUENTE=portal|manual (Vite lo lee al iniciar o compilar).
+ */
+export type FuenteScop = "temporal" | "portal" | "manual";
+
+const FUENTE_ENV = String(import.meta.env.VITE_SCOP_FUENTE ?? "").trim();
+export const SCOP_FUENTE: FuenteScop = FUENTE_ENV === "portal" || FUENTE_ENV === "manual" ? FUENTE_ENV : "temporal";
+
+/** Un SCOP de `GET /api/scop/temporales`. */
+export interface ScopTemporal {
+  nroScop: string;
+  factura: string | null;
+  proveedor: string | null;
+  /** YYYY-MM-DD HH:mm:ss */
+  fechaPedido: string | null;
+  fechaVenta: string | null;
+  fechaDespacho: string | null;
+  estadoPedido: string | null;
+  producto: string | null;
+  placa: string;
+  /** Establecimiento (punto de ubicación) del SCOP; null en GLP o si no se cargó. */
+  idEstablecimiento: number | null;
+  volumen: number | string | null;
+  unidadMedida: string | null;
+  /** false = ya está en otra guía (`guia` dice cuál). */
+  disponible: boolean;
+  /** Es de la guía que se está editando. */
+  enEstaGuia: boolean;
+  id_despatch: number | null;
+  guia: string | null;
+}
+
+/** "2026-11-15 10:00:00" → "15/11/2026 10:00:00" (el formato que muestra la lista). */
+const aFormatoScop = (fecha?: string | null) => {
+  const d = fecha ? dayjs(fecha) : null;
+  return d && d.isValid() ? d.format(FORMATO_FECHA_SCOP) : "";
+};
+
+/**
+ * Convierte un SCOP temporal al pedido que usa la guía. El proveedor hace de
+ * vendedor (GLP) y de "Prov. Producto" (líquidos): de ahí salen los chips.
+ */
+export const aPedidoTemporal = (s: ScopTemporal, tipo: TipoScop): PedidoScop => {
+  const referencia = dayjs(s.fechaDespacho || s.fechaPedido || "");
+  const estado = (s.estadoPedido || "").trim();
+  const proveedor = (s.proveedor || "").trim();
+
+  return {
+    tipo,
+    codigoAutorizacion: String(s.nroScop).trim(),
+    factura: facturaValida(s.factura || ""),
+    fechaPedido: aFormatoScop(s.fechaPedido || s.fechaDespacho),
+    fechaOrden: referencia.isValid() ? referencia.valueOf() : 0,
+    estado,
+    disponible: !ESTADO_NO_DISPONIBLE.test(estado),
+    producto: (s.producto || "").trim(),
+    volumen: parseVolumen(s.volumen),
+    unidad: (s.unidadMedida || "").trim(),
+    vendedor: proveedor,
+    provProducto: proveedor,
+    placa: normalizarPlaca(s.placa),
+  };
+};
+
+const motivoTemporales = (error: unknown): string => {
+  if (axios.isCancel(error as unknown)) return "Consulta cancelada.";
+  const e = error as AxiosError<any>;
+  if (e?.isAxiosError) {
+    if (!e.response) return "No se pudo conectar con el servidor para traer los SCOP.";
+    const texto = e.response.data?.error || e.response.data?.message;
+    if (texto) return texto;
+    return `El servidor respondió con error ${e.response.status} al traer los SCOP.`;
+  }
+  return error instanceof Error ? error.message : "No se pudieron traer los SCOP de la placa.";
+};
+
 /** Uso de un número de SCOP en guías guardadas. */
 export interface UsoScop {
   nroScop: string;
@@ -319,6 +404,40 @@ export const ScopService = {
       if (uso?.nroScop) mapa[String(uso.nroScop).trim()] = uso;
     });
     return mapa;
+  },
+
+  /**
+   * SCOP cargados en guiasapi para una placa (`GET /api/scop/temporales`), ya
+   * convertidos a pedidos. Incluye los usados en otra guía: la lista los muestra
+   * deshabilitados (ver `disponibilidad`). `idDespatch` = guía en edición.
+   *
+   * Líquidos: `idLlegada` (punto de llegada) deja sólo los SCOP de ese
+   * establecimiento y los cargados sin establecimiento. En GLP no se envía.
+   */
+  temporales: async (
+    placa: string,
+    tipo: TipoScop,
+    idDespatch?: number | null,
+    idLlegada?: number | string | null,
+    opciones: { signal?: AbortSignal } = {},
+  ): Promise<PedidoScop[]> => {
+    try {
+      const { data } = await apiLogged.get(`/api/scop/temporales`, {
+        params: {
+          // Sin guion ni espacios: así está guardada en scop_temporal ("ABC-123" → "ABC123")
+          placa: soloAlfanumerico(placa),
+          ...(idDespatch ? { id_despatch: idDespatch } : {}),
+          ...(tipo === "liquido" && idLlegada ? { id_puntoubicacion: idLlegada } : {}),
+        },
+        signal: opciones.signal,
+      });
+      const lista: ScopTemporal[] = Array.isArray(data?.scops) ? data.scops : [];
+      // El backend ya los ordena (más reciente primero)
+      return lista.filter((s) => s?.nroScop).map((s) => aPedidoTemporal(s, tipo));
+    } catch (error) {
+      if (!axios.isCancel(error as unknown)) console.error("Error al traer los SCOP temporales:", error);
+      throw motivoTemporales(error);
+    }
   },
 
   /**

@@ -33,6 +33,7 @@ import { ConductoresService } from "../../service/ConductoresServices";
 import { CombustiblesService } from "../../service/CombustiblesService";
 import {
   MAX_DIAS_SCOP,
+  SCOP_FUENTE,
   SCOP_MODO,
   ScopService,
   aPedidos,
@@ -667,11 +668,26 @@ export const useGuiaRapida = () => {
    * ========================================================= */
   useEffect(() => {
     /*
-     * Recién al terminar la carga inicial, con tipo marcado y sucursal. La placa no
-     * entra en la consulta: se piden todos los pedidos y se filtran en pantalla.
-     * Si la cisterna no es GLP, no se consulta hasta que el usuario lo pida.
+     * Fuente "temporal" (por defecto): lo cargado en guiasapi para la placa de la
+     * cisterna. Basta la placa; sale sola, también con líquidos.
+     *
+     * Fuente "portal": recién al terminar la carga inicial, con tipo marcado y
+     * sucursal. La placa no entra en la consulta: se piden todos los pedidos y se
+     * filtran en pantalla. Si la cisterna no es GLP, no se consulta hasta que el
+     * usuario lo pida.
      */
-    if (cargaEnCurso || !tipoScop || !sucursal || (!secundarioEsGlp && !consultaPedida)) {
+    const temporal = SCOP_FUENTE === "temporal";
+    const tipoActual: TipoScop = tipoScop || (secundarioEsGlp ? "glp" : "liquido");
+    // Líquidos: los SCOP se filtran también por el punto de llegada; sin él no se carga
+    const idLlegada = values.llegada?.id || null;
+    // Fuente "manual": nunca se consulta; todo se agrega a mano.
+    const faltaAlgo = SCOP_FUENTE === "manual"
+      ? true
+      : temporal
+      ? cargaEnCurso || !placaScop || (tipoActual === "liquido" && !idLlegada)
+      : cargaEnCurso || !tipoScop || !sucursal || (!secundarioEsGlp && !consultaPedida);
+
+    if (faltaAlgo) {
       consultaScop.current++;
       setPedidosSucursal([]);
       setDesdeCache(false);
@@ -690,22 +706,25 @@ export const useGuiaRapida = () => {
     setCargandoScop(true);
     setErrorScop(null);
 
-    ScopService.consultar(
-      {
-        sucursal,
-        fecha_inicio: rango.desde,
-        fecha_fin: rango.hasta,
-        para_liquido: tipoScop === "liquido",
-        para_glp: tipoScop === "glp",
-        refrescar,
-      },
-      { signal: controlador.signal }
-    )
-      .then((respuesta) => {
+    const pedir: Promise<{ todos: PedidoScop[]; cache: boolean }> = temporal
+      ? ScopService.temporales(placaScop, tipoActual, api.idDespatch, idLlegada, { signal: controlador.signal }).then((todos) => ({ todos, cache: false }))
+      : ScopService.consultar(
+          {
+            sucursal,
+            fecha_inicio: rango.desde,
+            fecha_fin: rango.hasta,
+            para_liquido: tipoScop === "liquido",
+            para_glp: tipoScop === "glp",
+            refrescar,
+          },
+          { signal: controlador.signal }
+        ).then((respuesta) => ({ todos: aPedidos(respuesta), cache: Boolean(respuesta.desdeCache) }));
+
+    pedir
+      .then(({ todos, cache }) => {
         if (ticket !== consultaScop.current) return;
-        const todos = aPedidos(respuesta);
         setPedidosSucursal(todos);
-        setDesdeCache(Boolean(respuesta.desdeCache));
+        setDesdeCache(cache);
 
         /*
          * Refrescar conserva lo elegido, pero con los datos nuevos: si un pedido
@@ -740,7 +759,7 @@ export const useGuiaRapida = () => {
 
     // Si cambia la búsqueda o se sale de la página, se abandona la consulta anterior.
     return () => controlador.abort();
-  }, [cargaEnCurso, tipoScop, rango.desde, rango.hasta, sucursal, secundarioEsGlp, consultaPedida, recargaScop]);
+  }, [cargaEnCurso, tipoScop, rango.desde, rango.hasta, sucursal, secundarioEsGlp, consultaPedida, recargaScop, placaScop, api.idDespatch, values.llegada?.id]);
 
   /* Pedidos de la placa elegida; los cerrados y anulados no se ofrecen. */
   const pedidosPlaca = useMemo(() => filtrarPorPlaca(pedidosSucursal, placaScop), [pedidosSucursal, placaScop]);
@@ -1292,6 +1311,8 @@ export const useGuiaRapida = () => {
     rango,
     cambiarRango,
     modoScop: SCOP_MODO,
+    /** "temporal": SCOP cargados en guiasapi por placa; "portal": consulta directa. */
+    fuenteScop: SCOP_FUENTE,
     pedidos,
     noDisponibles,
     cargandoScop,

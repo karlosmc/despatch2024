@@ -113,7 +113,28 @@ const GuiaRapidaContenido = () => {
     return () => clearInterval(temporizador);
   }, [r.cargandoScop]);
 
-  const mensajeScop = r.cargandoScop
+  // SCOP cargados en guiasapi: basta la placa (sin sucursal ni rango de fechas)
+  const scopTemporal = r.fuenteScop === "temporal";
+  // Sin consulta de SCOP: sólo proveedor, partida y lo agregado a mano
+  const scopManual = r.fuenteScop === "manual";
+
+  const mensajeScop = scopManual
+    ? null
+    : scopTemporal
+    ? r.cargandoScop
+      ? { color: "text.secondary", texto: "Cargando los SCOP de la placa…" }
+      : r.errorScop
+      ? { color: "error.main", texto: r.errorScop }
+      : !r.placaScop
+      ? { color: "warning.main", texto: "Elige el vehículo secundario: se muestran los SCOP cargados para su placa." }
+      : r.tipoScop === "liquido" && !v.llegada?.id
+      ? { color: "warning.main", texto: "Elige el punto de llegada: en líquidos se muestran los SCOP de ese establecimiento." }
+      : !r.proveedor
+      ? { color: "warning.main", texto: "Elige el proveedor para poder marcar pedidos." }
+      : r.tipoScop === "liquido"
+      ? { color: "text.secondary", texto: `SCOP de la placa ${r.placaScop} para este punto de llegada. Los usados en otra guía salen deshabilitados.` }
+      : { color: "text.secondary", texto: `SCOP cargados para la placa ${r.placaScop}. Los usados en otra guía salen deshabilitados.` }
+    : r.cargandoScop
     ? { color: "text.secondary", texto: `Consultando el portal SCOP… ${segundosScop} s` }
     : r.errorScop
     ? { color: "error.main", texto: r.errorScop }
@@ -309,7 +330,7 @@ const GuiaRapidaContenido = () => {
 
         {/* 2. Proveedor y pedidos SCOP */}
         <Bloque
-          titulo="Proveedor y pedidos"
+          titulo={scopManual ? "Proveedor y documentos" : "Proveedor y pedidos"}
           icono={<LocalGasStationRoundedIcon />}
           color="warning"
           completo={r.seleccion.length > 0 || cantidadBienes > 0}
@@ -342,6 +363,8 @@ const GuiaRapidaContenido = () => {
           </Box>
 
           {/* Filtros del SCOP en una sola fila */}
+          {!scopManual && (
+          <>
           <Box display="flex" alignItems="center" gap={0.75} mt={1} minWidth={0}>
             <ToggleButtonGroup
               exclusive
@@ -364,17 +387,27 @@ const GuiaRapidaContenido = () => {
               />
             </Box>
             <Box flex={1} />
-            <Tooltip title={`Rango: ${dayjs(r.rango.desde).format("DD/MM")} – ${dayjs(r.rango.hasta).format("DD/MM")}`}>
-              <IconButton onClick={() => setVerFechas((x) => !x)} color={verFechas ? "primary" : "default"} aria-label="Rango de fechas">
-                <DateRangeRoundedIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={r.consultaPedida || r.secundarioEsGlp ? "Volver a consultar" : "Consultar el SCOP"}>
+            {!scopTemporal && (
+              <Tooltip title={`Rango: ${dayjs(r.rango.desde).format("DD/MM")} – ${dayjs(r.rango.hasta).format("DD/MM")}`}>
+                <IconButton onClick={() => setVerFechas((x) => !x)} color={verFechas ? "primary" : "default"} aria-label="Rango de fechas">
+                  <DateRangeRoundedIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+            <Tooltip
+              title={
+                scopTemporal
+                  ? "Volver a cargar los SCOP de la placa"
+                  : r.consultaPedida || r.secundarioEsGlp
+                  ? "Volver a consultar"
+                  : "Consultar el SCOP"
+              }
+            >
               <span>
                 <IconButton
                   onClick={r.recargarScop}
-                  disabled={r.cargandoScop || !r.tipoScop || !r.sucursal}
-                  color={!r.secundarioEsGlp && !r.consultaPedida ? "primary" : "default"}
+                  disabled={r.cargandoScop || (scopTemporal ? !r.placaScop : !r.tipoScop || !r.sucursal)}
+                  color={!scopTemporal && !r.secundarioEsGlp && !r.consultaPedida ? "primary" : "default"}
                   aria-label="Consultar el SCOP"
                 >
                   <RefreshRoundedIcon fontSize="small" />
@@ -383,7 +416,7 @@ const GuiaRapidaContenido = () => {
             </Tooltip>
           </Box>
 
-          <Collapse in={verFechas}>
+          <Collapse in={verFechas && !scopTemporal}>
             <Box display="grid" gridTemplateColumns="repeat(2, minmax(0,1fr))" gap={1} mt={1}>
               <TextField
                 type="date"
@@ -467,6 +500,11 @@ const GuiaRapidaContenido = () => {
               cargando={r.cargandoScop && r.pedidos.length === 0}
               ocupados={r.ocupados}
               motivo={v.envio.codTraslado}
+              textoVacio={
+                scopTemporal
+                  ? "No hay SCOP cargados para esta placa (o los que hay están cerrados o anulados)."
+                  : undefined
+              }
             />
           </Box>
 
@@ -489,8 +527,11 @@ const GuiaRapidaContenido = () => {
               )}
             </Box>
           )}
+          </>
+          )}
 
           <AgregarManual
+            principal={scopManual}
             hayProveedor={Boolean(r.proveedor)}
             onAgregarDoc={r.agregarDocManual}
             onAgregarProducto={r.agregarProductoManual}

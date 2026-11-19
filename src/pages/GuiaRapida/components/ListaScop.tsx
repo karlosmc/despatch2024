@@ -28,6 +28,8 @@ interface ListaScopProps {
   ocupados?: Record<string, string>;
   /** Motivo del traslado: decide si el GLP va en kilos (compra) o en galones. */
   motivo?: string;
+  /** Texto cuando no hay pedidos (cambia según de dónde salen los SCOP). */
+  textoVacio?: string;
 }
 
 /** Pedidos numerados en filas de dos líneas; se marcan tocando la fila. */
@@ -38,6 +40,7 @@ const ListaScop = ({
   habilitado,
   cargando,
   ocupados = {},
+  textoVacio = "Sin pedidos disponibles (ni cerrados ni anulados) para esta placa y rango.",
   motivo,
 }: ListaScopProps) => {
   const theme = useTheme();
@@ -65,8 +68,7 @@ const ListaScop = ({
           borderRadius: 2,
         }}
       >
-        Sin pedidos disponibles (ni cerrados ni anulados) para esta placa y
-        rango.
+        {textoVacio}
       </Typography>
     );
   }

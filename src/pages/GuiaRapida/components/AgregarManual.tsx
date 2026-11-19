@@ -9,6 +9,8 @@ import { TipoDocRapido } from "../useGuiaRapida";
 type Modo = TipoDocRapido | "producto";
 
 interface AgregarManualProps {
+  /** Sin consulta de SCOP es la única forma de cargar la guía: se muestra más visible. */
+  principal?: boolean;
   /** Los documentos necesitan proveedor (es su emisor). */
   hayProveedor: boolean;
   onAgregarDoc: (tipo: TipoDocRapido, nro: string) => string | null;
@@ -25,7 +27,7 @@ const OPCIONES: { modo: Modo; texto: string; necesitaProveedor: boolean }[] = [
  * Para cuando el SCOP no trae algo: una línea discreta con enlaces que abren
  * un mini formulario. Queda abierto para agregar varios seguidos.
  */
-const AgregarManual = ({ hayProveedor, onAgregarDoc, onAgregarProducto }: AgregarManualProps) => {
+const AgregarManual = ({ principal = false, hayProveedor, onAgregarDoc, onAgregarProducto }: AgregarManualProps) => {
   const [modo, setModo] = useState<Modo | null>(null);
   const [nro, setNro] = useState("");
   const [codigo, setCodigo] = useState(PRODUCTOS_SCOP[0]?.codigo || "");
@@ -61,8 +63,13 @@ const AgregarManual = ({ hayProveedor, onAgregarDoc, onAgregarProducto }: Agrega
 
   return (
     <Box mt={0.75}>
-      <Typography variant="caption" color="text.disabled" component="div">
-        ¿Falta algo? agregar{" "}
+      <Typography
+        variant={principal ? "body2" : "caption"}
+        color={principal ? "text.secondary" : "text.disabled"}
+        fontWeight={principal ? 600 : undefined}
+        component="div"
+      >
+        {principal ? "Agregar:" : "¿Falta algo? agregar"}{" "}
         {OPCIONES.map((opcion, i) => {
           const deshabilitado = opcion.necesitaProveedor && !hayProveedor;
           return (
